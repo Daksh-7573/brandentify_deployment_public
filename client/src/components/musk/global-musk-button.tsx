@@ -124,7 +124,7 @@ export default function GlobalMuskButton() {
         // Get current page from location
         const currentPage = location.startsWith('/') ? location.substring(1) : location;
         const page = currentPage || 'home';
-        
+
         // Extract only the needed data and create stable references
         const userDataExtract = userData && typeof userData === 'object' ? {
           id: userData.id,
@@ -134,7 +134,7 @@ export default function GlobalMuskButton() {
           industry: userData.industry,
           domain: userData.domain
         } : null;
-        
+
         // Create stable versions of array data
         const stableExperiences = Array.isArray(experiences) ? experiences.map(exp => ({
           id: exp.id,
@@ -143,7 +143,7 @@ export default function GlobalMuskButton() {
           startDate: exp.startDate,
           endDate: exp.endDate
         })) : [];
-        
+
         const stableEducations = Array.isArray(educations) ? educations.map(edu => ({
           id: edu.id,
           institution: edu.institution,
@@ -151,20 +151,20 @@ export default function GlobalMuskButton() {
           startDate: edu.startDate,
           endDate: edu.endDate
         })) : [];
-        
+
         const stableSkills = Array.isArray(skills) ? skills.map(skill => ({
           id: skill.id,
           name: skill.name,
           level: skill.level
         })) : [];
-        
+
         const stableProjects = Array.isArray(projects) ? projects.map(proj => ({
           id: proj.id,
           title: proj.title,
           description: proj.description,
           category: proj.category
         })) : [];
-        
+
         // Use the stable data for the context
         setContextData({
           page,
@@ -182,13 +182,13 @@ export default function GlobalMuskButton() {
       }
     }
   }, [isAuthenticated, location, userId]);
-  
+
   // Separate effect to handle data updates - this prevents the infinite loop
   // by not making the main effect dependent on all data changes
   useEffect(() => {
-    if (isAuthenticated && userData && 
-        contextData.userId === userId && 
-        contextData.data.userData) {
+    if (isAuthenticated && userData &&
+      contextData.userId === userId &&
+      contextData.data.userData) {
       // Update only when we have stable data and it's meaningfully changed
       setContextData(prev => ({
         ...prev,
@@ -230,8 +230,16 @@ export default function GlobalMuskButton() {
     }
   }, [userData, experiences, educations, skills, projects]);
 
-  // Don't show on auth or landing pages
-  if (!isAuthenticated || location === '/' || location === '/auth' || location === '/verify-email') {
+  // Don't show on auth, landing, or onboarding pages
+  // Only allow Musk Chat to be displayed after profile onboarding is complete (>= 95%)
+  const isProfileIncomplete = (user?.profileCompleted || 0) < 95;
+  const isOnboardingPage = location.startsWith('/onboarding');
+
+  if (!isAuthenticated ||
+    location === '/' ||
+    location === '/auth' ||
+    location === '/verify-email' ||
+    isOnboardingPage) {
     return null;
   }
 

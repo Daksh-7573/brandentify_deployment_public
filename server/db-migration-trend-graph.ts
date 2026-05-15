@@ -3,15 +3,11 @@
  * These tables support Musk's ability to provide skill trend analysis and career path guidance
  */
 
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
+import { Pool } from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import { sql } from 'drizzle-orm';
 import dotenv from 'dotenv';
-import ws from 'ws';
 import * as schema from '../shared/schema';
-
-// Configure Neon to use ws for WebSocket connections
-neonConfig.webSocketConstructor = ws;
 
 dotenv.config();
 
@@ -20,8 +16,11 @@ if (!databaseUrl) {
   throw new Error("DATABASE_URL environment variable is not set");
 }
 
-const pool = new Pool({ connectionString: databaseUrl });
-const db = drizzle(pool);
+const pool = new Pool({ 
+  connectionString: databaseUrl,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+});
+const db = drizzle(pool, { schema });
 
 async function executeQuery(queryText: string, params: any[] = []) {
   try {

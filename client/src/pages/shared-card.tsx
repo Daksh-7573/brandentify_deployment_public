@@ -39,6 +39,27 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
   const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const refUser = searchParams.get("ref");
+    console.log("Referral detected:", refUser);
+
+    if (refUser) {
+      const viewerId = localStorage.getItem("userId");
+      fetch("/api/share/open", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          refUser,
+          cardId: userId,
+          viewerId: viewerId || null
+        })
+      }).catch(error => {
+        console.error("Failed to notify share open:", error);
+      });
+    }
+
     // Create an AbortController to cancel fetch if component unmounts
     const controller = new AbortController();
     const signal = controller.signal;

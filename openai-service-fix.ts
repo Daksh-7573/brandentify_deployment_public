@@ -9,7 +9,7 @@ import { LocalAIService } from "./server/services/local-ai-service";
 import type { WorkExperience, Education, Skill } from "./shared/schema";
 
 // Create the local AI service instance
-const localAI = new LocalAIService();
+const localAI = LocalAIService.getInstance();
 
 /**
  * Generate career advice based on user profile information and specific advice type

@@ -1,6 +1,7 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Home, User, BarChart, Briefcase, Menu, FileText } from "lucide-react";
+import { FEATURES } from "@/config/features";
 
 // Navigation items for the sidebar
 const navItems = [
@@ -25,9 +26,10 @@ const navItems = [
     icon: FileText
   },
   {
-    name: "Analytics",
+    name: FEATURES.ENABLE_SMART_RADAR ? "Analytics" : "Smart Radar (Coming Soon)",
     href: "/radar",
-    icon: BarChart
+    icon: BarChart,
+    disabled: !FEATURES.ENABLE_SMART_RADAR
   }
 ];
 
@@ -53,7 +55,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         >
           <Menu className="h-5 w-5" />
         </button>
-        <span className="font-semibold">Brandentifier</span>
+        <span className="font-semibold">Brandentify</span>
         <div></div> {/* Empty div for flex spacing */}
       </div>
 
@@ -65,7 +67,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       `}>
         <div className="bg-white dark:bg-gray-800 h-full w-80 shadow-xl p-4">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-xl font-bold">Brandentifier</h1>
+            <h1 className="text-xl font-bold">Brandentify</h1>
             <button 
               onClick={toggleMenu}
               className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -76,21 +78,32 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           
           <nav className="space-y-1">
             {navItems.map(item => (
-              <Link 
-                key={item.name}
-                href={item.href}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <a className={`
-                  flex items-center px-4 py-3 rounded-md transition-colors
-                  ${location === item.href 
-                    ? "bg-primary text-white" 
-                    : "hover:bg-gray-100 dark:hover:bg-gray-700"}
-                `}>
+              item.disabled ? (
+                <div
+                  key={item.name}
+                  className="flex items-center px-4 py-3 rounded-md text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                  aria-disabled="true"
+                >
                   <item.icon className="h-5 w-5 mr-3" />
                   {item.name}
-                </a>
-              </Link>
+                </div>
+              ) : (
+                <Link 
+                  key={item.name}
+                  href={item.href}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <a className={`
+                    flex items-center px-4 py-3 rounded-md transition-colors
+                    ${location === item.href 
+                      ? "bg-primary text-white" 
+                      : "hover:bg-gray-100 dark:hover:bg-gray-700"}
+                  `}>
+                    <item.icon className="h-5 w-5 mr-3" />
+                    {item.name}
+                  </a>
+                </Link>
+              )
             ))}
           </nav>
         </div>
@@ -107,20 +120,31 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="hidden sm:flex">
         <div className="w-64 h-screen bg-white dark:bg-gray-800 shadow-md fixed">
           <div className="p-5">
-            <h1 className="text-xl font-bold mb-8">Brandentifier</h1>
+            <h1 className="text-xl font-bold mb-8">Brandentify</h1>
             <nav className="space-y-1">
               {navItems.map(item => (
-                <Link key={item.name} href={item.href}>
-                  <a className={`
-                    flex items-center px-4 py-3 rounded-md transition-colors
-                    ${location === item.href 
-                      ? "bg-primary text-white" 
-                      : "hover:bg-gray-100 dark:hover:bg-gray-700"}
-                  `}>
+                item.disabled ? (
+                  <div
+                    key={item.name}
+                    className="flex items-center px-4 py-3 rounded-md text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                    aria-disabled="true"
+                  >
                     <item.icon className="h-5 w-5 mr-3" />
                     {item.name}
-                  </a>
-                </Link>
+                  </div>
+                ) : (
+                  <Link key={item.name} href={item.href}>
+                    <a className={`
+                      flex items-center px-4 py-3 rounded-md transition-colors
+                      ${location === item.href 
+                        ? "bg-primary text-white" 
+                        : "hover:bg-gray-100 dark:hover:bg-gray-700"}
+                    `}>
+                      <item.icon className="h-5 w-5 mr-3" />
+                      {item.name}
+                    </a>
+                  </Link>
+                )
               ))}
             </nav>
           </div>

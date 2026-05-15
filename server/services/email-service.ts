@@ -52,21 +52,21 @@ export async function sendVerificationEmail(to: string, token: string, host: str
   
   // Send email
   const info = await transporter.sendMail({
-    from: '"Brandentifier" <verification@brandentifier.com>',
+    from: '"Brandentify" <verification@brandentify.com>',
     to,
     subject: 'Verify Your Email Address',
     text: `Please verify your email address by clicking the following link: ${verificationUrl}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #4f46e5;">Verify Your Email Address</h2>
-        <p>Welcome to Brandentifier! Please verify your email address by clicking the button below:</p>
+        <p>Welcome to Brandentify! Please verify your email address by clicking the button below:</p>
         <a href="${verificationUrl}" style="display: inline-block; background-color: #4f46e5; color: white; font-weight: bold; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">
           Verify Email
         </a>
         <p>If the button doesn't work, you can also click on this link:</p>
         <p><a href="${verificationUrl}">${verificationUrl}</a></p>
         <p>This link will expire in 24 hours.</p>
-        <p>Thank you,<br>The Brandentifier Team</p>
+        <p>Thank you,<br>The Brandentify Team</p>
       </div>
     `,
   });
@@ -96,16 +96,16 @@ export async function sendWelcomeEmail(to: string): Promise<string> {
   
   // Send email
   const info = await transporter.sendMail({
-    from: '"Brandentifier" <welcome@brandentifier.com>',
+    from: '"Brandentify" <welcome@brandentify.com>',
     to,
-    subject: 'Welcome to Brandentifier!',
-    text: 'Your email has been verified successfully. Welcome to Brandentifier!',
+    subject: 'Welcome to Brandentify!',
+    text: 'Your email has been verified successfully. Welcome to Brandentify!',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #4f46e5;">Welcome to Brandentifier!</h2>
+        <h2 style="color: #4f46e5;">Welcome to Brandentify!</h2>
         <p>Your email has been verified successfully.</p>
-        <p>You can now log in to your account and start using all the features of Brandentifier.</p>
-        <p>Thank you,<br>The Brandentifier Team</p>
+        <p>You can now log in to your account and start using all the features of Brandentify.</p>
+        <p>Thank you,<br>The Brandentify Team</p>
       </div>
     `,
   });

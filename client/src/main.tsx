@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import SimpleApp from "./simple-app";
+import { ErrorBoundary } from "./components/error-boundary";
 import "./index.css";
 import "./styles/neo-glass-main.css";
 import "./styles/neo-glass-theme.css";
@@ -34,7 +35,9 @@ const renderApp = () => {
   console.log('[PERF] React rendering started');
   
   createRoot(document.getElementById("root")!).render(
-    useSimpleApp ? <SimpleApp /> : <App />
+    <ErrorBoundary>
+      {useSimpleApp ? <SimpleApp /> : <App />}
+    </ErrorBoundary>
   );
   
   // Report rendering time after React has mounted

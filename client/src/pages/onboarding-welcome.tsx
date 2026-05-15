@@ -64,9 +64,9 @@ export default function OnboardingWelcome({ userName, onGoalSelected }: Onboardi
   const allGoals = Object.values(BRAND_GOALS).flatMap(category => category.goals);
 
   return (
-    <div 
+    <div
       className="fixed inset-0 w-full h-full responsive-background"
-      style={{ 
+      style={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -75,7 +75,7 @@ export default function OnboardingWelcome({ userName, onGoalSelected }: Onboardi
     >
       {/* Glass UI overlay */}
       <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
-      
+
       <div className="relative z-10 w-full h-full overflow-y-auto flex items-center justify-center p-4 py-8">
         <div className="w-full max-w-4xl my-auto">
           <NeoGlassSection className="p-6 sm:p-8">
@@ -86,20 +86,20 @@ export default function OnboardingWelcome({ userName, onGoalSelected }: Onboardi
                   <span className="text-black font-bold text-2xl">B</span>
                 </div>
                 <span className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80">
-                  Brandentifier
+                  Brandentify
                 </span>
               </div>
-              
+
               <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">
                 👋 Welcome{userName ? `, ${userName}` : ''}!
               </h1>
-              
+
               <p className="text-lg text-white/80 max-w-2xl mx-auto mb-2">
                 Meet your AI-powered career growth coach
               </p>
-              
+
               <p className="text-white/60 max-w-2xl mx-auto">
-                Brandentifier creates personalized Brand Quests to help you build your professional brand. 
+                Brandentify creates personalized Brand Quests to help you build your professional brand.
                 The more we know about you, the better your quests will be.
               </p>
             </div>
@@ -131,17 +131,15 @@ export default function OnboardingWelcome({ userName, onGoalSelected }: Onboardi
                               <button
                                 key={goal.id}
                                 onClick={() => setSelectedGoal(goal.id)}
-                                className={`w-full text-left px-4 py-3 rounded-lg border transition-all duration-200 ${
-                                  isSelected 
-                                    ? 'bg-white/20 border-white/40 shadow-lg' 
+                                className={`w-full text-left px-4 py-3 rounded-lg border transition-all duration-200 ${isSelected
+                                    ? 'bg-white/20 border-white/40 shadow-lg'
                                     : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
-                                }`}
+                                  }`}
                                 data-testid={`goal-${goal.id}`}
                               >
                                 <div className="flex items-start gap-3">
-                                  <div className={`mt-0.5 flex-shrink-0 ${
-                                    isSelected ? 'opacity-100' : 'opacity-0'
-                                  } transition-opacity`}>
+                                  <div className={`mt-0.5 flex-shrink-0 ${isSelected ? 'opacity-100' : 'opacity-0'
+                                    } transition-opacity`}>
                                     <Check className="h-5 w-5 text-green-400" />
                                   </div>
                                   <span className="text-white/90 text-sm leading-relaxed">
@@ -174,17 +172,15 @@ export default function OnboardingWelcome({ userName, onGoalSelected }: Onboardi
                               <button
                                 key={goal.id}
                                 onClick={() => setSelectedGoal(goal.id)}
-                                className={`w-full text-left px-4 py-3 rounded-lg border transition-all duration-200 ${
-                                  isSelected 
-                                    ? 'bg-white/20 border-white/40 shadow-lg' 
+                                className={`w-full text-left px-4 py-3 rounded-lg border transition-all duration-200 ${isSelected
+                                    ? 'bg-white/20 border-white/40 shadow-lg'
                                     : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
-                                }`}
+                                  }`}
                                 data-testid={`goal-${goal.id}`}
                               >
                                 <div className="flex items-start gap-3">
-                                  <div className={`mt-0.5 flex-shrink-0 ${
-                                    isSelected ? 'opacity-100' : 'opacity-0'
-                                  } transition-opacity`}>
+                                  <div className={`mt-0.5 flex-shrink-0 ${isSelected ? 'opacity-100' : 'opacity-0'
+                                    } transition-opacity`}>
                                     <Check className="h-5 w-5 text-green-400" />
                                   </div>
                                   <span className="text-white/90 text-sm leading-relaxed">
@@ -203,25 +199,24 @@ export default function OnboardingWelcome({ userName, onGoalSelected }: Onboardi
             </div>
 
             {/* Continue Button */}
-            <div className="flex justify-center">
+            <div className="flex justify-center mt-4">
               <Button
                 onClick={handleContinue}
                 disabled={!selectedGoal}
                 size="lg"
-                className={`px-8 py-6 text-lg font-semibold transition-all duration-300 ${
-                  selectedGoal 
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-xl hover:shadow-2xl transform hover:scale-105' 
-                    : 'bg-white/10 text-white/40 cursor-not-allowed'
-                }`}
+                className={`px-10 py-6 text-lg font-semibold rounded-full transition-all duration-500 ${selectedGoal
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] transform hover:scale-105'
+                    : 'bg-white/10 text-white/20 cursor-not-allowed'
+                  }`}
                 data-testid="button-continue-welcome"
               >
-                Continue →
+                Get Started →
               </Button>
             </div>
 
             {/* Time Indicator */}
-            <div className="text-center mt-6 text-white/50 text-sm">
-              Step 1 of 5 · Less than 3 minutes to start
+            <div className="text-center mt-12 text-white/40 text-xs uppercase tracking-widest">
+              Step 1 of 7 · Let's begin your journey
             </div>
           </NeoGlassSection>
         </div>
@@ -229,3 +224,4 @@ export default function OnboardingWelcome({ userName, onGoalSelected }: Onboardi
     </div>
   );
 }
+

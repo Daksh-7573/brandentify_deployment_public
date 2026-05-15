@@ -2,8 +2,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useContext } from "react";
-import { AuthContext } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { Check, AlertCircle, Loader2, Mail, Eye, EyeOff } from "lucide-react";
 import {
@@ -50,7 +49,7 @@ const registerSchema = z.object({
 });
 
 export function EmailAuth() {
-  const authContext = useContext(AuthContext);
+  const { signIn } = useAuth();
   const [_, setLocation] = useLocation();
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -154,8 +153,8 @@ export function EmailAuth() {
       
       setSuccessMessage("Login successful!");
       
-      // Use Auth Context to set the user
-      authContext.signInWithEmail(data);
+      // Update auth state immediately for protected route gating
+      signIn(data);
       
       // Small delay to show success message before redirecting
       setTimeout(() => {
@@ -247,9 +246,8 @@ export function EmailAuth() {
           {unverifiedEmail && (
             <div className="mt-2">
               <Button 
-                variant="outline" 
                 size="sm" 
-                className="mt-2" 
+                className="neo-glass-button secondary mt-2 text-sm" 
                 onClick={resendVerificationEmail}
                 disabled={isResendingVerification}
               >
@@ -279,9 +277,8 @@ export function EmailAuth() {
           {unverifiedEmail && !error && (
             <div className="mt-2">
               <Button 
-                variant="outline" 
                 size="sm" 
-                className="mt-2 text-green-600 border-green-300 hover:bg-green-50 hover:text-green-700" 
+                className="neo-glass-button secondary mt-2 text-sm" 
                 onClick={resendVerificationEmail}
                 disabled={isResendingVerification}
               >
@@ -346,9 +343,8 @@ export function EmailAuth() {
                         />
                         <Button
                           type="button"
-                          variant="ghost"
                           size="sm"
-                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          className="neo-glass-button tertiary absolute right-0 top-0 h-full px-3 py-2"
                           onClick={() => setShowPassword(!showPassword)}
                         >
                           {showPassword ? (
@@ -472,9 +468,8 @@ export function EmailAuth() {
                         />
                         <Button
                           type="button"
-                          variant="ghost"
                           size="sm"
-                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          className="neo-glass-button tertiary absolute right-0 top-0 h-full px-3 py-2"
                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                         >
                           {showConfirmPassword ? (

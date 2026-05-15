@@ -1,7 +1,7 @@
 /**
- * Internal Brandentifier Trend Adapter
+ * Internal Brandentify Trend Adapter
  * 
- * Analyzes Brandentifier platform data for trending topics:
+ * Analyzes Brandentify platform data for trending topics:
  * - Popular hashtags
  * - Trending pulse topics
  * - Nowboard activity patterns
@@ -146,3 +146,4 @@ export class InternalAdapter extends BaseTrendAdapter {
       .slice(0, 8);
   }
 }
+

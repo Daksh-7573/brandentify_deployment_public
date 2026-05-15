@@ -12,7 +12,7 @@ const FlipCard: React.FC<FlipCardProps> = ({ userData }) => {
   const [isDarkMode, setIsDarkMode] = useState(true); // Default to dark mode
   
   // Format profile link using brand name (or username as fallback)
-  const profileLink = `brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
+  const profileLink = `brandentify.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
   
   // Toggle flip animation
   const toggleFlip = () => {

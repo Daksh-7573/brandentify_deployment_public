@@ -1,6 +1,6 @@
 /**
  * Lumos Flow Animation Utilities
- * Helper functions to apply dynamic animations in the Brandentifier platform
+ * Helper functions to apply dynamic animations in the Brandentify platform
  */
 
 /**

@@ -14,7 +14,7 @@ import { LocalAIService } from '../local-ai-service';
 import { pool } from '../../db';
 import { resumeScores, resumeFixes, type InsertResumeScore, type InsertResumeFix } from '@shared/schema';
 
-const localAI = new LocalAIService();
+const localAI = LocalAIService.getInstance();
 
 export interface ResumeScoreBreakdown {
   overall: number; // 0-100
@@ -61,11 +61,32 @@ export class ResumeScorerService {
   }> {
     console.log(`[ResumeScorer] Analyzing resume for user ${userId}, role: ${targetRole || 'general'}`);
     
+    const cleanedText = resumeText
+      .replace(/\u0000/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    const MAX_RESUME_CHARS = 15000;
+    const needsTruncate = cleanedText.length > MAX_RESUME_CHARS;
+    const truncatedText = needsTruncate ? cleanedText.substring(0, MAX_RESUME_CHARS) : cleanedText;
+    const estimatedTokens = Math.ceil(truncatedText.length / 4);
+
+    console.log("[ResumeScorer] Input size:", {
+      originalLength: resumeText.length,
+      truncatedLength: truncatedText.length,
+      truncated: needsTruncate,
+      estimatedTokens
+    });
+
     // Generate AI analysis
-    const aiAnalysis = await this.generateAIAnalysis(resumeText, targetRole);
+    if (!truncatedText || truncatedText.length < 20) {
+      throw new Error('Resume text is empty or unreadable after cleaning. Please upload a text-based PDF.');
+    }
+
+    const aiAnalysis = await this.generateAIAnalysis(truncatedText, targetRole);
     
     // Parse AI response into structured data
-    const parsed = this.parseAIAnalysis(aiAnalysis.fullAnalysis, resumeText);
+    const parsed = this.parseAIAnalysis(aiAnalysis.fullAnalysis, truncatedText);
     
     // Calculate scores
     const scoreBreakdown = this.calculateScores(parsed);

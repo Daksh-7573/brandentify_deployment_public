@@ -10,8 +10,8 @@ interface PhotographyQuantumCardProps {
 const PhotographyQuantumCard: React.FC<PhotographyQuantumCardProps> = ({ userData, isLoading = false }) => {
   // Format profile link
   const profileLink = userData.randomProfileLink 
-    ? `brandentifier.com/r/${userData.randomProfileLink}` 
-    : `brandentifier.com/@${userData.brandName || userData.username}`;
+    ? `brandentify.com/r/${userData.randomProfileLink}` 
+    : `brandentify.com/@${userData.brandName || userData.username}`;
 
   return (
     <div className="photography-quantum-card w-full min-h-[580px] relative rounded-2xl overflow-hidden">
@@ -212,3 +212,4 @@ const PhotographyQuantumCard: React.FC<PhotographyQuantumCardProps> = ({ userDat
 };
 
 export default PhotographyQuantumCard;
+

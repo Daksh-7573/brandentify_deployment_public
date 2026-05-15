@@ -3,6 +3,7 @@ import { useChat } from '@/contexts/ChatContext';
 import ConversationList from './ConversationList';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
+import MessageRequests from './MessageRequests';
 import MuskChatPanel from '@/components/musk/musk-chat-panel';
 import { useToast } from '@/hooks/use-toast';
 import { 
@@ -24,7 +25,12 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
   const { currentConversation, setCurrentConversation, markConversationAsRead, conversations } = useChat();
   const { toast } = useToast();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [filter, setFilter] = React.useState<'recent' | 'unread' | 'all' | 'musk'>('recent');
+  const [filter, setFilter] = React.useState<'recent' | 'unread' | 'all' | 'requests' | 'musk'>('recent');
+
+  // Log when filter changes
+  useEffect(() => {
+    console.log(`[Chat] 🔄 Filter changed to: "${filter}"`);
+  }, [filter]);
 
   // Scroll to bottom effect for new messages
   useEffect(() => {
@@ -42,6 +48,27 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
 
   // Get details about the other user in the current conversation
   const otherUser = currentConversation?.participants?.find(p => p.userId !== userId);
+
+  // Log participant resolution
+  useEffect(() => {
+    if (currentConversation) {
+      console.log(`[Chat] 📋 Current conversation:`, {
+        id: currentConversation.id,
+        title: currentConversation.title,
+        participantCount: currentConversation.participants?.length || 0,
+        participants: currentConversation.participants?.map(p => ({
+          userId: p.userId,
+          userName: p.userName,
+          userPhotoURL: p.userPhotoURL
+        }))
+      });
+      console.log(`[Chat] 👤 Other user (for userId ${userId}):`, {
+        userId: otherUser?.userId,
+        userName: otherUser?.userName,
+        userPhotoURL: otherUser?.userPhotoURL
+      });
+    }
+  }, [currentConversation, userId, otherUser]);
 
   return (
     <div className="flex flex-col md:flex-row gap-3 sm:gap-4 md:gap-6 h-full overflow-hidden">
@@ -75,18 +102,18 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
                 Recent
               </button>
               <button 
+                className={`sidebar-tab ${filter === 'requests' ? 'active' : ''}`}
+                onClick={() => setFilter('requests')}
+                data-testid="filter-requests"
+              >
+                Requests
+              </button>
+              <button 
                 className={`sidebar-tab ${filter === 'unread' ? 'active' : ''}`}
                 onClick={() => setFilter('unread')}
                 data-testid="filter-unread"
               >
                 Unread
-              </button>
-              <button 
-                className={`sidebar-tab ${filter === 'all' ? 'active' : ''}`}
-                onClick={() => setFilter('all')}
-                data-testid="filter-all"
-              >
-                All
               </button>
               <button 
                 className={`sidebar-tab ${filter === 'musk' ? 'active' : ''}`}
@@ -100,15 +127,26 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
           </div>
           
           <div className="sidebar-playlists">
-            <ConversationList filter={filter} onMuskSelect={() => {}} />
+            {filter === 'requests' ? (
+              <div className="p-4 text-center text-spotify-light-gray text-sm">
+                Click a request to view and respond
+              </div>
+            ) : (
+              <ConversationList filter={filter} onMuskSelect={() => setFilter('musk')} />
+            )}
           </div>
         </div>
       </div>
       
       {/* Main chat area - Full width on mobile when a conversation is selected */}
-      <div className={`${currentConversation || filter === 'musk' ? 'block' : 'hidden md:block'} flex-1 h-full overflow-hidden flex flex-col`}>
+      <div className={`${currentConversation || filter === 'musk' || filter === 'requests' ? 'block' : 'hidden md:block'} flex-1 h-full overflow-hidden flex flex-col`}>
         <div className="neo-spotify-main h-full w-full flex flex-col overflow-hidden">
-          {filter === 'musk' ? (
+          {filter === 'requests' ? (
+            <>
+              {/* Message Requests - Show requests directly in main area */}
+              <MessageRequests />
+            </>
+          ) : filter === 'musk' ? (
             <>
               {/* Musk Chat Header */}
               <div className="neo-spotify-header">

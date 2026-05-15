@@ -422,7 +422,9 @@ export const useCareerCapsule = (userId: number | string) => {
           title: 'Milestones generated',
           description: 'Musk AI has successfully generated milestones for your career goal.',
         });
+        queryClient.invalidateQueries({ queryKey: [`/api/career-goals/${capsuleId}`] });
         queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-capsule`] });
+        queryClient.refetchQueries({ queryKey: [`/api/career-goals/${capsuleId}`] });
       },
       onError: (error: any) => {
         toast({

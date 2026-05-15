@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { UserData } from "@/types/user";
 import { Mail, Phone, Globe, Briefcase, MapPin, Code, Building2, Share2, Zap } from "lucide-react";
+import { QuantumShareModal } from "@/components/share/quantum-share-modal";
 
 interface QuantumCardProps {
   userData: UserData;
@@ -8,8 +9,10 @@ interface QuantumCardProps {
 }
 
 const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }) => {
+  const [showShareModal, setShowShareModal] = useState(false);
+  
   // Format profile link using brand name (or username as fallback)
-  const profileLink = `brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
+  const profileLink = `brandentify.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
   
   // Generate the actual link href for navigation
   const profileHref = `/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
@@ -200,7 +203,10 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
           
           {/* Footer with share button */}
           <div className="mt-4 sm:mt-6 pt-2 sm:pt-4 pb-2 sm:pb-3 flex justify-center">
-            <div className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-blue-900/40 to-cyan-900/40 backdrop-blur-md text-cyan-400 text-xs font-medium inline-flex items-center border border-blue-500/30 shadow-[0_0_10px_rgba(34,211,238,0.15)] ${isLoading ? 'opacity-50' : 'hover:bg-blue-800/40 hover:shadow-[0_0_15px_rgba(34,211,238,0.3)] transition-all duration-300 cursor-pointer'}`}>
+            <div 
+              onClick={() => !isLoading && userData.randomProfileLink && setShowShareModal(true)}
+              className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-blue-900/40 to-cyan-900/40 backdrop-blur-md text-cyan-400 text-xs font-medium inline-flex items-center border border-blue-500/30 shadow-[0_0_10px_rgba(34,211,238,0.15)] ${isLoading || !userData.randomProfileLink ? 'opacity-50' : 'hover:bg-blue-800/40 hover:shadow-[0_0_15px_rgba(34,211,238,0.3)] transition-all duration-300 cursor-pointer'}`}
+            >
               <Share2 className="h-2.5 w-2.5 sm:h-3 sm:w-3 mr-1.5 sm:mr-2 text-cyan-400" />
               <span className="hidden sm:inline">Share Quantum Card</span>
               <span className="sm:hidden">Share</span>
@@ -243,6 +249,15 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
           </div>
         </div>
       </div>
+      
+      {/* Share Modal */}
+      {userData.randomProfileLink && (
+        <QuantumShareModal 
+          open={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          randomProfileLink={userData.randomProfileLink}
+        />
+      )}
     </div>
   );
 };

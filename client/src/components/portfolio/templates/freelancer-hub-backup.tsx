@@ -2140,7 +2140,7 @@ export default function FreelancerHub({
       {/* Footer */}
       <footer className="pb-12 px-6 text-center">
         <p className="text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          © {new Date().getFullYear()} {userInfo.name} • Made with Brandentifier 💖
+          © {new Date().getFullYear()} {userInfo.name} • Made with Brandentify 💖
         </p>
         
         {publicUrl && (

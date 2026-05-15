@@ -1,17 +1,10 @@
-import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
 import { WorkExperience, Education, Skill } from "@shared/schema";
 import { extractTextFromPdf } from "../utils/pdf-extractor";
 import { processPdfWithAdvancedAlgorithm } from "../utils/advanced-pdf-processor";
 import { promises as fs } from 'fs';
 import path from 'path';
-
-// Initialize OpenAI client with extended timeout
-const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY,
-  timeout: 60000, // 60 seconds timeout
-  maxRetries: 3
-});
+import { generateAIResponse } from "./central-ai-provider";
 
 // Initialize Anthropic client for fallback
 const anthropic = new Anthropic({
@@ -339,16 +332,8 @@ Always structure your analysis like this:
                 `;
                 
                 // Skip the vision API and use a text-only approach with GPT-4o
-                const response = await openai.chat.completions.create({
-                  model: "gpt-4o",
-                  messages: [
-                    {
-                      role: "system",
-                      content: systemContent
-                    },
-                    {
-                      role: "user",
-                      content: `
+                const aiResult = await generateAIResponse(
+                  `
                       I'd like you to analyze my resume and provide personalized feedback for improvements.
                       Focus on structure, impact, achievements, and ${targetRole ? `how to better position myself for a ${targetRole} role` : 'overall effectiveness'}.
                       ${targetIndustry ? `I'm specifically targeting the ${targetIndustry} industry.` : ''}
@@ -391,14 +376,15 @@ Always structure your analysis like this:
                       [RESUME ENDS]
                       
                       Please analyze this resume and provide specific, personalized feedback to help me improve it.
-                      `
-                    }
-                  ],
-                  max_tokens: 4000,
-                  temperature: 0.7 // Using slightly higher temperature for more creative advice
-                });
-                
-                const extractedVisionText = response.choices[0].message.content;
+                      `,
+                  {
+                    systemPrompt: systemContent,
+                    maxTokens: 4000,
+                    temperature: 0.7,
+                  }
+                );
+
+                const extractedVisionText = aiResult.text;
                 
                 if (extractedVisionText && extractedVisionText.length > 200) {
                   console.log(`Successfully extracted text with Vision API (${extractedVisionText.length} chars)`);
@@ -504,7 +490,7 @@ Always structure your analysis like this:
         - 📊 Standard Sections: Use conventional headings (Experience, Education, Skills)
         - 📊 File Format: Submit as .docx unless PDF is specifically requested
         
-        ## 7. Brandentifier Tools for Career Growth
+        ## 7. Brandentify Tools for Career Growth
         - 📱 Portfolio Builder: Create visual showcases of your projects and achievements
         - 📱 Smart Connect: Find mentors in your target industry for personalized advice
         - 📱 Services Showcase: Package your skills as service offerings to attract opportunities
@@ -629,7 +615,7 @@ Always structure your analysis like this:
         - 📊 Standard Sections: Use conventional headings (Experience, Education, Skills)
         - 📊 File Format: Submit as .docx unless PDF is specifically requested
         
-        ## 7. Brandentifier Tools for Career Growth
+        ## 7. Brandentify Tools for Career Growth
         - 📱 Portfolio Builder: Create visual showcases of your projects and achievements
         - 📱 Smart Connect: Find mentors in your target industry for personalized advice
         - 📱 Services Showcase: Package your skills as service offerings to attract opportunities
@@ -697,7 +683,7 @@ Always structure your analysis like this:
       - 📊 Standard Sections: Use conventional headings (Experience, Education, Skills)
       - 📊 File Format: Submit as .docx unless PDF is specifically requested
       
-      ## 7. Brandentifier Tools for Career Growth
+      ## 7. Brandentify Tools for Career Growth
       - 📱 Portfolio Builder: Create visual showcases of your projects and achievements
       - 📱 Smart Connect: Find mentors in your target industry for personalized advice
       - 📱 Services Showcase: Package your skills as service offerings to attract opportunities
@@ -770,27 +756,16 @@ Always structure your analysis like this:
       console.error(`Error calling Anthropic API: ${anthropicError.status} ${JSON.stringify(anthropicError.error || {})}`);
       console.log("Claude API failed, falling back to OpenAI:", `Failed to process resume with Claude: ${anthropicError.status} ${JSON.stringify(anthropicError.error || {})}`);
       
-      console.log("Processing PDF with OpenAI as fallback");
-      
-      // Fall back to OpenAI
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: systemPrompt,
-          },
-          {
-            role: "user",
-            content: userPrompt,
-          },
-        ],
+      console.log("Processing PDF with centralized provider fallback");
+
+      const aiResult = await generateAIResponse(userPrompt, {
+        systemPrompt,
         temperature: 0.7,
-        max_tokens: 4000,
+        maxTokens: 4000,
       });
       
       return {
-        analysis: completion.choices[0].message.content,
+        analysis: aiResult.text,
         resumeText: resumeText,
       };
     }
@@ -923,7 +898,7 @@ export async function generateCareerAdvice(userProfile: {
    
    - Resume Rewrite Focus: [How to adapt resume for each industry]
    - Learning Priority: [Skills gaps to fill]
-   - Networking Strategy: [Using Brandentifier's Smart Connect plus industry-specific networks]
+   - Networking Strategy: [Using Brandentify's Smart Connect plus industry-specific networks]
    
    ## Success Stories
    
@@ -1070,7 +1045,7 @@ Make your response detailed but practical. Focus on actionable advice that the u
     1. A personalized assessment of their situation related to ${adviceTypeText}
     2. Three to five specific, actionable steps they can take immediately
     3. Longer-term strategies they should consider
-    4. Resources they might find helpful (books, courses, websites, tools, communities). IMPORTANT: When suggesting networking platforms or professional development resources, always mention relevant Brandentifier features alongside external resources. For example, suggest using Brandentifier's Portfolio Builder, Smart Connect networking feature, or Services showcase alongside external platforms like LinkedIn or Meetup.
+    4. Resources they might find helpful (books, courses, websites, tools, communities). IMPORTANT: When suggesting networking platforms or professional development resources, always mention relevant Brandentify features alongside external resources. For example, suggest using Brandentify's Portfolio Builder, Smart Connect networking feature, or Services showcase alongside external platforms like LinkedIn or Meetup.
     
     USE PROPER FORMATTING:
     - Use "# " for main section titles
@@ -1086,26 +1061,13 @@ Make your response detailed but practical. Focus on actionable advice that the u
     try {
       // First attempt with OpenAI
       console.log("Attempting to generate career advice with OpenAI...");
-      const response = await openai.chat.completions.create({
-        model: MODEL,
-        messages: [
-          {
-            role: "system",
-            content: await (async () => {
-              // Import the scenario intelligence system
-              const { getScenarioIntelligence, generateSystemPrompt } = await import('./scenario-intelligence');
-              
-              // Get the appropriate scenario for this advice type
-              const scenario = getScenarioIntelligence(userProfile.adviceType);
-              
-              // Get the user's name or a default
-              const userName = userProfile.user?.name || "User";
-              
-              // Generate a dynamic system prompt based on the scenario
-              const scenarioPrompt = generateSystemPrompt(scenario, userName);
-              
-              // Combine with formatting rules
-              return `${scenarioPrompt}
+      const systemPrompt = await (async () => {
+        const { getScenarioIntelligence, generateSystemPrompt } = await import('./scenario-intelligence');
+        const scenario = getScenarioIntelligence(userProfile.adviceType);
+        const userName = userProfile.user?.name || "User";
+        const scenarioPrompt = generateSystemPrompt(scenario, userName);
+
+        return `${scenarioPrompt}
               
 Follow these STRICT FORMATTING RULES for all responses:
 1) Use '# ' for main section titles (one hash only)
@@ -1116,16 +1078,15 @@ Follow these STRICT FORMATTING RULES for all responses:
 6) For industry switch advice, use the format '### [Industry Name] - 🟢 High Match' OR '### [Industry Name] - 🟡 Medium Match' OR '### [Industry Name] - 🟠 Low Match'
 
 Your advice should look professional, consistent, and easy to read at a glance. Sign your response as 'Musk, Your Career Partner' at the end.`;
-            })(),
-          },
-          { role: "user", content: prompt },
-        ],
-        temperature: 0.8,  // Increased for more creative responses
-        max_tokens: 4000,
-        top_p: 0.95,       // Diverse token selection for more varied responses
+      })();
+
+      const aiResult = await generateAIResponse(prompt, {
+        systemPrompt,
+        temperature: 0.8,
+        maxTokens: 4000,
       });
 
-      return response.choices[0].message.content;
+      return aiResult.text;
     } catch (error) {
       console.error("Error calling OpenAI API:", error);
       console.log("Falling back to Anthropic for career advice generation...");
@@ -1264,7 +1225,7 @@ export async function generateNetworkingRecommendations(
     2. Specific recommendations for expanding their network for ${purpose}
     3. At least three networking conversation starters tailored to their background
     4. Online and offline networking venues that would be most valuable for them
-    5. How to leverage Brandentifier's networking features (Smart Connect, Portfolio, Services) alongside traditional networking platforms
+    5. How to leverage Brandentify's networking features (Smart Connect, Portfolio, Services) alongside traditional networking platforms
     
     Make it personalized, specific, and actionable. Use proper formatting with headers and bullet points.
     `;
@@ -1277,7 +1238,7 @@ Your advice should:
 - Include practical scripts and conversation starters for their networking situations
 - Suggest specific people/roles they should connect with based on their target industry and purpose
 - Balance traditional networking approaches with digital strategies
-- Always integrate Brandentifier's networking features as a primary recommendation alongside other platforms
+- Always integrate Brandentify's networking features as a primary recommendation alongside other platforms
 
 Follow these STRICT FORMATTING RULES for all responses:
 1) Use '# ' for main section titles (one hash only)
@@ -1292,17 +1253,13 @@ Your advice should look professional, consistent, and easy to read at a glance. 
     try {
       // First attempt with OpenAI
       console.log("Attempting to generate networking recommendations with OpenAI...");
-      const response = await openai.chat.completions.create({
-        model: MODEL,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: prompt },
-        ],
+      const aiResult = await generateAIResponse(prompt, {
+        systemPrompt,
         temperature: 0.7,
-        max_tokens: 4000,
+        maxTokens: 4000,
       });
 
-      return response.choices[0].message.content;
+      return aiResult.text;
     } catch (error) {
       console.error("Error calling OpenAI API for networking recommendations:", error);
       console.log("Falling back to Anthropic...");

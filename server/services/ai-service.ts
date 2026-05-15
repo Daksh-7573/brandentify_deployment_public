@@ -1,6 +1,7 @@
 import { Skill, WorkExperience, Education } from "@shared/schema";
 import { storage } from "../storage";
 import { localAIService } from "./local-ai-service";
+import { generateAIResponse } from "./central-ai-provider";
 
 /**
  * General AI function for making AI calls
@@ -11,13 +12,11 @@ export async function callAI(prompt: string, options?: {
   maxTokens?: number;
 }): Promise<string> {
   try {
-    // Use local AI service for all AI calls
-    const response = await localAIService.generateCompletion(
-      prompt,
-      options?.temperature || 0.7,
-      options?.maxTokens || 2000
-    );
-    return response;
+    const response = await generateAIResponse(prompt, {
+      temperature: options?.temperature || 0.7,
+      maxTokens: options?.maxTokens || 2000,
+    });
+    return response.text;
   } catch (error) {
     console.error('[callAI] Error:', error);
     throw new Error('Failed to generate AI response. Please try again later.');

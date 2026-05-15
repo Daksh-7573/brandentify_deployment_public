@@ -965,11 +965,11 @@ const ProjectsFixed = () => {
                               />
                             </div>
                             <div className="space-y-2">
-                              <label className="text-white/80 text-sm">Brandentifier Profile</label>
+                              <label className="text-white/80 text-sm">Brandentify Profile</label>
                               <input
                                 value={currentTeamMember.brandentifier}
                                 onChange={(e) => setCurrentTeamMember({...currentTeamMember, brandentifier: e.target.value})}
-                                placeholder="https://brandentifier.replit.app/profile/username"
+                                placeholder="https://brandentify.replit.app/profile/username"
                                 className="neo-glass-input"
                               />
                             </div>
@@ -1010,10 +1010,10 @@ const ProjectsFixed = () => {
                         <label className="text-white/80 text-sm">Client Profile Link</label>
                         <input
                           {...projectForm.register("clientProfileLink")}
-                          placeholder="https://brandentifier.replit.app/profile/username"
+                          placeholder="https://brandentify.replit.app/profile/username"
                           className="neo-glass-input"
                         />
-                        <p className="text-xs text-white/60">Add Brandentifier profile link of your client</p>
+                        <p className="text-xs text-white/60">Add Brandentify profile link of your client</p>
                       </div>
                     </div>
                   </div>

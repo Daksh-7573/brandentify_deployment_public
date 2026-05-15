@@ -1,1642 +1,392 @@
 import { Request, Response } from 'express';
-import fs from 'fs';
-import path from 'path';
-import crypto from 'crypto';
-import OpenAI from 'openai';
-import { analyzeResume } from './services/fixed-openai-service';
 import { storage } from './storage';
-import { generatePersonalizedResponse, MuskContext } from './services/musk-intelligence-system';
-import { processWithBackwardCompatibility } from './services/enhanced-musk-intelligence';
-import { extractTextFromPdf } from './utils/pdf-extractor';
-import { ResumeScorerService } from './services/career-intelligence/resume-scorer';
-import { intentClassifier } from './services/intent-classifier';
-import { enhancedIntentClassifier } from './services/enhanced-intent-classifier';
-import { formatMuskReport, wrapAnalysisAsReport } from './services/musk-report-formatter';
-import { userMuskMemoryService } from './services/user-musk-memory';
-import { toneCalibrationService } from './services/tone-calibration';
-import { conversationGoalTrackerService } from './services/conversation-goal-tracker';
-import { db, pool } from './db';
-import { followupTemplates } from '@shared/schema';
-import { resumeContextService } from './services/resume-context-service';
+import { createUserMessage, generateChatCompletion, getMessagesForUser, listConversations, persistAssistantMessage } from './modules/muskchat/chat-service';
+import { analyzeResumeUpload, persistResumeUpload, extractResumeText, validateResumeFile } from './modules/muskchat/resume-service';
+import { buildPitchDeckMessages, buildResumeMessages, buildChatMessages } from './services/ai/prompts';
+import { generateBrandentifyResponse } from './services/ai/provider';
+import { generateMuskChatFallback, streamFallbackContent } from './services/ai/musk-chat-fallback';
+import { generateOutcomeAnchoredFollowUps } from './services/musk-followup-intelligence';
+import { resolveResumeUploadFile } from './utils/resume-upload-file';
 
-// Initialize global variable for resume context storage (legacy - migrated to database)
-declare global {
-  var resumeContexts: {
-    [userId: string]: {
-      resumeText: string;
-      detectedRole: string | null;
-      skills: string[];
-      detectedIndustry: string | null;
-      uploadDate: string;
-      fileName: string;
+function getUploadedFile(req: Request, preferredKeys: string[]): any | null {
+  const fileBag = (req as any).files || {};
+  for (const key of preferredKeys) {
+    const value = fileBag[key];
+    if (value) {
+      return Array.isArray(value) ? value[0] : value;
     }
-  };
+  }
+  return (req as any).file || null;
 }
 
-if (!global.resumeContexts) {
-  global.resumeContexts = {};
-}
-
-// NOTE: User interaction memory is now stored in PostgreSQL via userMuskMemoryService
-// This ensures persistence across app restarts in production
-
-// Track and update user interaction patterns - NOW USES DATABASE via userMuskMemoryService
-// This ensures persistence across app restarts in production
-async function updateUserInteractionMemory(userId: string, message: string, response: string, context: any): Promise<void> {
-  try {
-    const numericUserId = parseInt(userId, 10);
-    if (isNaN(numericUserId)) {
-      console.warn(`[updateUserInteractionMemory] Invalid userId: ${userId}`);
-      return;
-    }
-
-    // Increment interaction count in database
-    const interactionCount = await userMuskMemoryService.recordInteraction(numericUserId);
-    
-    // Analyze and update communication style
-    const communicationStyle = analyzeUserCommunicationStyle(message);
-    await userMuskMemoryService.updateCommunicationStyle(numericUserId, communicationStyle);
-    
-    // Analyze and record topic preferences  
-    const detectedTopics = analyzeTopicPreferences(message);
-    for (const topic of detectedTopics) {
-      await userMuskMemoryService.recordTopicPreference(numericUserId, topic);
-    }
-    
-    // Record this as a chat action
-    await userMuskMemoryService.recordAction(numericUserId, 'musk_chat', 'chat');
-    
-    console.log(`[updateUserInteractionMemory] Updated database-backed memory for user ${userId}, interaction count: ${interactionCount}`);
-  } catch (error) {
-    console.error("[updateUserInteractionMemory] Error updating user interaction memory:", error);
-  }
-}
-
-// Analyze user's communication style to adapt responses - returns style object for database storage
-function analyzeUserCommunicationStyle(message: string): {
-  messageLength?: 'short' | 'medium' | 'long';
-  formality?: 'casual' | 'neutral' | 'formal';
-  detailLevel?: 'low' | 'medium' | 'high';
-  technicalLevel?: 'low' | 'medium' | 'high';
-  lastInteraction?: Date;
-} {
-  try {
-    const style: any = { lastInteraction: new Date() };
-    
-    // Analyze message length
-    const length = message.length;
-    if (length < 50) {
-      style.messageLength = 'short';
-    } else if (length > 200) {
-      style.messageLength = 'long';
-    } else {
-      style.messageLength = 'medium';
-    }
-    
-    // Analyze formality
-    const casualMarkers = ['hey', 'btw', 'lol', 'haha', 'yeah', 'cool', 'awesome', 'gonna', 'wanna'];
-    const formalMarkers = ['would you', 'could you', 'I would like', 'please', 'thank you', 'appreciate', 'sincerely'];
-    
-    let casualScore = 0;
-    let formalScore = 0;
-    
-    casualMarkers.forEach(marker => {
-      if (message.toLowerCase().includes(marker)) casualScore++;
-    });
-    
-    formalMarkers.forEach(marker => {
-      if (message.toLowerCase().includes(marker)) formalScore++;
-    });
-    
-    if (casualScore > formalScore) {
-      style.formality = 'casual';
-    } else if (formalScore > casualScore) {
-      style.formality = 'formal';
-    } else {
-      style.formality = 'neutral';
-    }
-    
-    // Analyze detail level
-    const detailMarkers = ['how', 'why', 'explain', 'detail', 'specifically', 'expand', 'elaborate'];
-    let detailScore = 0;
-    
-    detailMarkers.forEach(marker => {
-      if (message.toLowerCase().includes(marker)) detailScore++;
-    });
-    
-    const words = message.split(' ');
-    const avgWordLength = words.reduce((sum, word) => sum + word.length, 0) / words.length;
-    const sentenceCount = (message.match(/[.!?]+/g) || []).length;
-    
-    if (detailScore > 2 || avgWordLength > 6 || sentenceCount > 3) {
-      style.detailLevel = 'high';
-    } else if (detailScore > 0 || avgWordLength > 4) {
-      style.detailLevel = 'medium';
-    } else {
-      style.detailLevel = 'low';
-    }
-    
-    // Analyze technical level
-    const technicalMarkers = ['code', 'technical', 'software', 'programming', 'algorithm', 'framework', 'data', 'analysis'];
-    let techScore = 0;
-    
-    technicalMarkers.forEach(marker => {
-      if (message.toLowerCase().includes(marker)) techScore++;
-    });
-    
-    if (techScore > 2) {
-      style.technicalLevel = 'high';
-    } else if (techScore > 0) {
-      style.technicalLevel = 'medium';
-    } else {
-      style.technicalLevel = 'low';
-    }
-    
-    return style;
-  } catch (error) {
-    console.error("[analyzeUserCommunicationStyle] Error:", error);
-    return { lastInteraction: new Date() };
-  }
-}
-
-// Analyze user's topic preferences - returns array of detected topics for database storage
-function analyzeTopicPreferences(message: string): string[] {
-  try {
-    const topicKeywords: Record<string, string[]> = {
-      'resume': ['resume', 'cv', 'curriculum', 'experience', 'work history'],
-      'career': ['career', 'job', 'profession', 'advancement', 'promotion', 'growth'],
-      'skills': ['skills', 'abilities', 'competencies', 'expertise', 'learn', 'develop'],
-      'education': ['education', 'degree', 'university', 'college', 'school', 'certification'],
-      'networking': ['network', 'connect', 'contacts', 'referral', 'recommendation', 'introduction'],
-      'interview': ['interview', 'hiring', 'recruiter', 'employer', 'questions', 'answers'],
-      'salary': ['salary', 'compensation', 'pay', 'benefits', 'negotiate', 'offer'],
-      'industry': ['industry', 'sector', 'field', 'niche', 'market']
-    };
-    
-    const detectedTopics: string[] = [];
-    
-    // Check for topic keywords in the message
-    Object.entries(topicKeywords).forEach(([topic, keywords]) => {
-      keywords.forEach(keyword => {
-        if (message.toLowerCase().includes(keyword.toLowerCase())) {
-          if (!detectedTopics.includes(topic)) {
-            detectedTopics.push(topic);
-          }
-        }
-      });
-    });
-    
-    return detectedTopics;
-  } catch (error) {
-    console.error("[analyzeTopicPreferences] Error:", error);
-    return [];
-  }
-}
-
-// Handle Musk AI assistant chat requests
-// Provide a meaningful fallback response when OpenAI is unavailable
-function generateFallbackResponse(message: string, context: any): string {
-  // Extract user data if available
-  const userName = context?.userData?.profile?.name || "there";
-  const userTitle = context?.userData?.profile?.title || "professional";
-  
-  // Check for resume-related queries
-  if (message.toLowerCase().includes("resume") || 
-      message.toLowerCase().includes("cv")) {
-    return `# Resume Analysis
-
-**I apologize, but I'm currently unable to access my AI services to analyze your resume in detail.**
-
-I understand that getting quality feedback on your resume is important. Here are some general tips that might help:
-
-- Make sure your resume highlights quantifiable achievements, not just responsibilities
-- Tailor your resume for each specific job application
-- Keep your resume concise (1-2 pages maximum)
-- Have a clean, professional format with consistent styling
-- Include keywords from the job description to pass ATS systems
-
-✅ **Once my services are back online, I'll be able to provide you with personalized resume analysis and improvement suggestions.**
-
-To help me understand your needs better, I'd like to ask:
-- 🔍 What specific role or industry are you targeting with your resume?
-- 🎯 Which section of your resume do you feel needs the most improvement?
-- 🛠️ What would success look like for you after improving your resume?`;
-  }
-  
-  // Check for career advice queries
-  if (message.toLowerCase().includes("career") || 
-      message.toLowerCase().includes("job") || 
-      message.toLowerCase().includes("interview")) {
-    return `# Career Guidance
-
-**Hi ${userName}, I'm currently experiencing some technical difficulties accessing my AI services.**
-
-As a ${userTitle}, there are several paths you might consider for career growth:
-
-- Specializing in a high-demand area of your field
-- Taking on leadership roles in projects to build management experience
-- Networking with professionals in your target companies or industries
-- Developing complementary skills that increase your market value
-
-✅ **I'll be able to provide more personalized career guidance once my services are back online.**
-
-To better understand your career goals, I'd like to ask:
-- 🔍 What specific aspects of your career are you looking to develop right now?
-- 🎯 What challenges are you currently facing in your professional growth?
-- 🛠️ Where do you see yourself in 3-5 years, and what steps might help you get there?`;
-  }
-  
-  // Default fallback response
-  return `# Hello ${userName}!
-
-**I apologize, but I'm currently experiencing some technical difficulties with my AI service.**
-
-I'm usually able to provide personalized career advice and professional insights based on your profile data and questions. However, I'm temporarily limited in my capabilities.
-
-💡 **Once my services are fully restored, I'll be able to assist you with:**
-- Resume analysis and improvement suggestions
-- Career path recommendations
-- Skill development guidance
-- Industry-specific insights
-- Professional networking strategies
-
-To help me better understand how I can assist you, I'd like to ask:
-- 🔍 What specific professional goals are you working toward right now?
-- 🎯 What area of your career would you most value guidance on?
-- 🛠️ What would make our conversation most helpful for your current situation?`;
+function extractUserId(req: Request): number | null {
+  const raw = req.body?.userId ?? req.query?.userId ?? req.params?.userId;
+  const parsed = Number.parseInt(String(raw ?? ''), 10);
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
 export const handleMuskChat = async (req: Request, res: Response) => {
+  const message = typeof req.body?.message === 'string' ? req.body.message.trim() : '';
+  const userId = extractUserId(req);
+  const conversationId = typeof req.body?.conversationId === 'number'
+    ? req.body.conversationId
+    : req.body?.conversationId
+      ? Number.parseInt(String(req.body.conversationId), 10)
+      : undefined;
+  const wantsStream = req.body?.stream === true || req.headers.accept?.includes('text/event-stream');
+
+  if (!message) {
+    return res.status(400).json({ error: 'Message is required' });
+  }
+
+  if (!userId) {
+    return res.status(400).json({ error: 'User ID is required' });
+  }
+
   try {
-    const { userId: rawUserId, message, context } = req.body;
-    
-    console.log(`Musk chat: Received message request with rawUserId: ${rawUserId}, type: ${typeof rawUserId}`);
-    
-    if (!message) {
-      return res.status(400).json({ error: "Message is required" });
+    const user = await storage.getUser(userId);
+    const conversations = await listConversations(userId);
+    const existingConversationId = Number.isFinite(conversationId) ? conversationId : conversations[0]?.id;
+
+    const { conversation, message: userMessage } = await createUserMessage({
+      userId,
+      conversationId: existingConversationId,
+      content: message,
+    });
+
+    const pastMessages = await getMessagesForUser(conversation.id, userId) || [];
+    const chatHistory = pastMessages.map((entry) => ({ role: entry.role, content: entry.content }));
+    const profileContext = [
+      user?.name ? `Name: ${user.name}` : '',
+      user?.title ? `Title: ${user.title}` : '',
+      user?.industry ? `Industry: ${user.industry}` : '',
+      user?.domain ? `Domain: ${user.domain}` : '',
+      user?.location ? `Location: ${user.location}` : '',
+      user?.lookingFor ? `Looking for: ${user.lookingFor}` : '',
+    ].filter(Boolean).join('\n');
+
+    const responseHandlers = wantsStream
+      ? {
+          onProvider: (provider: string, model: string) => {
+            if (!res.headersSent) {
+              res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+              res.setHeader('Cache-Control', 'no-cache, no-transform');
+              res.setHeader('Connection', 'keep-alive');
+              res.flushHeaders?.();
+            }
+            res.write(`event: provider\n`);
+            res.write(`data: ${JSON.stringify({ provider, model })}\n\n`);
+          },
+          onToken: (token: string) => {
+            res.write(`event: token\n`);
+            res.write(`data: ${JSON.stringify({ token })}\n\n`);
+          },
+        }
+      : {};
+
+    if (wantsStream) {
+      res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-cache, no-transform');
+      res.setHeader('Connection', 'keep-alive');
+      res.flushHeaders?.();
+      res.write(`event: conversation\n`);
+      res.write(`data: ${JSON.stringify({ conversation, userMessage })}\n\n`);
     }
-    
-    // Enrich context with user data if userId is provided
-    let enrichedContext = context || {};
-    
-    // Add session to context so it can be used to retrieve resume data
-    enrichedContext.req = req;
-    
-    // Initialize global storage for resume contexts (legacy fallback)
-    if (!global.resumeContexts) {
-      global.resumeContexts = {};
-    }
-    
-    // Return a simple fallback response if AI service is unavailable
-    if (!message || message.trim().length === 0) {
-      return res.json({
+
+    const aiResponse = await generateChatCompletion({
+      user: { id: user.id, email: user.email || undefined, name: user.name || undefined },
+      conversationId: conversation.id,
+      userMessage: message,
+      handlers: wantsStream ? responseHandlers : undefined,
+    });
+
+    const assistantMessage = await persistAssistantMessage({
+      conversationId: conversation.id,
+      content: aiResponse.content,
+      providerUsed: aiResponse.provider,
+    });
+
+    const followUps = generateOutcomeAnchoredFollowUps(
+      {
+        userId,
+        userData: user,
+        experiences: await storage.getWorkExperiencesByUserId(userId),
+        skills: await storage.getSkillsByUserId(userId),
+        educations: await storage.getEducationsByUserId(userId),
+        projects: await storage.getProjectsByUserId(userId),
+        conversationHistory: chatHistory.map((entry) => ({ content: entry.content, sender: entry.role })),
+      },
+      'general_advice'
+    ).map((entry) => entry.text);
+
+    if (wantsStream) {
+      res.write(`event: done\n`);
+      res.write(`data: ${JSON.stringify({
         success: true,
-        response: "I'm ready to help! Please tell me about your career goals or ask any career-related questions.",
-        followUps: ["Tell me about your career goals", "What skills would you like to develop?", "How can I help you today?"]
-      });
+        conversationId: conversation.id,
+        assistantMessage,
+        response: aiResponse.content,
+        quickResponses: followUps,
+        provider: aiResponse.provider,
+        model: aiResponse.model,
+        fallbackUsed: aiResponse.fallbackUsed,
+      })}\n\n`);
+      return res.end();
     }
-    
-    // NOTE: User interaction memory is now stored in PostgreSQL via userMuskMemoryService
-    
-    // Handle both Firebase UIDs and numeric user IDs
-    let numericUserId = 0;
-    
-    if (rawUserId) {
-      // If userId is a number, use it directly
-      if (typeof rawUserId === 'number') {
-        numericUserId = rawUserId;
-        console.log(`Musk chat: Using numeric userId directly: ${numericUserId}`);
-      } 
-      // If userId is a numeric string (e.g., "2"), convert it
-      else if (typeof rawUserId === 'string' && /^\d+$/.test(rawUserId)) {
-        numericUserId = parseInt(rawUserId, 10);
-        console.log(`Musk chat: Converted numeric string "${rawUserId}" to number: ${numericUserId}`);
-      }
-      // If userId is a Firebase UID (string format), look up the numeric ID
-      else if (typeof rawUserId === 'string') {
-        try {
-          console.log(`Musk chat: Looking up numeric ID for Firebase UID: ${rawUserId}`);
-          const user = await storage.getUserByUsername(rawUserId);
-          if (user) {
-            numericUserId = user.id;
-            console.log(`Musk chat: Found numeric ID ${numericUserId} for Firebase UID ${rawUserId}`);
-          } else {
-            console.log(`Musk chat: No user found for Firebase UID ${rawUserId}`);
-          }
-        } catch (error) {
-          console.error(`Error looking up numeric ID for Firebase UID ${rawUserId}:`, error);
-        }
-      }
-    }
-    
-    // If we couldn't find a valid user ID, log warning but don't use demo user
-    if (!numericUserId) {
-      console.log(`Musk chat: Warning - No valid user ID found (raw input: ${rawUserId})`);
-    }
-    
-    console.log(`Musk chat: Using user ID ${numericUserId} (original: ${rawUserId})`);
-    
-    // Use numeric user ID for all operations
-    const userId = numericUserId;
-    
-    // Check AI chat quota for subscription enforcement (free users: 5/month, premium: unlimited)
-    if (userId) {
-      const quotaCheck = await storage.checkAiChatQuota(userId);
-      if (!quotaCheck.hasQuotaRemaining) {
-        return res.status(429).json({
-          error: "AI chat quota exceeded",
-          message: `You've used all ${quotaCheck.max} AI chat messages this month. Upgrade to Premium for unlimited access!`,
-          quotaInfo: {
-            used: quotaCheck.used,
-            max: quotaCheck.max,
-            remaining: quotaCheck.remaining,
-            subscriptionTier: quotaCheck.subscriptionTier
-          }
-        });
-      }
-    }
-    
-    // Check for resume context - first database, then fallback to global memory
-    const userIdStr = userId.toString();
-    let hasResumeContext = false;
-    
-    // Try to get from database first (persistent storage)
-    const dbResumeContext = await resumeContextService.get(userId);
-    if (dbResumeContext) {
-      hasResumeContext = true;
-      console.log(`[MuskChat] Found resume context in database for user ${userId} (full text: ${dbResumeContext.resumeText?.length || 0} chars)`);
-      // Sync to global memory for backward compatibility - use full text if available, fallback to preview
-      global.resumeContexts = global.resumeContexts || {};
-      global.resumeContexts[userIdStr] = {
-        resumeText: dbResumeContext.resumeText || dbResumeContext.resumeTextPreview || '',
-        detectedRole: dbResumeContext.detectedRole || null,
-        skills: dbResumeContext.skills || [],
-        detectedIndustry: dbResumeContext.detectedIndustry || null,
-        uploadDate: dbResumeContext.uploadDate || '',
-        fileName: dbResumeContext.fileName || ''
-      };
-    } else if (global.resumeContexts && global.resumeContexts[userIdStr]) {
-      hasResumeContext = true;
-      console.log(`[MuskChat] Found resume context in memory for user ${userId}`);
-    } else {
-      console.log(`[MuskChat] No resume context found for user ${userId}`);
-    }
-    
-    if (userId) {
-      enrichedContext = await enrichContextWithUserData(userId, enrichedContext);
-      
-      // Add user interaction memory from database to context
-      try {
-        const userMemory = await userMuskMemoryService.getInteractionMemory(userId);
-        if (userMemory && userMemory.interactionCount > 0) {
-          enrichedContext.userMemory = userMemory;
-          console.log(`[MuskChat] Found user interaction memory in database for user ${userId} (${userMemory.interactionCount} interactions)`);
-        }
-      } catch (err) {
-        console.warn(`[MuskChat] Could not load user memory from database:`, err);
-      }
-    }
-    
-    // Try enhanced persona system first, fallback to original system
-    let response: string;
-    let enhanced = false;
-    let metadata: any = {};
-    
-    if (userId) {
-      try {
-        console.log('[Musk Chat] Attempting enhanced persona response');
-        
-        // Gather conversation history from database-backed memory (recent actions as proxy)
-        // Note: Full message history is now stored in chatMessages table, accessed by musk-memory-service
-        const recentActions = enrichedContext.userMemory?.recentActions || [];
-        const conversationHistory: Array<{message: string; response: string; timestamp: Date}> = [];
-        
-        // Get user data for enhanced processing
-        const userProfile = enrichedContext.userData?.profile;
-        const userExperiences = enrichedContext.userData?.experiences || [];
-        const userSkills = enrichedContext.userData?.skills || [];
-        const userEducations = enrichedContext.userData?.educations || [];
-        const userProjects = enrichedContext.userData?.projects || [];
-        
-        // Process with enhanced intelligence
-        const enhancedResult = await processWithBackwardCompatibility(
-          message,
-          userId,
-          userProfile,
-          userExperiences,
-          userSkills,
-          userEducations,
-          userProjects,
-          conversationHistory.map(h => ({
-            message: h.message,
-            response: h.response,
-            timestamp: h.timestamp
-          }))
-        );
-        
-        response = enhancedResult.response;
-        enhanced = true; // Enhanced system was used
-        metadata = enhancedResult.metadata || {};
-        
-        if (enhanced) {
-          console.log(`[Musk Chat] Enhanced persona system used: ${metadata.persona}`);
-        } else {
-          console.log('[Musk Chat] Fallback to basic processing');
-        }
-        
-      } catch (error: any) {
-        console.error('[Musk Chat] Enhanced system failed, using original system:', error);
-        console.error('[Musk Chat] Error details:', error.stack);
-        response = await generateMuskResponse(message, enrichedContext);
-        enhanced = false;
-        metadata = {};
-      }
-    } else {
-      // No user ID, use original system
-      response = await generateMuskResponse(message, enrichedContext);
-    }
-    
-    // Update user interaction memory with this conversation
-    if (userId) {
-      const userIdString = userId.toString();
-      if (userIdString) {
-        updateUserInteractionMemory(userIdString, message, response, enrichedContext);
-      }
-      
-      // Increment AI chat usage count for subscription tracking
-      await storage.incrementAiChatUsage(userId);
-    }
-    
-    // Return the response with enhanced metadata
-    if (!res.headersSent) {
-      return res.status(200).json({
-        id: 'response-' + Date.now(),
-        message: response,
-        timestamp: new Date(),
-        enhanced,
-        ...(enhanced && metadata ? {
-          persona: metadata.persona,
-          confidence: metadata.confidence,
-          intent: metadata.intent?.type,
-          proactiveSuggestions: metadata.proactiveSuggestions
-        } : {}),
-        contextUsed: {
-          dataSource: enrichedContext.dataSource || 'profile',
-          hasResumeData: !!enrichedContext.resumeData,
-          detectedRole: enrichedContext.resumeData?.detectedRole || null,
-          hasUserMemory: !!enrichedContext.userMemory,
-          ...(enhanced && metadata ? {
-            profileCompleteness: metadata.contextUsed?.profileCompleteness,
-            keyInsights: metadata.contextUsed?.keyInsights
-          } : {})
-        }
-      });
-    }
+
+    return res.status(200).json({
+      success: true,
+      id: `response-${Date.now()}`,
+      message: aiResponse.content,
+      response: aiResponse.content,
+      quickResponses: followUps,
+      timestamp: new Date(),
+      enhanced: true,
+      metadata: {
+        provider: aiResponse.provider,
+        model: aiResponse.model,
+        fallbackUsed: aiResponse.fallbackUsed,
+      },
+      contextUsed: {
+        dataSource: 'postgres',
+        hasResumeData: Boolean(user?.title || user?.industry || user?.domain || user?.lookingFor),
+        detectedRole: user?.title ?? null,
+        hasUserMemory: pastMessages.length > 0,
+      },
+    });
   } catch (error) {
-    console.error("Error in Musk chat handler:", error);
-    if (!res.headersSent) {
-      return res.status(500).json({ error: "Failed to process chat request" });
+    console.error('[Musk Chat] Error processing message:', error);
+
+    const fallbackMessages = buildChatMessages({
+      userMessage: message,
+      history: [],
+      profileContext: '',
+    });
+    const fallbackContent = generateMuskChatFallback(fallbackMessages);
+
+    if (wantsStream && !res.headersSent) {
+      res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-cache, no-transform');
+      res.setHeader('Connection', 'keep-alive');
+      res.flushHeaders?.();
+      res.write(`event: provider\n`);
+      res.write(`data: ${JSON.stringify({ provider: 'fallback', model: 'musk-coach-fallback' })}\n\n`);
+      await streamFallbackContent(fallbackContent, (token) => {
+        res.write(`event: token\n`);
+        res.write(`data: ${JSON.stringify({ token })}\n\n`);
+      });
+      res.write(`event: done\n`);
+      res.write(`data: ${JSON.stringify({
+        success: true,
+        response: fallbackContent,
+        provider: 'fallback',
+        model: 'musk-coach-fallback',
+        fallbackUsed: true,
+      })}\n\n`);
+      return res.end();
     }
+
+    if (wantsStream && res.headersSent) {
+      await streamFallbackContent(fallbackContent, (token) => {
+        res.write(`event: token\n`);
+        res.write(`data: ${JSON.stringify({ token })}\n\n`);
+      });
+      res.write(`event: done\n`);
+      res.write(`data: ${JSON.stringify({
+        success: true,
+        response: fallbackContent,
+        provider: 'fallback',
+        model: 'musk-coach-fallback',
+        fallbackUsed: true,
+      })}\n\n`);
+      return res.end();
+    }
+
+    return res.status(200).json({
+      success: true,
+      id: `response-${Date.now()}`,
+      message: fallbackContent,
+      response: fallbackContent,
+      quickResponses: ['Tell me more about this', 'What are the next steps?', 'How can I apply this?'],
+      timestamp: new Date(),
+      metadata: {
+        provider: 'fallback',
+        model: 'musk-coach-fallback',
+        fallbackUsed: true,
+      },
+    });
   }
 };
 
-// Enhance context with user data for personalized responses
-async function enrichContextWithUserData(userId: number, context?: any) {
+export const handleMuskHistory = async (req: Request, res: Response) => {
+  const userId = extractUserId(req);
+
+  if (!userId) {
+    return res.status(400).json({ error: 'User ID is required' });
+  }
+
+  const conversations = await listConversations(userId);
+  const latestConversation = conversations[0];
+
+  if (!latestConversation) {
+    return res.status(200).json({ success: true, userId, messages: [] });
+  }
+
+  const messages = await getMessagesForUser(latestConversation.id, userId) || [];
+
+  return res.status(200).json({
+    success: true,
+    userId,
+    messages: messages.map((entry) => ({
+      role: entry.role === 'assistant' ? 'musk' : 'user',
+      message: entry.content,
+      timestamp: entry.createdAt,
+    })),
+  });
+};
+
+export const handlePitchDeckUpload = async (req: Request, res: Response) => {
+  const userId = extractUserId(req);
+  const rawText = typeof req.body?.pitchDeckText === 'string' ? req.body.pitchDeckText.trim() : '';
+
+  if (!userId) {
+    return res.status(400).json({ error: 'User ID is required' });
+  }
+
   try {
-    // Get user profile data with debug logging
-    console.log(`Enriching context with user data for userId: ${userId}`);
-    const user = await storage.getUser(userId);
-    if (!user) {
-      console.log(`No user found for userId: ${userId}`);
-      return context;
-    }
-    console.log(`Found user profile for userId ${userId}: ${user.name}, ${user.title}`);
-    
-    // Get user's experiences with debug logging
-    const experiences = await storage.getWorkExperiencesByUserId(userId);
-    console.log(`Found ${experiences?.length || 0} work experiences for userId ${userId}`);
-    
-    // Get user's educations with debug logging
-    const educations = await storage.getEducationsByUserId(userId);
-    console.log(`Found ${educations?.length || 0} education entries for userId ${userId}`);
-    
-    // Get user's skills with debug logging
-    const skills = await storage.getSkillsByUserId(userId);
-    console.log(`Found ${skills?.length || 0} skills for userId ${userId}`);
-    
-    // Get user's projects/assignments with debug logging
-    const projects = await storage.getProjectsByUserId(userId);
-    console.log(`Found ${projects?.length || 0} projects for userId ${userId}`);
-    
-    // Create base context with user data
-    const baseContext = {
-      ...context,
-      userData: {
-        profile: {
-          name: user.name || "",
-          title: user.title || "",
-          industry: user.industry || "",
-          location: user.location || "",
-        },
-        experiences: experiences || [],
-        educations: educations || [],
-        skills: skills || [],
-        projects: projects || []
+    let deckText = rawText;
+    let deckName = typeof req.body?.deckName === 'string' ? req.body.deckName.trim() : 'Pitch Deck';
+
+    if (!deckText) {
+      const fileLike = await resolveResumeUploadFile(req, ['deck', 'pitchDeck', 'file']);
+      if (!fileLike) {
+        return res.status(400).json({ success: false, error: 'Upload a PDF pitch deck.' });
       }
-    };
-    
-    // Check for resume context in global storage
-    let enrichedContext = baseContext;
-    const userIdStr = userId.toString();
-    
-    // Check for resume context - try database first, then memory fallback
-    let resumeContext = null;
-    
-    // Try database first (persistent storage)
-    const dbResumeContext = await resumeContextService.get(userId);
-    if (dbResumeContext) {
-      // Use full text if available, fallback to preview for backward compatibility
-      resumeContext = {
-        resumeText: dbResumeContext.resumeText || dbResumeContext.resumeTextPreview || '',
-        detectedRole: dbResumeContext.detectedRole,
-        skills: dbResumeContext.skills || [],
-        detectedIndustry: dbResumeContext.detectedIndustry,
-        uploadDate: dbResumeContext.uploadDate || '',
-        fileName: dbResumeContext.fileName || ''
-      };
-      console.log(`[EnrichContext] Found resume context in database for user ${userId} (${dbResumeContext.resumeText?.length || 0} chars)`);
-    } else if (global.resumeContexts && global.resumeContexts[userIdStr]) {
-      // Fallback to memory
-      resumeContext = global.resumeContexts[userIdStr];
-      console.log(`[EnrichContext] Found resume context in memory for user ${userId}`);
+      deckName = deckName || fileLike.originalname || 'Pitch Deck';
+      validateResumeFile(fileLike);
+      deckText = await extractResumeText(fileLike);
     }
-    
-    if (resumeContext) {
-      enrichedContext = {
-        ...baseContext,
-        resumeData: resumeContext,
-        dataSource: 'resume',
-        lastUploaded: resumeContext.uploadDate
-      };
-    }
-    
-    return enrichedContext;
-  } catch (error) {
-    console.error("Error enriching context with user data:", error);
-    return context;
-  }
-}
 
-// Generate AI response based on message and context
-async function generateMuskResponse(message: string, context: any) {
-  try {
-    console.log("Generating personalized response using Musk Intelligence System with Local AI");
-    
-    // Convert the old context format to our new MuskContext format
-    const muskContext: MuskContext = {
-      userId: context.userId,
-      userData: context.userData?.profile,
-      experiences: context.userData?.experiences || [],
-      educations: context.userData?.educations || [],
-      skills: context.userData?.skills || [],
-      projects: context.userData?.projects || [],
-      resumeData: context.resumeData,
-      userMemory: context.userMemory ? {
-        interactions: context.userMemory.messageHistory || [],
-        patterns: {
-          communicationStyle: context.userMemory.communicationStyle?.formality || 'neutral',
-          topicPreferences: context.userMemory.topicPreferences || {},
-          engagementLevel: context.userMemory.communicationStyle?.detailLevel || 'medium',
-          responseStyle: context.userMemory.communicationStyle?.messageLength || 'medium'
-        }
-      } : undefined,
-      dataSource: context.dataSource,
-      page: context.page,
-      section: context.section,
-      conversationHistory: context.conversationHistory || []
-    };
-    
-    // Log context data for debugging
-    console.log("Musk context data being sent to intelligence system:", {
-      hasUserData: !!muskContext.userData,
-      userProfile: muskContext.userData,
-      experienceCount: muskContext.experiences?.length || 0,
-      skillsCount: muskContext.skills?.length || 0,
-      projectsCount: muskContext.projects?.length || 0,
-      hasResumeData: !!muskContext.resumeData,
-      dataSource: muskContext.dataSource || 'profile',
-      hasUserMemory: !!muskContext.userMemory
+    if (!deckText) {
+      return res.status(400).json({ error: 'Upload a pitch deck file or include pitchDeckText.' });
+    }
+
+    const ai = await generateBrandentifyResponse(buildPitchDeckMessages(deckText), {}, { temperature: 0.35, maxTokens: 1200 });
+
+    return res.status(200).json({
+      success: true,
+      id: `pitchdeck-${Date.now()}`,
+      analysis: ai.content,
+      response: ai.content,
+      provider: ai.provider,
+      model: ai.model,
+      fallbackUsed: ai.fallbackUsed,
+      deckName,
     });
-    
-    // Use our enhanced intelligence system instead of direct OpenAI call
-    let response = await generatePersonalizedResponse(message, muskContext);
-    
-    // REMOVED: Template-based fallback for quick responses
-    // Follow-up questions should ONLY come from AI-generated "Quick Response Options:" in the response
-    // If the AI doesn't include follow-ups, that's fine - the UI will simply not show follow-up buttons
-    
-    console.log("Musk AI response generated with enhanced intelligence system");
-    return response;
   } catch (error) {
-    console.error("Error in Musk intelligence system:", error);
-    // Fallback to demo responses if OpenAI fails
-    return generateFallbackResponse(message, context);
+    console.error('[Musk Chat] Pitch deck analysis failed:', error);
+    return res.status(503).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Pitch deck analysis failed.',
+    });
   }
-}
-
-// Handle CV/Resume uploads for analysis by Musk - Integrated with Resume Scorer
-const resumeScorerService = new ResumeScorerService();
+};
 
 export const handleResumeUpload = async (req: Request, res: Response) => {
-  console.log("[Resume Upload] Handler called - INTEGRATED VERSION");
-  console.log("[Resume Upload] Request body:", req.body);
-  console.log("[Resume Upload] Request files:", req.files ? Object.keys(req.files) : 'No files');
-  
+  const userId = extractUserId(req);
+  const fileName = typeof req.body?.fileName === 'string' ? req.body.fileName.trim() : undefined;
+
+  if (!userId) {
+    return res.status(400).json({ success: false, error: 'User ID is required' });
+  }
+
   try {
-    // Get user ID from request body
-    const rawUserId = req.body.userId;
-    console.log(`[Resume Upload] Received rawUserId: ${rawUserId}, type: ${typeof rawUserId}`);
-    
-    let userId = 0;
-    
-    // Handle both numeric IDs and Firebase UIDs
-    if (rawUserId) {
-      if (typeof rawUserId === 'number') {
-        userId = rawUserId;
-        console.log(`[Resume Upload] Using numeric userId directly: ${userId}`);
-      } else if (typeof rawUserId === 'string' && /^\d+$/.test(rawUserId)) {
-        userId = parseInt(rawUserId, 10);
-        console.log(`[Resume Upload] Converted numeric string "${rawUserId}" to number: ${userId}`);
-      } else if (typeof rawUserId === 'string') {
-        try {
-          console.log(`[Resume Upload] Looking up numeric ID for Firebase UID: ${rawUserId}`);
-          const user = await storage.getUserByUsername(rawUserId);
-          if (user) {
-            userId = user.id;
-            console.log(`[Resume Upload] Found numeric ID ${userId} for Firebase UID ${rawUserId}`);
-          } else {
-            console.log(`[Resume Upload] No user found for Firebase UID ${rawUserId}`);
-          }
-        } catch (userLookupError) {
-          console.error(`[Resume Upload] Error looking up user:`, userLookupError);
-        }
-      }
-    }
-    
-    // Check if file was uploaded
-    if (!req.files || Object.keys(req.files).length === 0) {
-      console.log("[Resume Upload] ERROR: No files uploaded in request");
-      return res.status(400).json({ error: "No resume file was uploaded" });
-    }
-    
-    // Get the uploaded file - express-fileupload returns an array if single or object
-    let resumeFile = req.files.file as any;
-    if (!resumeFile) {
-      resumeFile = req.files.resume as any;
-    }
-    
-    if (!resumeFile) {
-      console.log("[Resume Upload] ERROR: Resume file not found in request");
-      console.log("[Resume Upload] Available files:", Object.keys(req.files || {}));
-      return res.status(400).json({ error: "Resume file not found in the request" });
-    }
-    
-    console.log(`[Resume Upload] Processing file: ${resumeFile.name}, size: ${resumeFile.size} bytes`);
-    
-    // File validation - accept common resume formats
-    const fileExt = resumeFile.name.split('.').pop()?.toLowerCase();
-    const allowedFormats = ['pdf', 'doc', 'docx', 'txt', 'rtf'];
-    
-    if (!allowedFormats.includes(fileExt || '')) {
-      const fileType = fileExt ? fileExt.toUpperCase() : 'Unknown';
-      let helpMessage = `File type ".${fileExt}" is not supported.`;
-      
-      // Provide specific guidance based on file type
-      if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExt || '')) {
-        helpMessage = `Image files (${fileType}) cannot be used as resumes. Please convert to PDF or Word document first.`;
-      } else if (['xls', 'xlsx'].includes(fileExt || '')) {
-        helpMessage = `Spreadsheet files (${fileType}) are not accepted. Please save as PDF or Word document.`;
-      }
-      
+    const uploadedFile = await resolveResumeUploadFile(req, ['resume', 'file', 'attachment']);
+
+    if (!uploadedFile) {
       return res.status(400).json({
-        error: "INVALID_FILE_TYPE",
-        message: `${helpMessage} Supported formats: PDF, DOC, DOCX, TXT, RTF`,
-        allowedFormats: allowedFormats,
-        receivedFormat: fileExt
+        success: false,
+        error: 'No resume file received. Upload a PDF using the Resume button.',
       });
     }
-    
-    // Check file size (max 10MB for resumes)
-    const maxFileSize = 10 * 1024 * 1024; // 10MB
-    if (resumeFile.size > maxFileSize) {
-      return res.status(400).json({
-        error: "FILE_TOO_LARGE",
-        message: `File size (${(resumeFile.size / 1024 / 1024).toFixed(2)}MB) exceeds maximum of 10MB. Please upload a smaller file.`,
-        maxSize: maxFileSize
-      });
-    }
-    
-    // Extract text from PDF/DOCX
-    let resumeText = '';
+
+    validateResumeFile(uploadedFile);
+
+    const displayName =
+      fileName || uploadedFile.originalname || 'resume.pdf';
+
+    const conversationResult = await createUserMessage({
+      userId,
+      content: `Analyze my resume: ${displayName}`,
+    });
+    const conversationId = conversationResult.conversation.id;
+
+    const analysis = await analyzeResumeUpload({
+      userId,
+      conversationId,
+      file: uploadedFile,
+    });
+
+    let uploadRecord = null;
     try {
-      // express-fileupload with useTempFiles stores file in tempFilePath, not data
-      const fs = await import('fs');
-      
-      console.log(`[Resume Extract] File extension: ${fileExt}`);
-      console.log(`[Resume Extract] Resume file keys: ${Object.keys(resumeFile)}`);
-      console.log(`[Resume Extract] tempFilePath: ${resumeFile.tempFilePath}`);
-      console.log(`[Resume Extract] data buffer exists: ${!!resumeFile.data}`);
-      
-      if (fileExt === 'pdf') {
-        let pdfBuffer: Buffer;
-        
-        // Try tempFilePath first (production-safe approach)
-        if (resumeFile.tempFilePath && fs.existsSync(resumeFile.tempFilePath)) {
-          console.log(`[Resume Extract] Reading PDF from tempFilePath: ${resumeFile.tempFilePath}`);
-          pdfBuffer = fs.readFileSync(resumeFile.tempFilePath);
-        } else if (resumeFile.data) {
-          // Fallback to data buffer if temp file doesn't exist
-          console.log(`[Resume Extract] Temp file not found, using data buffer. Temp path was: ${resumeFile.tempFilePath}`);
-          pdfBuffer = resumeFile.data;
-        } else {
-          throw new Error('No PDF data available - temp file not created and no data buffer present');
-        }
-        
-        console.log(`[Resume Extract] PDF buffer type: ${typeof pdfBuffer}, length: ${pdfBuffer?.length}`);
-        resumeText = await extractTextFromPdf(pdfBuffer);
-        console.log(`[Resume Extract] Extracted ${resumeText.length} characters from PDF`);
-      } else if (fileExt === 'txt') {
-        // For text files, try temp file first, then data buffer
-        if (resumeFile.tempFilePath && fs.existsSync(resumeFile.tempFilePath)) {
-          console.log(`[Resume Extract] Reading TXT from tempFilePath`);
-          resumeText = fs.readFileSync(resumeFile.tempFilePath, 'utf-8');
-        } else if (resumeFile.data) {
-          console.log(`[Resume Extract] Reading TXT from data buffer`);
-          resumeText = resumeFile.data.toString('utf-8');
-        } else {
-          throw new Error('No text file data available');
-        }
-      } else {
-        // For DOC/DOCX, try temp file first, then data buffer
-        if (resumeFile.tempFilePath && fs.existsSync(resumeFile.tempFilePath)) {
-          console.log(`[Resume Extract] Reading ${fileExt} from tempFilePath`);
-          resumeText = fs.readFileSync(resumeFile.tempFilePath, 'utf-8');
-        } else if (resumeFile.data) {
-          console.log(`[Resume Extract] Reading ${fileExt} from data buffer`);
-          resumeText = resumeFile.data.toString('utf-8');
-        } else {
-          throw new Error(`No ${fileExt} file data available`);
-        }
-      }
-      
-      console.log(`[Resume Extract] Final text length: ${resumeText?.length || 0} characters`);
-      
-      if (!resumeText || resumeText.trim().length < 20) {
-        throw new Error('Document appears to be empty or unreadable - extracted less than 20 characters');
-      }
-    } catch (extractError) {
-      console.error('[Resume Extract] ERROR:', extractError);
-      const errorMessage = extractError instanceof Error ? extractError.message : 'Unknown error';
-      
-      // Provide specific error messages based on extraction failure reason
-      let userMessage = 'Could not extract text from the file.';
-      if (errorMessage.includes('empty') || errorMessage.includes('unreadable')) {
-        userMessage = 'The document appears to be empty or corrupted. Please ensure it is a valid, readable document with actual content.';
-      } else if (errorMessage.includes('PDF')) {
-        userMessage = 'The PDF file appears to be corrupted or encrypted. Try converting it to a different format (e.g., Word document).';
-      } else if (errorMessage.includes('no data available') || errorMessage.includes('not created')) {
-        userMessage = 'The file could not be processed on the server. Please try uploading again or convert to a different format (PDF or Word).';
-      }
-      
-      return res.status(400).json({
-        error: 'TEXT_EXTRACTION_FAILED',
-        message: userMessage,
-        hint: 'Make sure your resume file is readable and contains actual text content (at least 20 characters)',
-        supportedFormats: 'PDF, Word (.doc, .docx), Text (.txt), RTF',
-        debug: process.env.NODE_ENV === 'development' ? { originalError: errorMessage } : undefined
+      uploadRecord = await persistResumeUpload({
+        userId,
+        conversationId,
+        fileName: displayName,
+        fileUrl: analysis.fileUrl,
+        extractedText: analysis.extractedText,
+        aiFeedback: analysis.ai.content,
+        score: analysis.score,
+        providerUsed: analysis.ai.provider,
       });
+    } catch (persistError) {
+      console.warn('[Musk Chat] Resume saved to chat but DB upload record failed:', persistError);
     }
-    
-    // Call Resume Scorer Service for real analysis with retry logic
-    console.log(`Analyzing resume for user ${userId}...`);
-    console.log(`[ROUTE DEBUG] Resume text length BEFORE analyzer: ${resumeText.length}`);
-    console.log(`[ROUTE DEBUG] Resume text preview: "${resumeText.substring(0, 200)}..."`);
-    
-    let analysisResult;
-    let retryCount = 0;
-    const maxRetries = 3;
-    
-    while (retryCount < maxRetries) {
-      try {
-        analysisResult = await resumeScorerService.analyzeResume(
-          resumeText,
-          userId,
-          undefined // No target role specified
-        );
-        console.log(`[Resume Analysis] Success on attempt ${retryCount + 1}`);
-        break;
-      } catch (analyzerError) {
-        retryCount++;
-        console.error(`[Resume Analysis] Attempt ${retryCount} failed:`, analyzerError);
-        
-        if (retryCount >= maxRetries) {
-          console.error(`[Resume Analysis] All ${maxRetries} retries failed`);
-          throw new Error(`Resume analysis failed after ${maxRetries} attempts: ${analyzerError instanceof Error ? analyzerError.message : 'Unknown error'}`);
-        }
-        
-        // Wait before retrying (exponential backoff)
-        await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-      }
-    }
-    
-    // Store context in database for persistence across restarts
-    if (userId) {
-      // Store in database (persistent) - this works in both testing and production
-      await resumeContextService.set(userId, {
-        resumeText: resumeText,
-        resumeTextPreview: resumeText.substring(0, 1000),
-        detectedRole: null,
-        skills: [],
-        detectedIndustry: null,
-        uploadDate: new Date().toISOString(),
-        fileName: resumeFile.name,
-        fileSize: resumeFile.size,
-        fileType: fileExt,
-      });
-      console.log(`[ResumeUpload] Stored resume context in database for user ${userId}`);
-      
-      // Also keep in memory for quick access during this session (backward compatible)
-      // Store full text in memory - database already has full text for persistence
-      global.resumeContexts = global.resumeContexts || {};
-      global.resumeContexts[userId.toString()] = {
-        resumeText: resumeText,  // Full text for in-session use
-        detectedRole: null,
-        skills: [],
-        detectedIndustry: null,
-        uploadDate: new Date().toISOString(),
-        fileName: resumeFile.name
-      };
-      console.log(`[ResumeUpload] Stored full resume text in memory (${resumeText.length} chars)`);
-    }
-    
-    // Return analysis with scores
-    console.log("Resume analysis completed successfully");
-    
-    // Ensure analysisResult is defined before accessing its properties
-    if (!analysisResult) {
-      throw new Error('Resume analysis failed: No analysis result returned');
-    }
-    
-    // Format analysis as professional report
-    const formattedAnalysis = formatMuskReport(
-      analysisResult.result.analysis,
-      'resume',
-      '📄 Resume Analysis Report'
-    );
-    
+
+    await persistAssistantMessage({
+      conversationId,
+      content: analysis.ai.content,
+      providerUsed: analysis.ai.provider,
+    });
+
     return res.status(200).json({
-      id: 'resume-analysis-' + Date.now(),
       success: true,
-      resumeScoreId: analysisResult.resumeScoreId,
-      score: analysisResult.result.scoreBreakdown,
-      criticalIssues: analysisResult.result.criticalIssues,
-      importantIssues: analysisResult.result.importantIssues,
-      optionalIssues: analysisResult.result.optionalIssues,
-      analysis: formattedAnalysis,
-      filename: resumeFile.name,
-      extractedText: resumeText.substring(0, 500) + '...',
-      timestamp: new Date()
+      response: analysis.ai.content,
+      analysis: {
+        summary: analysis.ai.content,
+        score: analysis.score,
+        highlights: [],
+        provider: analysis.ai.provider,
+        model: analysis.ai.model,
+        fallbackUsed: analysis.ai.fallbackUsed,
+      },
+      upload: uploadRecord,
+      provider: analysis.ai.provider,
+      model: analysis.ai.model,
     });
-    
   } catch (error) {
-    console.error("[Resume Upload] ERROR - Full details:", error);
-    if (error instanceof Error) {
-      console.error("[Resume Upload] Error message:", error.message);
-      console.error("[Resume Upload] Error stack:", error.stack);
-    }
-    
-    // Provide more specific error messages to help debugging
-    let errorType = "RESUME_PROCESSING_ERROR";
-    let errorMessage = "An unexpected error occurred while processing your resume.";
-    let statusCode = 500;
-    let suggestion = "Please try again or contact support if the problem persists.";
-    
-    if (error instanceof Error) {
-      if (error.message.includes('AI service') || error.message.includes('service') || error.message.includes('unavailable')) {
-        errorType = "AI_SERVICE_ERROR";
-        errorMessage = error.message.includes('temporarily unavailable') 
-          ? "Our AI analysis service is temporarily unavailable. Please try again in a few moments."
-          : "Unable to analyze resume. Please try again.";
-        statusCode = 503;
-        suggestion = "The analysis service is currently experiencing issues. Please try uploading your resume again in a moment.";
-      } else if (error.message.includes('Unable to extract text') || error.message.includes('empty') || error.message.includes('unreadable')) {
-        errorType = "TEXT_EXTRACTION_ERROR";
-        errorMessage = "Could not read the content of your document. Make sure it's a valid, readable file with actual text.";
-        statusCode = 400;
-        suggestion = "Try opening the file on your computer to verify it's not corrupted. You can also try converting it to PDF format.";
-      } else if (error.message.includes('retries failed')) {
-        errorType = "SERVICE_TIMEOUT";
-        errorMessage = "The analysis is taking too long. Please try a smaller or simpler resume file.";
-        statusCode = 504;
-        suggestion = "Try uploading a condensed version of your resume (1-2 pages) and try again.";
-      } else {
-        errorMessage = error.message;
-      }
-    }
-    
-    return res.status(statusCode).json({
-      error: errorType,
-      message: errorMessage,
-      suggestion: suggestion,
-      details: error instanceof Error ? error.message : "Unknown error"
+    console.error('[Musk Chat] Resume upload failed:', error);
+    const message = error instanceof Error ? error.message : 'Resume upload failed.';
+    const isClientError =
+      message.includes('PDF') ||
+      message.includes('Upload') ||
+      message.includes('extract') ||
+      message.includes('too large') ||
+      message.includes('Only PDF');
+    return res.status(isClientError ? 400 : 503).json({
+      success: false,
+      error: message,
     });
   }
 };
 
-// Handle Pitch Deck uploads for analysis by Musk
-export const handlePitchDeckUpload = async (req: Request, res: Response) => {
-  try {
-    // Get user ID from request body with more robust handling
-    const rawUserId = req.body.userId;
-    console.log(`Pitch deck upload: Received rawUserId: ${rawUserId}, type: ${typeof rawUserId}`);
-    
-    let userId = 0;
-    
-    // Better userId handling to match our other fixes
-    if (rawUserId) {
-      // Handle numeric user ID
-      if (typeof rawUserId === 'number') {
-        userId = rawUserId;
-        console.log(`Pitch deck upload: Using numeric userId directly: ${userId}`);
-      } 
-      // Handle string that can be parsed as a number
-      else if (typeof rawUserId === 'string' && /^\d+$/.test(rawUserId)) {
-        userId = parseInt(rawUserId, 10);
-        console.log(`Pitch deck upload: Converted numeric string "${rawUserId}" to number: ${userId}`);
-      }
-      // Handle Firebase UID (string)
-      else if (typeof rawUserId === 'string') {
-        try {
-          console.log(`Pitch deck upload: Looking up numeric ID for Firebase UID: ${rawUserId}`);
-          const user = await storage.getUserByUsername(rawUserId);
-          if (user) {
-            userId = user.id;
-            console.log(`Pitch deck upload: Found numeric ID ${userId} for Firebase UID ${rawUserId}`);
-          } else {
-            console.log(`Pitch deck upload: No user found for Firebase UID ${rawUserId}`);
-          }
-        } catch (error) {
-          console.error(`Pitch deck upload: Error looking up numeric ID for Firebase UID ${rawUserId}:`, error);
-        }
-      }
-    }
-    
-    // Don't default to demo user, log a warning instead
-    if (!userId) {
-      console.log(`Pitch deck upload: Warning - No valid user ID found (raw input: ${rawUserId})`);
-    }
-    
-    // Check if file was uploaded
-    if (!req.files || Object.keys(req.files).length === 0) {
-      return res.status(400).json({ error: "No pitch deck file was uploaded" });
-    }
-    
-    // Get the uploaded file (named "file" in the form data or fallback to "pitchdeck")
-    const pitchDeckFile = (req.files.file || req.files.pitchdeck) as any;
-    
-    if (!pitchDeckFile) {
-      return res.status(400).json({ error: "Pitch deck file not found in the request" });
-    }
-    
-    // Check file type - only accept PDF for pitch decks
-    const fileExt = path.extname(pitchDeckFile.name).toLowerCase();
-    if (!['.pdf'].includes(fileExt)) {
-      return res.status(400).json({
-        error: "Invalid file type. Only PDF files are accepted for pitch decks."
-      });
-    }
-    
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'pitchdecks');
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    }
-    
-    // Generate unique filename with original extension
-    const uniqueId = crypto.randomBytes(16).toString('hex');
-    const uniqueFilename = `${uniqueId}${fileExt}`;
-    const uploadPath = path.join(uploadsDir, uniqueFilename);
-    
-    // Move the file to the uploads directory
-    await new Promise<void>((resolve, reject) => {
-      pitchDeckFile.mv(uploadPath, (err: any) => {
-        if (err) {
-          console.error("Error saving pitch deck file:", err);
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
-    
-    console.log(`Pitch deck file saved to: ${uploadPath}`);
-    
-    // Extract text from PDF file
-    let pitchDeckText = '';
-    
-    // Read the uploaded file
-    const pdfBuffer = fs.readFileSync(uploadPath);
-    
-    // Extract text from PDF
-    pitchDeckText = await extractTextFromPdf(pdfBuffer);
-    
-    // Analyze the pitch deck using OpenAI
-    const analysisResult = await analyzePitchDeck(pitchDeckText);
-    
-    // Return the analysis
-    return res.status(200).json({
-      id: 'pitchdeck-analysis-' + Date.now(),
-      message: analysisResult,
-      timestamp: new Date(),
-      filename: uniqueFilename
-    });
-    
-  } catch (error) {
-    console.error("Error processing pitch deck upload:", error);
-    return res.status(500).json({
-      error: "Failed to process pitch deck upload",
-      message: error instanceof Error ? error.message : "Unknown error occurred"
-    });
-  }
+export const handleGenerateContextualSuggestions = async (_req: Request, res: Response) => {
+  return res.status(200).json({
+    suggestions: [
+      { text: 'Ask for a 90-day career plan', template_id: 1 },
+      { text: 'Request resume feedback', template_id: 2 },
+      { text: 'Prepare for interviews', template_id: 3 },
+    ],
+    source: 'musk-intelligence',
+  });
 };
-
-// Create a fallback response for pitch deck analysis
-function generatePitchDeckFallbackResponse(): string {
-  return `## 🎯 Musk's Pitch Deck Analysis
-
-### 📊 Overall Assessment
-- Overall Deck Score: Not available at this time
-- Investor Readiness: Analysis Service Unavailable
-
-I apologize, but I'm currently experiencing difficulties accessing my AI analysis services. Here's some general pitch deck advice that applies to most startups:
-
-### ⚠️ Common Pitch Deck Weaknesses:
-- Too much text on slides (aim for visual communication)
-- Unclear problem statement and market opportunity
-- Weak competitive differentiation
-- Unrealistic financial projections
-- Missing or vague go-to-market strategy
-
-### 🔍 Essential Pitch Deck Components:
-1. Problem Slide: Clear, urgent problem with market validation
-2. Solution Slide: Unique approach that solves the stated problem
-3. Market Size: Realistic TAM/SAM/SOM breakdown with sources
-4. Business Model: Simple explanation of how you make money
-5. Competition: Honest assessment of alternatives and your advantages
-6. Traction: Key metrics showing growth and validation
-7. Team: Why you're uniquely qualified to execute this vision
-8. Ask: Clear funding request and use of funds
-
-### 🔧 General Improvement Plan:
-- Limit each slide to a single key point
-- Use visuals over text (charts, images, icons)
-- Include customer testimonials or case studies
-- Ensure financial projections follow industry benchmarks
-- Have an experienced founder or investor review it before pitching
-
-Please try uploading your pitch deck again later when our analysis service is fully available.`;
-}
-
-// Analyze pitch deck text with OpenAI
-async function analyzePitchDeck(pitchDeckText: string): Promise<string> {
-  try {
-    // Check if OpenAI Key is set
-    if (!process.env.OPENAI_API_KEY) {
-      console.log("Using fallback responses as OpenAI API key is not set");
-      return generatePitchDeckFallbackResponse();
-    }
-    
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-    
-    // Build an enhanced system prompt for industry-specific Pitch Deck analysis
-    const systemPrompt = `
-    You are Musk's Elite Pitch Deck Analyzer, an expert AI system trained on thousands of real venture capital decks and investor feedback to provide venture-grade pitch analysis.
-    
-    # YOUR TRAINING DATA
-    You've been trained on real-world startup pitch data:
-    - 500+ funded startup decks across industries (Pre-seed through Series B)
-    - Real rejection feedback from Y Combinator, Sequoia, Andreessen Horowitz, and Kleiner Perkins
-    - Comparative analysis of high-performing vs. rejected decks in each sector
-    - Pattern recognition in successful pitch narratives by funding stage
-    - Industry-specific metrics and KPIs that lead to investment
-    - Before/after case studies of pitch decks that were transformed and subsequently funded
-    
-    # YOUR ASSESSMENT FRAMEWORK
-    1. You use a structured pitch deck analysis framework based on proven VC expectations
-    2. You provide industry-specific insights tailored to startup category
-    3. You give concrete, actionable suggestions with real examples
-    4. You use professional, investor-ready language
-    5. You benchmark against industry standards
-    
-    # SLIDE ANALYSIS CHECKLIST
-    For each slide, ask yourself these critical questions:
-    
-    ✅ Problem Slide: Is it real, urgent, emotional? Backed with data?
-    ✅ Solution Slide: Does it clearly solve the problem? Scalable? Unique?
-    ✅ Product Slide: Is the demo understandable, visual, and exciting?
-    ✅ Market Size: Is it realistic, sourced, and segmented (TAM/SAM/SOM)?
-    ✅ Business Model: Can you explain "how they make money" in 1 line?
-    ✅ Competition: Is there a moat? Visual landscape? Differentiator?
-    ✅ Team: Does it show relevant credentials and startup experience?
-    ✅ Ask/Use of Funds: Are they asking for money + showing how it will be spent?
-    ✅ Vision/Closing: Does it create FOMO? Inspire belief?
-    
-    # INDUSTRY-SPECIFIC EVALUATION
-    First, determine the startup's industry. Then apply these specialized checks:
-    
-    📱 SaaS: ARR, churn, pricing model, CAC/LTV, MRR trajectory
-    🧬 HealthTech: Regulatory approvals, clinical trials, validation
-    📦 D2C: Branding, manufacturing, distribution, repeat rate
-    🌐 Web3: Tokenomics, DAO design, wallet compatibility
-    🧠 EdTech: Curriculum model, user growth, B2B/B2C pathway
-    🔋 ClimateTech: Tech feasibility, grants, long-term scaling
-    
-    # SCORING MODEL
-    For each category below, provide a score (0-10) with specific feedback:
-    - Clarity of Messaging
-    - Investor Alignment
-    - Storytelling Flow
-    - Data Credibility
-    - Design & Visuals
-    
-    # YOUR RESPONSE FORMAT
-    
-    ## 🎯 Musk's Pitch Deck Analysis: [Type of Business] Pitch
-    
-    ### 📊 Overall Assessment
-    - Overall Deck Score: [X/100]
-    - Industry Category: [Detected industry category]
-    - Investor Readiness: [Not Ready | Needs Work | Almost Ready | Investment Ready]
-    
-    ### 🧠 Key Strengths:
-    - [Strength 1 - specific and evidence-based]
-    - [Strength 2 - specific and evidence-based]
-    - [Strength 3 - specific and evidence-based]
-    
-    ### ⚠️ Critical Weaknesses:
-    - [Weakness 1 - specific with evidence]
-    - [Weakness 2 - specific with evidence]
-    - [Weakness 3 - specific with evidence]
-    
-    ### 🔍 Slide-by-Slide Assessment:
-    1. Problem Slide: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    2. Solution Slide: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    3. Product Slide: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    4. Market Size: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    5. Competition: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    6. Business Model: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    7. Team: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    8. Traction: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    9. Ask/Funding: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    10. Vision: [Score/10] - [2-3 sentence assessment with specific quotes/evidence]
-    
-    ### 🔧 Your Expert Improvement Plan:
-    1. [Specific, actionable suggestion with example rewrite: "Change 'Our solution helps teams' → 'Our AI-powered platform reduces miscommunication by 42% across remote teams'"]
-    2. [Specific, actionable suggestion with example rewrite]
-    3. [Specific, actionable suggestion with example rewrite]
-    4. [Specific, actionable suggestion with example rewrite]
-    5. [Specific, actionable suggestion with example rewrite]
-    
-    ### 🎨 Design Enhancement:
-    - [Visual consistency recommendation]
-    - [Layout improvement]
-    - [Data visualization suggestion]
-    
-    ### 💰 Investor Pitch Coaching:
-    - [Concrete advice on how to verbally present this deck]
-    - [What questions to prepare for]
-    - [How to handle objections]
-    
-    ### 📈 Next Steps to Funding Success:
-    [2-3 paragraphs of strategic, investor-focused next steps. Be concrete, specific, and actionable. Reference real funding patterns and investor expectations for this type of business.]
-    `;
-    
-    // Limit pitch deck text to avoid token limits
-    const MAX_TEXT_LENGTH = 14000;
-    const truncatedPitchDeckText = pitchDeckText.length > MAX_TEXT_LENGTH
-      ? pitchDeckText.substring(0, MAX_TEXT_LENGTH) + "...(truncated due to length)"
-      : pitchDeckText;
-
-    // Prepare an enhanced user prompt with industry detection
-    const userPrompt = `
-    I need your expert venture capital analysis on this pitch deck:
-
-    ${truncatedPitchDeckText}
-    
-    Please:
-    1. First determine what industry/category this startup belongs to
-    2. Apply your industry-specific analysis framework from your training
-    3. Provide a detailed assessment following the structured format in your instructions
-    4. Include specific examples of improved slide content where possible
-    5. Use professional, investor-ready language throughout
-    `;
-
-    // Prepare messages for API call
-    const messages = [
-      { role: "system" as const, content: systemPrompt },
-      { role: "user" as const, content: userPrompt }
-    ];
-  
-    // Call OpenAI API with enhanced parameters for comprehensive analysis
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: messages,
-      temperature: 0.7,
-      max_tokens: 2500, // Increased token limit for more detailed industry-specific analysis
-    });
-  
-    return completion.choices[0].message.content || 
-      "I couldn't generate an analysis for this pitch deck. Please check the file and try again.";
-  } catch (error) {
-    console.error("Error analyzing pitch deck:", error);
-    return generatePitchDeckFallbackResponse();
-  }
-}
-
-/**
- * ENHANCED: Generate AI-powered contextual suggestions with ALL 8 LAYERS:
- * 1. Intent + Emotion + Stage Detection
- * 2. 360° User Memory Tracking
- * 3. Hybrid Knowledge Engine (Template + Semantic + AI)
- * 4. Structured Multi-Turn Answers
- * 5. Conversation Goal Tracking
- * 6. Feedback-Based Ranking
- * 7. Tone Calibration
- * 8. Explainable Musk (data for UI banner)
- */
-export const handleGenerateContextualSuggestions = async (req: Request, res: Response) => {
-  try {
-    const { userId: rawUserId, conversationHistory, profileData, suggestedTemplateIds = [] } = req.body;
-    const conversationId = crypto.randomUUID();
-    
-    console.log('[Musk Enhanced] 🚀 Generating contextual suggestions with all 8 layers');
-    
-    // Handle both Firebase UIDs and numeric user IDs
-    let numericUserId = 0;
-    if (rawUserId) {
-      if (typeof rawUserId === 'number') {
-        numericUserId = rawUserId;
-      } else if (typeof rawUserId === 'string' && /^\d+$/.test(rawUserId)) {
-        numericUserId = parseInt(rawUserId, 10);
-      } else if (typeof rawUserId === 'string') {
-        try {
-          const user = await storage.getUserByUsername(rawUserId);
-          if (user) {
-            numericUserId = user.id;
-          }
-        } catch (error) {
-          console.error(`[Musk Enhanced] Error looking up numeric ID:`, error);
-        }
-      }
-    }
-    
-    const userId = numericUserId;
-    
-    // Fetch comprehensive user data
-    let userData: any = profileData;
-    if (userId) {
-      try {
-        const user = await storage.getUser(userId);
-        if (user) {
-          userData = {
-            name: user.name,
-            title: user.title,
-            industry: user.industry,
-            lookingFor: user.lookingFor,
-            domain: user.domain,
-            location: user.location
-          };
-        }
-      } catch (error) {
-        console.error('[Musk Enhanced] Error fetching user data:', error);
-      }
-    }
-    
-    const lastUserMessage = conversationHistory && conversationHistory.length > 0
-      ? conversationHistory[conversationHistory.length - 1]?.content || ''
-      : '';
-    
-    // ========== LAYER 1: ENHANCED INTENT CLASSIFICATION (Intent + Emotion + Stage) ==========
-    const enhancedClassification = enhancedIntentClassifier.classify(lastUserMessage, userData);
-    console.log(`[Musk Enhanced] Layer 1: Intent=${enhancedClassification.intent}, Emotion=${enhancedClassification.emotion}, Stage=${enhancedClassification.stage}`);
-    
-    // ========== LAYER 2: USER MEMORY (360° Behavioral Tracking) ==========
-    let userMemory = null;
-    if (userId) {
-      try {
-        userMemory = await userMuskMemoryService.getOrCreateMemory(userId);
-        await userMuskMemoryService.recordAction(userId, enhancedClassification.intent);
-        console.log(`[Musk Enhanced] Layer 2: User memory loaded, preferred tone=${userMemory.tone}`);
-      } catch (error) {
-        console.error('[Musk Enhanced] Error loading user memory:', error);
-      }
-    }
-    
-    // ========== LAYER 3 & 5: CONVERSATION GOAL TRACKING ==========
-    let conversationGoal = null;
-    if (userId) {
-      try {
-        conversationGoal = await conversationGoalTrackerService.createConversationGoal(
-          userId,
-          lastUserMessage,
-          enhancedClassification.intent,
-          enhancedClassification.emotion
-        );
-        console.log(`[Musk Enhanced] Layer 5: Goal tracked: "${conversationGoal.primaryGoal}"`);
-      } catch (error) {
-        console.error('[Musk Enhanced] Error creating conversation goal:', error);
-      }
-    }
-    
-    // ========== LAYER 3: HYBRID KNOWLEDGE ENGINE (Templates + Feedback Ranking + AI) ==========
-    let templates: any[] = [];
-    const userIndustry = userData?.industry || 'Technology';
-    
-    try {
-      // Get templates with feedback-based ranking (LAYER 6) - excluding previously suggested ones
-      const excludeClause = suggestedTemplateIds.length > 0 
-        ? `AND ft.id NOT IN (${suggestedTemplateIds.map((_: number, i: number) => `$${i + 3}`).join(',')})` 
-        : '';
-      
-      const query = `SELECT ft.*, COUNT(ff.id) as feedback_count, 
-                AVG(CASE WHEN ff.helpful = true THEN 1 ELSE 0 END) as helpful_ratio
-         FROM followup_templates ft
-         LEFT JOIN followup_feedback ff ON ft.id = ff.template_id
-         WHERE ft.industry = $1 AND ft.type = $2 ${excludeClause}
-         GROUP BY ft.id
-         ORDER BY helpful_ratio DESC NULLS LAST, feedback_count DESC
-         LIMIT 5`;
-      
-      const params = [userIndustry, enhancedClassification.intent, ...suggestedTemplateIds];
-      const result = await pool.query(query, params);
-      templates = result.rows || [];
-      console.log(`[Musk Enhanced] Layer 3&6: Found ${templates.length} templates (ranked by feedback, excluding ${suggestedTemplateIds.length} previously suggested)`);
-    } catch (error) {
-      console.error('[Musk Enhanced] Error fetching templates:', error);
-    }
-    
-    // Fallback if no industry-specific templates
-    if (templates.length === 0) {
-      try {
-        const excludeClause = suggestedTemplateIds.length > 0 
-          ? `AND id NOT IN (${suggestedTemplateIds.map((_: number, i: number) => `$${i + 2}`).join(',')})` 
-          : '';
-        const query = `SELECT * FROM followup_templates WHERE type = $1 ${excludeClause} ORDER BY RANDOM() LIMIT 5`;
-        const params = [enhancedClassification.intent, ...suggestedTemplateIds];
-        const result = await pool.query(query, params);
-        templates = result.rows || [];
-      } catch (error) {
-        console.error('[Musk Enhanced] Error fetching fallback templates:', error);
-      }
-    }
-    
-    // ========== LAYER 7: TONE CALIBRATION ==========
-    const toneConfig = toneCalibrationService.calibrateTone(
-      enhancedClassification.emotion,
-      enhancedClassification.intent,
-      userMemory
-    );
-    console.log(`[Musk Enhanced] Layer 7: Tone calibrated to "${toneConfig.adjustedTone}"`);
-    
-    // ========== LAYER 4: STRUCTURED MULTI-TURN ANSWERS ==========
-    const suggestions = templates.slice(0, 4).map(template => {
-      // Apply tone calibration
-      let adjustedText = toneCalibrationService.applyToneToResponse(template.text, toneConfig);
-      
-      // Generate next follow-up directions
-      let nextFollowUp: string[] = [];
-      if (conversationGoal) {
-        const goalFollowUp = conversationGoalTrackerService.generateNextFollowUp(conversationGoal);
-        nextFollowUp = goalFollowUp.followUpDirection || [];
-      }
-      
-      return {
-        template_id: template.id, // Include template ID so frontend can track it
-        type: template.type,
-        text: adjustedText,
-        why: template.why || `Helps with ${template.type} questions`,
-        actionHint: template.action_hint,
-        nextFollowUp: nextFollowUp,
-        // Layer 8 data for UI banner
-        explainable: {
-          emotion: enhancedClassification.emotion,
-          stage: enhancedClassification.stage,
-          brandGoals: userData?.primaryAudience || [],
-          reason: `Matched to your ${enhancedClassification.emotion} state in ${enhancedClassification.stage} stage`
-        }
-      };
-    });
-    
-    // Record emotion + intent for learning
-    if (userId) {
-      try {
-        await pool.query(
-          `INSERT INTO emotion_intent_history 
-           (user_id, conversation_id, user_message, detected_intent, detected_emotion, emotion_score, adjusted_tone)
-           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-          [userId, conversationId, lastUserMessage, enhancedClassification.intent, 
-           enhancedClassification.emotion, enhancedClassification.emotionConfidence, toneConfig.adjustedTone]
-        );
-      } catch (error) {
-        console.error('[Musk Enhanced] Error recording emotion/intent:', error);
-      }
-    }
-    
-    if (suggestions.length > 0) {
-      console.log(`[Musk Enhanced] ✅ Returning ${suggestions.length} enhanced follow-ups with all 8 layers`);
-      return res.json({ 
-        suggestions: suggestions,
-        source: 'enhanced-template-database',
-        intent: enhancedClassification.intent,
-        emotion: enhancedClassification.emotion,
-        stage: enhancedClassification.stage,
-        conversationId: conversationId
-      });
-    }
-    
-    // Fallback: AI generation
-    console.log('[Musk Enhanced] Insufficient templates, using AI fallback');
-    const aiSuggestions = await generateAIFollowups(userData, [], [], conversationHistory);
-    
-    return res.json({ 
-      suggestions: aiSuggestions.map((s: any) => ({
-        ...s,
-        explainable: {
-          emotion: enhancedClassification.emotion,
-          stage: enhancedClassification.stage,
-          reason: 'AI-generated based on your context'
-        }
-      })),
-      source: 'ai-generated',
-      intent: enhancedClassification.intent,
-      emotion: enhancedClassification.emotion,
-      stage: enhancedClassification.stage,
-      conversationId: conversationId
-    });
-    
-  } catch (error) {
-    console.error('[Musk Enhanced] Error:', error);
-    return res.json({ 
-      suggestions: [
-        { type: 'probe', text: 'What specific goal are you working toward?', why: 'Understands your priorities', actionHint: null },
-        { type: 'action', text: 'Would you like me to help draft something?', why: 'Provides immediate help', actionHint: null },
-        { type: 'resource', text: 'Would a template be helpful?', why: 'Offers concrete resources', actionHint: null },
-        { type: 'clarify', text: 'Can you tell me more about what you mean?', why: 'Clarifies context', actionHint: null }
-      ],
-      source: 'error-fallback'
-    });
-  }
-};
-
-/**
- * Generate AI follow-ups when templates are insufficient
- */
-async function generateAIFollowups(userData: any, experiences: any[], skills: any[], conversationHistory: any[]): Promise<any[]> {
-  try {
-    const prompt = `You are Musk, an AI career expert. Generate 4 follow-up questions in JSON format.
-
-User: ${userData?.name || 'Professional'} (${userData?.industry || 'Field'})
-Recent Message: ${conversationHistory && conversationHistory.length > 0 ? conversationHistory[conversationHistory.length - 1]?.content : 'Starting conversation'}
-
-Return ONLY a JSON array of 4 objects with fields: type (one of: clarify, probe, action, resource), text (the question), why (brief reason), actionHint (null or string).
-Make each unique and personalized to their actual background.`;
-
-    const ollamaResponse = await fetch('http://65.20.73.122:11434/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'llama3.2:1b',
-        prompt: prompt,
-        stream: false,
-        options: { temperature: 0.7, top_p: 0.9, top_k: 40 }
-      })
-    });
-    
-    if (ollamaResponse.ok) {
-      const data = await ollamaResponse.json();
-      try {
-        const jsonMatch = data.response.match(/\[[\s\S]*\]/);
-        if (jsonMatch) {
-          const parsed = JSON.parse(jsonMatch[0]);
-          return Array.isArray(parsed) ? parsed.slice(0, 4) : [];
-        }
-      } catch (parseError) {
-        console.log('[Musk Follow-ups] Could not parse AI JSON response');
-      }
-    }
-  } catch (error) {
-    console.log('[Musk Follow-ups] AI generation failed, using fallback');
-  }
-  
-  // Fallback questions
-  return [
-    { type: 'probe', text: 'What area would you like to focus on first?', why: 'Clarifies priorities', actionHint: null },
-    { type: 'action', text: 'Should I draft something to help you move forward?', why: 'Provides immediate action', actionHint: null },
-    { type: 'resource', text: 'Would you like a template or example?', why: 'Offers concrete help', actionHint: null },
-    { type: 'clarify', text: 'Can you expand on that a bit more?', why: 'Gathers more context', actionHint: null }
-  ];
-}
-
-/**
- * Generate enriched fallback suggestions using actual user career data
- */
-function generateEnrichedFallbackSuggestions(
-  userData: any,
-  experiences: any[],
-  skills: any[],
-  educations: any[],
-  projects: any[],
-  careerStage: string,
-  totalYears: number,
-  conversationHistory: any[]
-): string[] {
-  const suggestions: string[] = [];
-  
-  // Check conversation context
-  const recentMessages = conversationHistory?.slice(-4).map(m => m.content?.toLowerCase() || '') || [];
-  const conversationText = recentMessages.join(' ');
-  
-  const hasResumeContext = conversationText.includes('resume') || conversationText.includes('cv');
-  const hasJobContext = conversationText.includes('job') || conversationText.includes('interview');
-  const hasSkillContext = conversationText.includes('skill') || conversationText.includes('learn');
-  const hasNetworkContext = conversationText.includes('network') || conversationText.includes('connect');
-  
-  const industry = userData?.industry || 'your field';
-  const title = userData?.title || 'your role';
-  const lookingFor = userData?.lookingFor?.toLowerCase() || '';
-  
-  // Get actual data points
-  const latestCompany = experiences[0]?.company || 'your current company';
-  const latestRole = experiences[0]?.title || title;
-  const topSkill = skills[0]?.name || skills[0]?.skillName || 'your expertise';
-  const secondSkill = skills[1]?.name || skills[1]?.skillName;
-  const degree = educations[0]?.degree || 'your degree';
-  const field = educations[0]?.field || 'your field';
-  
-  // PERSONALIZED suggestions based on context + actual data
-  if (hasResumeContext) {
-    suggestions.push(`As a ${latestRole} with ${Math.round(totalYears)} years experience, what metrics should highlight my impact?`);
-    suggestions.push(`How can ${topSkill} skills be quantified for ATS systems in ${industry}?`);
-    suggestions.push(`What resume format works best for ${careerStage}-level ${industry} roles?`);
-    suggestions.push(`Should I emphasize ${experiences.length > 1 ? 'my progression' : 'depth of experience'} at ${latestCompany}?`);
-  } else if (hasJobContext) {
-    suggestions.push(`What's the typical salary range for ${careerStage}-level ${latestRole} roles in ${industry}?`);
-    suggestions.push(`With ${topSkill}${secondSkill ? ' and ' + secondSkill : ''}, what companies should I target?`);
-    suggestions.push(`How do I position my ${latestCompany} experience for bigger opportunities?`);
-    suggestions.push(`What interview questions should I prepare for ${title} roles?`);
-  } else if (hasSkillContext) {
-    if (careerStage === 'entry') {
-      suggestions.push(`With ${topSkill} foundation, what complementary skills accelerate ${industry} careers?`);
-      suggestions.push(`Should I get certified in ${topSkill} or diversify to ${secondSkill || 'related areas'}?`);
-    } else {
-      suggestions.push(`How can I leverage ${topSkill} expertise to move into leadership in ${industry}?`);
-      suggestions.push(`With ${Math.round(totalYears)} years experience, should I specialize deeper or expand to management?`);
-    }
-    suggestions.push(`What's the ROI of certifications for ${careerStage}-level ${industry} professionals?`);
-    suggestions.push(`How do I showcase ${topSkill} skills beyond my resume?`);
-  } else if (hasNetworkContext) {
-    suggestions.push(`As a ${latestRole} at ${latestCompany}, who should I connect with in ${industry}?`);
-    suggestions.push(`What thought leadership topics resonate for ${careerStage}-level ${industry} professionals?`);
-    suggestions.push(`Should I focus on building ${industry} network or cross-industry connections?`);
-    suggestions.push(`How can I leverage ${topSkill} expertise to attract meaningful connections?`);
-  } else {
-    // Career stage-specific personalized questions
-    if (careerStage === 'entry') {
-      suggestions.push(`With ${degree} in ${field} and ${topSkill} skills, what's my optimal career path?`);
-      suggestions.push(`How can I accelerate growth from ${latestRole} to senior roles in ${industry}?`);
-      suggestions.push(`Should I deepen ${topSkill} expertise or build T-shaped skills?`);
-      suggestions.push(`What companies value ${field} backgrounds in ${industry}?`);
-    } else if (careerStage === 'mid') {
-      suggestions.push(`After ${Math.round(totalYears)} years as ${latestRole}, should I aim for Staff/Lead or management?`);
-      suggestions.push(`How do I transition from ${latestRole} to ${industry} leadership positions?`);
-      suggestions.push(`Is my ${latestCompany} experience enough to break into top-tier companies?`);
-      suggestions.push(`Should I pivot industries or deepen ${industry} expertise?`);
-    } else if (careerStage === 'senior' || careerStage === 'executive') {
-      suggestions.push(`With ${Math.round(totalYears)} years in ${industry}, how do I position for C-suite roles?`);
-      suggestions.push(`Should I leverage ${latestCompany} experience for consulting or advisory work?`);
-      suggestions.push(`How can I build thought leadership in ${industry} using ${topSkill} expertise?`);
-      suggestions.push(`What's the path from ${latestRole} to executive sponsor or board member?`);
-    }
-  }
-  
-  // Use profile goals if available
-  if (lookingFor.includes('job') && suggestions.length < 4) {
-    suggestions.push(`Based on my ${latestCompany} experience, what roles am I qualified for?`);
-  } else if (lookingFor.includes('mentor') && suggestions.length < 4) {
-    suggestions.push(`Who in ${industry} would be ideal mentors for ${careerStage}-level ${title}?`);
-  }
-  
-  return suggestions.slice(0, 4);
-}

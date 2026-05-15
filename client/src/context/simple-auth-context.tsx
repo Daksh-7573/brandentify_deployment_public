@@ -131,23 +131,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { user: userData } = customEvent.detail;
       console.log('[Auth] Google auth success event received:', userData?.email);
       
-      // Verify with server session after OAuth callback
-      const verifiedUser = await fetchServerSession();
-      if (verifiedUser) {
-        console.log('[Auth] Session verified after Google auth, updating user state');
-        setUser(verifiedUser);
+      // Immediately update state with the received user data
+      if (userData) {
+        setUser(userData);
         setIsLoading(false);
         loadingRef.current = false;
-        
-        // Process pending referral if exists
-        const referralCode = sessionStorage.getItem('referral_code');
-        if (referralCode && verifiedUser.id) {
-          console.log('[Referral] Found pending referral code, processing...');
-          processReferral(verifiedUser.id, referralCode);
-        }
-      } else {
-        console.warn('[Auth] Session verification failed after Google auth event');
+        localStorage.setItem('userId', userData.id.toString());
+        localStorage.setItem('userEmail', userData.email);
+        console.log('[Auth] User state updated immediately after Google auth');
       }
+      
+      // Verify with server session after OAuth callback (async verification)
+      setTimeout(async () => {
+        const verifiedUser = await fetchServerSession();
+        if (verifiedUser) {
+          console.log('[Auth] Session verified after Google auth');
+          setUser(verifiedUser);
+          
+          // Process pending referral if exists
+          const referralCode = sessionStorage.getItem('referral_code');
+          if (referralCode && verifiedUser.id) {
+            console.log('[Referral] Found pending referral code, processing...');
+            processReferral(verifiedUser.id, referralCode);
+          }
+        } else {
+          console.warn('[Auth] Session verification failed after Google auth event');
+        }
+      }, 100);
     };
 
     window.addEventListener('googleAuthSuccess', handleGoogleAuthSuccess);
@@ -191,26 +201,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Sign in - called after successful OAuth, verifies with server
+  // Sign in - called after successful OAuth, updates state immediately
   const signIn = useCallback(async (userData: AuthUser) => {
     console.log('[Auth] Sign in called for:', userData.email);
     
-    // Verify the session with the server
-    const verifiedUser = await fetchServerSession();
-    if (verifiedUser) {
-      setUser(verifiedUser);
-      
-      // Process pending referral
-      const referralCode = sessionStorage.getItem('referral_code');
-      if (referralCode && verifiedUser.id) {
-        console.log('[Referral] Found pending referral code, processing...');
-        processReferral(verifiedUser.id, referralCode);
-      }
-    } else {
-      console.warn('[Auth] Sign in failed - no valid server session');
-      setUser(null);
-    }
+    // CRITICAL FIX: Update state immediately to prevent refresh requirement
+    setUser(userData);
     setIsLoading(false);
+    loadingRef.current = false;
+    
+    // Store in localStorage as backup
+    localStorage.setItem('userId', userData.id.toString());
+    localStorage.setItem('userEmail', userData.email);
+    
+    // Dispatch custom event for components to react immediately
+    window.dispatchEvent(new CustomEvent('auth-state-changed', { 
+      detail: { user: userData, authenticated: true } 
+    }));
+    
+    console.log('[Auth] User state updated immediately - no refresh needed');
+    
+    // Verify with server in background (async, non-blocking)
+    setTimeout(async () => {
+      const verifiedUser = await fetchServerSession();
+      if (verifiedUser) {
+        setUser(verifiedUser); // Update with server-verified data
+        
+        // Process pending referral
+        const referralCode = sessionStorage.getItem('referral_code');
+        if (referralCode && verifiedUser.id) {
+          console.log('[Referral] Found pending referral code, processing...');
+          processReferral(verifiedUser.id, referralCode);
+        }
+      }
+    }, 100);
   }, [fetchServerSession]);
 
   // Sign out - calls server logout endpoint

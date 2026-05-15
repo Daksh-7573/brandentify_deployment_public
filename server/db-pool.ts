@@ -3,12 +3,9 @@
  * Optimizes database connections for enterprise scaling
  */
 
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import ws from "ws";
+import { Pool } from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import * as schema from "@shared/schema";
-
-neonConfig.webSocketConstructor = ws;
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
@@ -40,8 +37,7 @@ const poolConfig = {
 export const pool = new Pool(poolConfig);
 
 // Enhanced database instance with performance monitoring
-export const db = drizzle({ 
-  client: pool, 
+export const db = drizzle(pool, { 
   schema,
   logger: process.env.NODE_ENV === 'development' ? {
     logQuery: (query: string, params: unknown[]) => {
@@ -171,12 +167,12 @@ const dbManager = DatabaseManager.getInstance();
 // Graceful shutdown handling
 process.on('SIGINT', async () => {
   await dbManager.gracefulShutdown();
-  process.exit(0);
+  process.exitCode = 0;
 });
 
 process.on('SIGTERM', async () => {
   await dbManager.gracefulShutdown();
-  process.exit(0);
+  process.exitCode = 0;
 });
 
 export { dbManager };

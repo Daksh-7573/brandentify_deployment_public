@@ -1,0 +1,491 @@
+{
+  "timestamp": "2026-04-22T16:55:51.403Z",
+  "scheduled_date": "2026-04-22",
+  "total_row_count": 50,
+  "per_user_counts": [
+    {
+      "user_id": 1,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 2,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 3,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 4,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 5,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 6,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 7,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 9,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 10,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 11,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 12,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 13,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 14,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 16,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 17,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 18,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 19,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 20,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 21,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 22,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 23,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 24,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 25,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 26,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 27,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 28,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 29,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 30,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 31,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 32,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 33,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 34,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 35,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 36,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 37,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 38,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 39,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 40,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 41,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 42,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 43,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 44,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 45,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 46,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 47,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 48,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 49,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 50,
+      "career_count": "0",
+      "social_count": "0"
+    }
+  ],
+  "violators": [
+    {
+      "user_id": 1,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 2,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 3,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 4,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 5,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 6,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 7,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 9,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 10,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 11,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 12,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 13,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 14,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 16,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 17,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 18,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 19,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 20,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 21,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 22,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 23,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 24,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 25,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 26,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 27,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 28,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 29,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 30,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 31,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 32,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 33,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 34,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 35,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 36,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 37,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 38,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 39,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 40,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 41,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 42,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 43,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 44,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 45,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 46,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 47,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 48,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 49,
+      "career_count": "0",
+      "social_count": "0"
+    },
+    {
+      "user_id": 50,
+      "career_count": "0",
+      "social_count": "0"
+    }
+  ],
+  "duplicates": [],
+  "note": "Quest fields (title, etc) missing from user_quests table. Joining quest_definitions for type."
+}

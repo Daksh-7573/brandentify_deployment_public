@@ -1,0 +1,13 @@
+node_modules
+.git
+.local
+.venv
+dist
+logs
+tmp
+private_uploads
+attached_assets
+*.md
+test-*
+*.html
+!client/index.html

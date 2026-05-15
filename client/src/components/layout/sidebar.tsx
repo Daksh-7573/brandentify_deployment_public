@@ -18,7 +18,7 @@ export default function Sidebar({ activePage }: SidebarProps) {
   return (
     <div className="bg-[#1a1a2e] w-64 border-r border-white/10 flex flex-col h-full">
       <div className="flex items-center flex-shrink-0 px-4 pt-4 pb-2">
-        <span className="text-lg font-semibold text-white">Brandentifier</span>
+        <span className="text-lg font-semibold text-white">Brandentify</span>
       </div>
       <div className="flex-1 flex flex-col overflow-y-auto">
         <nav className="flex-1 px-2 space-y-1 py-2">
@@ -41,3 +41,4 @@ export default function Sidebar({ activePage }: SidebarProps) {
     </div>
   );
 }
+

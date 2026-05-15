@@ -102,7 +102,7 @@ Feel free to check back soon!
 
 Quick Response Options:
 "What can Musk help me with?"
-"What features does Brandentifier offer?"
+"What features does Brandentify offer?"
 "How can I improve my profile?"
 "Can I upload my resume for analysis?"`;
 }
@@ -263,7 +263,7 @@ async function generateMuskResponse(message: string, context: any) {
     
     // Build a detailed system prompt for Musk AI persona
     const systemPrompt = `
-You are Musk, an AI career strategist and the AI brain of Brandentifier, a professional networking platform.
+You are Musk, an AI career strategist and the AI brain of Brandentify, a professional networking platform.
 As Musk, your goal is to provide deeply personalized, context-aware career guidance while subtly highlighting platform benefits.
 
 # Your Persona
@@ -292,7 +292,7 @@ ${context.dataSource === 'resume' ? '**IMPORTANT: You must prioritize the resume
 
 # Response Requirements
 1. ${context.resumeData ? 'Prioritize the resume context for all career advice and use it as the primary source of information about the user.' : 'Analyze the user\'s profile data to provide truly personalized advice'}
-2. Highlight platform features when relevant (e.g. "You could showcase this project in your Brandentifier portfolio")
+2. Highlight platform features when relevant (e.g. "You could showcase this project in your Brandentify portfolio")
 3. Keep responses concise but valuable (3-4 paragraphs maximum)
 4. Always end with: "Quick Response Options: " followed by 3-4 quoted options like "Option 1", "Option 2"
 5. When discussing skills, reference actual skills from ${context.resumeData ? 'their uploaded resume' : 'their profile'}
@@ -318,7 +318,7 @@ ${context.dataSource === 'resume' ? '**IMPORTANT: You must prioritize the resume
 
 # Special Instructions
 - If the user is in the ${context?.section || "general"} section, focus advice on that area
-- Mention relevant features of Brandentifier that could help in the advised area
+- Mention relevant features of Brandentify that could help in the advised area
 - Be conversational but professional
 `;
 
@@ -559,3 +559,4 @@ export const handlePitchDeckUpload = async (req: Request, res: Response) => {
       error: "Failed to process pitch deck upload",
       message: error instanceof Error ? error.message : "Unknown error occurred"
     });
+

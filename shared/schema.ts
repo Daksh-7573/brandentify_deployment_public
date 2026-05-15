@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, decimal, unique } from "drizzle-orm/pg-core"; 
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, decimal, unique, date, index } from "drizzle-orm/pg-core"; 
 import { pgEnum } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
@@ -187,7 +187,11 @@ export const chatMessages = pgTable("chat_messages", {
   userId: integer("user_id").references(() => users.id).notNull(),
   message: text("message").notNull(), // actual message content
   sender: text("sender").notNull(), // user or ai
+  role: text("role"), // user or musk
+  intent: text("intent"),
+  metadata: jsonb("metadata").default('{}'),
   timestamp: timestamp("timestamp").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 // OTP verification model for phone login
@@ -235,7 +239,7 @@ export const projectCollaborators = pgTable("project_collaborators", {
   name: text("name").notNull().default("Team Member"), // Default name for all team members
   email: text("email"),
   role: text("role").notNull().default("Collaborator"), // Default role for all team members
-  profileLink: text("profile_link").notNull(), // Required Brandentifier profile link for connecting users
+  profileLink: text("profile_link").notNull(), // Required Brandentify profile link for connecting users
   userId: integer("user_id").references(() => users.id), // Optional: if the collaborator is on the platform
   inviteStatus: text("invite_status").default("Pending"), // Pending, Accepted, Declined
   inviteToken: text("invite_token"),
@@ -253,7 +257,7 @@ export const projectEndorsements = pgTable("project_endorsements", {
   clientCompany: text("client_company"),
   message: text("message"),
   rating: integer("rating"), // e.g., 1-5 stars
-  profileLink: text("profile_link"), // Brandentifier profile link for connecting users
+  profileLink: text("profile_link"), // Brandentify profile link for connecting users
   userId: integer("user_id").references(() => users.id), // If the client is on the platform
   approvalStatus: text("approval_status").default("Pending"), // Pending, Approved, Declined
   isVerified: boolean("is_verified").default(false), // Whether the endorsement has been verified by the client
@@ -300,7 +304,7 @@ export const insertResumeSchema = createInsertSchema(resumes).omit({ id: true, u
 export const insertWorkExperienceSchema = createInsertSchema(workExperiences).omit({ id: true });
 export const insertEducationSchema = createInsertSchema(educations).omit({ id: true });
 export const insertSkillSchema = createInsertSchema(skills).omit({ id: true });
-export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({ id: true, timestamp: true });
+export const insertChatMessageSchema = createInsertSchema(chatMessages).omit({ id: true, timestamp: true, createdAt: true });
 export const insertOtpVerificationSchema = createInsertSchema(otpVerifications).omit({ id: true, verified: true, createdAt: true });
 export const insertEmailVerificationSchema = createInsertSchema(emailVerifications).omit({ id: true, verified: true, createdAt: true });
 
@@ -1148,7 +1152,7 @@ export const questTypeEnum = pgEnum("quest_type", [
   "portfolio",
   "resume",
   "visibility",
-  "engagement", // Brandentifier platform engagement (comments, reactions, discussions)
+  "engagement", // Brandentify platform engagement (comments, reactions, discussions)
   "social_post", // Social Media Post Suggestions
   "social_quest" // Social Media Quest Activities
 ]);
@@ -1234,6 +1238,15 @@ export const badgeTypeEnum = pgEnum("badge_type", [
   "visibility_boosted"
 ]);
 
+// Quest category enum - for balanced quest allocation
+export const questCategoryEnum = pgEnum("quest_category", [
+  "career",      // Career development and authority building
+  "profile",     // Profile completion and enhancement
+  "portfolio",   // Portfolio projects and case studies
+  "social",      // Social media engagement and content
+  "networking"   // Professional networking and connections
+]);
+
 // Quests definition model - stores templates for quests (simplified version)
 export const questDefinitions = pgTable("quest_definitions", {
   id: serial("id").primaryKey(),
@@ -1255,6 +1268,18 @@ export const questDefinitions = pgTable("quest_definitions", {
   quantityType: text("quantity_type"), // What we're counting: "hashtags", "words", "slides", "connections", etc.
   platformConstraints: text("platform_constraints"), // Specific platform requirements: "vertical format", "16:9 ratio", etc.
   guidanceSnippet: text("guidance_snippet"), // Specific action guidance: "Use canva.com", "Record on phone", etc.
+  // Enhanced detailed quest content fields for professional growth missions
+  objective: text("objective"), // Clear, specific objective statement
+  whyThisMatters: text("why_this_matters"), // Explanation of career/networking benefits
+  stepByStepInstructions: text("step_by_step_instructions").array(), // Detailed execution steps
+  expectedOutcome: text("expected_outcome"), // What user will achieve upon completion
+  successCriteria: text("success_criteria").array(), // Specific criteria that define completion
+  autoTrackingConditions: text("auto_tracking_conditions").array(), // Conditions for automatic progress tracking
+  estimatedImpact: text("estimated_impact"), // Expected career/visibility impact description
+  skillArea: text("skill_area"), // Professional skill area this quest develops
+  // Quest uniqueness and categorization fields
+  questContentHash: text("quest_content_hash"), // SHA256 hash of title + description + deliverableFormat for duplicate detection
+  questCategory: questCategoryEnum("quest_category"), // Category for balanced quest allocation (career/profile/portfolio/social/networking)
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow()
@@ -1273,7 +1298,8 @@ export const userQuests = pgTable("user_quests", {
   progress: integer("progress").notNull().default(0), // Current progress count
   assignedAt: timestamp("assigned_at").defaultNow(),
   completedAt: timestamp("completed_at"), // When the quest was completed
-  assignedDate: text("assigned_date").notNull(), // Date in YYYY-MM-DD format for daily tracking
+  scheduledDate: date("scheduled_date"), // Optional calendar date for planned quest execution
+  assignedDate: date("assigned_date").notNull(), // Date for daily tracking
   weekNumber: integer("week_number").notNull(), // Week of the year (1-52) - kept for backwards compatibility
   year: integer("year").notNull(), // Year of the quest
   xpEarned: integer("xp_earned"), // Actual XP earned upon completion
@@ -1288,6 +1314,20 @@ export const userQuests = pgTable("user_quests", {
   profileSnapshot: text("profile_snapshot"), // JSON snapshot of user profile when quest was completed (for smart regeneration logic)
   generatedQuestId: integer("generated_quest_id"), // Link to AI-generated social quest content
   generatedCareerQuestId: integer("generated_career_quest_id"), // Link to AI-generated career quest content
+  // Enhanced automatic tracking fields
+  lastTrackedAt: timestamp("last_tracked_at"), // When progress was last updated
+  trackedActivities: text("tracked_activities").array(), // List of activities that contributed to progress
+  autoCompleted: boolean("auto_completed").default(false), // Whether quest was completed automatically
+  completionPercentage: integer("completion_percentage").default(0), // Calculated completion percentage
+});
+
+// User Quest History - tracks quest rotation to prevent repetition
+export const userQuestHistory = pgTable("user_quest_history", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  questDefinitionId: integer("quest_definition_id").references(() => questDefinitions.id).notNull(),
+  assignedAt: timestamp("assigned_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Instant quest status enum
@@ -1298,9 +1338,9 @@ export const instantQuestStatusEnum = pgEnum("instant_quest_status", [
   "expired"
 ]);
 
-// Instant Quest category enum - career (Brandentifier) or social (external platforms)
+// Instant Quest category enum - career (Brandentify) or social (external platforms)
 export const instantQuestCategoryEnum = pgEnum("instant_quest_category", [
-  "career", // For Brandentifier platform engagement (posting pulse, etc.)
+  "career", // For Brandentify platform engagement (posting pulse, etc.)
   "social"  // For external social platforms (LinkedIn, Twitter, etc.)
 ]);
 
@@ -1308,7 +1348,7 @@ export const instantQuestCategoryEnum = pgEnum("instant_quest_category", [
 export const instantQuests = pgTable("instant_quests", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
-  questType: instantQuestCategoryEnum("quest_type").notNull(), // 'career' for Brandentifier, 'social' for external platforms
+  questType: instantQuestCategoryEnum("quest_type").notNull(), // 'career' for Brandentify, 'social' for external platforms
   trendTopic: text("trend_topic").notNull(), // Main trending topic
   trendKeywords: text("trend_keywords").array(), // Keywords related to the trend
   questDefinitionId: integer("quest_definition_id").references(() => questDefinitions.id), // Link to the generated quest
@@ -1368,7 +1408,7 @@ export const trendSourceEnum = pgEnum("trend_source", [
   "rss_feed",      // RSS feed aggregators
   "google_trends", // Google Trends API
   "reddit",        // Reddit API
-  "internal"       // Internal Brandentifier analytics
+  "internal"       // Internal Brandentify analytics
 ]);
 
 // Industry trends model - stores normalized trend data per industry/domain
@@ -1872,7 +1912,7 @@ export const socialQuestTemplates = pgTable("social_quest_templates", {
   targetAction: text("target_action").notNull(), // create_linkedin_post, create_instagram_reel, etc.
   variables: jsonb("variables").default('[]'), // Array of variable names used: ["signature_methodology", "quantified_achievements"]
   brandImpactDescription: text("brand_impact_description").notNull(), // What this specific template achieves
-  callToAction: text("call_to_action").notNull(), // CTA back to Brandentifier
+  callToAction: text("call_to_action").notNull(), // CTA back to Brandentify
   difficultyLevel: text("difficulty_level").default('beginner'), // beginner, intermediate, advanced
   estimatedTimeMinutes: integer("estimated_time_minutes").default(15),
   xpReward: integer("xp_reward").default(50),
@@ -1925,7 +1965,7 @@ export const generatedSocialQuests = pgTable("generated_social_quests", {
   generatedAt: timestamp("generated_at").defaultNow(),
   assignedAt: timestamp("assigned_at"), // When assigned to user
   completedAt: timestamp("completed_at"), // When user completed it
-  assignedDate: text("assigned_date"), // Date in YYYY-MM-DD format for daily tracking
+  assignedDate: date("assigned_date"), // Date for daily tracking
   status: questStatusEnum("status").default("active"), // Quest status: active, completed, expired
   brandImpactScore: integer("brand_impact_score").default(0), // 0-100 based on completion quality
   recommendedPostTime: text("recommended_post_time"), // Optimal time to post (e.g., "14:00-16:00 UTC")
@@ -1954,7 +1994,7 @@ export const generatedCareerQuests = pgTable("generated_career_quests", {
   generatedAt: timestamp("generated_at").defaultNow(),
   assignedAt: timestamp("assigned_at"), // When assigned to user
   completedAt: timestamp("completed_at"), // When user completed it
-  assignedDate: text("assigned_date"), // Date in YYYY-MM-DD format for daily tracking
+  assignedDate: date("assigned_date"), // Date for daily tracking
   status: questStatusEnum("status").default("active"), // Quest status: active, completed, expired
   brandImpactScore: integer("brand_impact_score").default(0), // 0-100 based on completion quality
   recommendedPostTime: text("recommended_post_time"), // Optimal time to post (for pulse creation quests)
@@ -2416,6 +2456,24 @@ export const insertUserUnlockSchema = createInsertSchema(userUnlocks).omit({
 export type UserUnlock = typeof userUnlocks.$inferSelect;
 export type InsertUserUnlock = z.infer<typeof insertUserUnlockSchema>;
 
+// Share Events - Track when users open shared Quantum Card links
+export const shareEvents = pgTable("share_events", {
+  id: serial("id").primaryKey(),
+  refUser: integer("ref_user").references(() => users.id).notNull(), // The sharer (gets rewarded)
+  viewerId: integer("viewer_id").references(() => users.id), // The viewer (may be null if not logged in)
+  cardId: text("card_id"), // The shared resource identifier (e.g., randomProfileLink)
+  viewedAt: timestamp("viewed_at").defaultNow(),
+  rewardGranted: boolean("reward_granted").default(false), // Whether unlock was given to sharer
+});
+
+export const insertShareEventSchema = createInsertSchema(shareEvents).omit({
+  id: true,
+  viewedAt: true
+});
+
+export type ShareEvent = typeof shareEvents.$inferSelect;
+export type InsertShareEvent = z.infer<typeof insertShareEventSchema>;
+
 // ============================================
 // MUSK FOLLOW-UP SYSTEM
 // ============================================
@@ -2519,6 +2577,68 @@ export type ConversationGoal = typeof conversationGoals.$inferSelect;
 export type InsertConversationGoal = z.infer<typeof insertConversationGoalSchema>;
 export type GoalCheckpoint = typeof goalCheckpoints.$inferSelect;
 export type EmotionIntentHistory = typeof emotionIntentHistory.$inferSelect;
+
+// ============================================
+// MUSK CHAT 2.0 - Persistent AI assistant
+// ============================================
+
+export const muskChatConversations = pgTable("musk_chat_conversations", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  title: text("title").notNull().default("New chat"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  userUpdatedIdx: index("musk_chat_conversations_user_updated_idx").on(table.userId, table.updatedAt),
+}));
+
+export const muskChatMessages = pgTable("musk_chat_messages", {
+  id: serial("id").primaryKey(),
+  conversationId: integer("conversation_id").references(() => muskChatConversations.id, { onDelete: "cascade" }).notNull(),
+  role: text("role").notNull(), // user | assistant | system
+  content: text("content").notNull(),
+  providerUsed: text("provider_used"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  conversationCreatedIdx: index("musk_chat_messages_conversation_created_idx").on(table.conversationId, table.createdAt),
+}));
+
+export const muskResumeUploads = pgTable("musk_resume_uploads", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  conversationId: integer("conversation_id").references(() => muskChatConversations.id, { onDelete: "set null" }),
+  fileName: text("file_name").notNull(),
+  fileUrl: text("file_url"),
+  extractedText: text("extracted_text").notNull(),
+  aiFeedback: text("ai_feedback").notNull(),
+  score: integer("score"),
+  providerUsed: text("provider_used"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  userCreatedIdx: index("musk_resume_uploads_user_created_idx").on(table.userId, table.createdAt),
+  conversationIdx: index("musk_resume_uploads_conversation_idx").on(table.conversationId),
+}));
+
+export const insertMuskChatConversationSchema = createInsertSchema(muskChatConversations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export const insertMuskChatMessageSchema = createInsertSchema(muskChatMessages).omit({
+  id: true,
+  createdAt: true,
+});
+export const insertMuskResumeUploadSchema = createInsertSchema(muskResumeUploads).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type MuskChatConversation = typeof muskChatConversations.$inferSelect;
+export type InsertMuskChatConversation = z.infer<typeof insertMuskChatConversationSchema>;
+export type MuskChatMessage = typeof muskChatMessages.$inferSelect;
+export type InsertMuskChatMessage = z.infer<typeof insertMuskChatMessageSchema>;
+export type MuskResumeUpload = typeof muskResumeUploads.$inferSelect;
+export type InsertMuskResumeUpload = z.infer<typeof insertMuskResumeUploadSchema>;
 
 // ============================================
 // RESUME CONTEXT CACHE - For persistent resume analysis storage

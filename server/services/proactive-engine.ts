@@ -293,7 +293,7 @@ function getPersonalizedLearningPaths(industry: string, title: string): string[]
 
 /**
  * Generate contextual suggestions for immediate action
- * Always prioritizes Brandentifier-related suggestions first
+ * Always prioritizes Brandentify-related suggestions first
  */
 export function generateImmediateSuggestions(
   message: string, 
@@ -302,8 +302,8 @@ export function generateImmediateSuggestions(
 ): string[] {
   const suggestions: string[] = [];
   
-  // ALWAYS start with Brandentifier-related suggestions
-  const brandentifierSuggestions = generateBrandentifierSuggestions(message, userProfile, profileCompleteness);
+  // ALWAYS start with Brandentify-related suggestions
+  const brandentifierSuggestions = generateBrandentifySuggestions(message, userProfile, profileCompleteness);
   suggestions.push(...brandentifierSuggestions);
   
   // Profile completion suggestions
@@ -332,13 +332,13 @@ export function generateImmediateSuggestions(
     }
   }
   
-  return suggestions.slice(0, 3); // Return top 3 suggestions (Brandentifier first)
+  return suggestions.slice(0, 3); // Return top 3 suggestions (Brandentify first)
 }
 
 /**
- * Generate Brandentifier-specific suggestions that always appear first
+ * Generate Brandentify-specific suggestions that always appear first
  */
-function generateBrandentifierSuggestions(
+function generateBrandentifySuggestions(
   message: string, 
   userProfile: any, 
   profileCompleteness: number
@@ -347,24 +347,24 @@ function generateBrandentifierSuggestions(
   
   // Profile enhancement suggestions
   if (profileCompleteness < 80) {
-    brandSuggestions.push('Enhance your Brandentifier profile to unlock more career opportunities');
+    brandSuggestions.push('Enhance your Brandentify profile to unlock more career opportunities');
   }
   
   // Feature-specific suggestions based on message content
   if (message.toLowerCase().includes('skill') || message.toLowerCase().includes('learn')) {
-    brandSuggestions.push('Use Brandentifier\'s skill tracking to showcase your learning progress');
+    brandSuggestions.push('Use Brandentify\'s skill tracking to showcase your learning progress');
   } else if (message.toLowerCase().includes('network') || message.toLowerCase().includes('connect')) {
-    brandSuggestions.push('Discover professionals in your field through Brandentifier\'s networking features');
+    brandSuggestions.push('Discover professionals in your field through Brandentify\'s networking features');
   } else if (message.toLowerCase().includes('project') || message.toLowerCase().includes('portfolio')) {
-    brandSuggestions.push('Showcase your work with Brandentifier\'s project portfolio features');
+    brandSuggestions.push('Showcase your work with Brandentify\'s project portfolio features');
   } else if (message.toLowerCase().includes('goal') || message.toLowerCase().includes('plan')) {
-    brandSuggestions.push('Set and track career goals using Brandentifier\'s career planning tools');
+    brandSuggestions.push('Set and track career goals using Brandentify\'s career planning tools');
   } else if (message.toLowerCase().includes('job') || message.toLowerCase().includes('opportunity')) {
-    brandSuggestions.push('Explore career opportunities through Brandentifier\'s job matching system');
+    brandSuggestions.push('Explore career opportunities through Brandentify\'s job matching system');
   } else {
-    // Default Brandentifier suggestion
-    brandSuggestions.push('Maximize your career potential with Brandentifier\'s comprehensive professional tools');
+    // Default Brandentify suggestion
+    brandSuggestions.push('Maximize your career potential with Brandentify\'s comprehensive professional tools');
   }
   
-  return brandSuggestions.slice(0, 1); // Always return exactly 1 Brandentifier suggestion
+  return brandSuggestions.slice(0, 1); // Always return exactly 1 Brandentify suggestion
 }

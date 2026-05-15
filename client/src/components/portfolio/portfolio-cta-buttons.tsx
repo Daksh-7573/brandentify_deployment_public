@@ -55,16 +55,23 @@ export default function PortfolioCtaButtons({
   const [message, setMessage] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Mutation for sending connection request
   const connectionMutation = useMutation({
     mutationFn: async (data: { receiverId: number, reason: string, message: string }) => {
-      return await apiRequest('POST', '/api/connection-requests', data);
+      console.log(`[PortfolioCTA] Sending connection request to user ${data.receiverId}`);
+      const response = await apiRequest('POST', '/api/connection-requests', data);
+      const result = await response.json();
+      console.log(`[PortfolioCTA] ✅ Connection request sent successfully:`, result);
+      return result;
     },
     onSuccess: () => {
+      console.log(`[PortfolioCTA] Connection request success handler called`);
       toast({
         title: "Connection request sent!",
         description: `Your connection request has been sent to ${userName}. You'll be notified when they respond.`,
@@ -77,6 +84,7 @@ export default function PortfolioCtaButtons({
       queryClient.invalidateQueries({ queryKey: ['/api/users', user?.id, 'sent-connection-requests'] });
     },
     onError: (error: any) => {
+      console.error(`[PortfolioCTA] ❌ Connection request error:`, error);
       toast({
         title: "Failed to send request",
         description: error.message || "Please try again later.",
@@ -101,6 +109,32 @@ export default function PortfolioCtaButtons({
 
   const handleRemoveFile = () => {
     setFile(null);
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      setFile(e.dataTransfer.files[0]);
+    }
   };
 
   const handleSubmitRequest = async () => {
@@ -352,37 +386,42 @@ export default function PortfolioCtaButtons({
 
       {/* Let's Talk Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-md sm:max-w-lg md:max-w-xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
-              <span className="text-xl font-semibold">Let's Talk with {userName || 'Professional'}</span>
-              <DialogClose className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-100">
-                <X size={16} />
-              </DialogClose>
-            </DialogTitle>
-          </DialogHeader>
+        <DialogContent className="max-w-md sm:max-w-lg md:max-w-xl !bg-transparent !border-0 !p-0 !shadow-none">
+          <div className="neo-glass-panel rounded-2xl p-6">
+            <DialogHeader className="space-y-3 pb-4 border-b border-white/20">
+              <DialogTitle className="flex items-center justify-between">
+                <span className="text-2xl font-semibold text-white tracking-tight">Let's Talk with {userName || 'Professional'}</span>
+                <DialogClose className="w-9 h-9 rounded-full flex items-center justify-center text-white/60 hover:text-white hover:bg-white/10 transition-all duration-200">
+                  <X size={18} />
+                </DialogClose>
+              </DialogTitle>
+            </DialogHeader>
           
-          <div className="p-1 space-y-6 max-h-[70vh] overflow-y-auto">
+          <div className="px-1 pt-6 pb-2 space-y-8 max-h-[70vh] overflow-y-auto">
             {/* Dropdown with pre-written intros */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Purpose to connect <span className="text-red-500">*</span>
+            <div className="space-y-3">
+              <label className="text-sm font-semibold text-white/90 tracking-wide uppercase text-xs">
+                Purpose to connect <span className="text-red-400">*</span>
               </label>
               
               {/* Custom radio button implementation instead of Select */}
-              <div className="border rounded-md p-2 space-y-1 max-h-64 overflow-y-auto">
+              <div className="space-y-2.5 max-h-64 overflow-y-auto">
                 
                 {introOptions.map((option, index) => (
                   <div 
                     key={index} 
-                    className={`p-2 cursor-pointer rounded-md ${selectedIntro === option ? 'bg-purple-50' : 'hover:bg-gray-50'}`} 
+                    className={`group relative p-4 cursor-pointer rounded-xl border-2 transition-all duration-200 ${
+                      selectedIntro === option
+                        ? 'bg-white/20 border-white/40 shadow-lg shadow-white/10'
+                        : 'bg-zinc-900/50 border-zinc-700 hover:bg-zinc-800/50 hover:border-zinc-600 hover:shadow-md hover:shadow-white/5 hover:-translate-y-0.5'
+                    }`} 
                     onClick={() => setSelectedIntro(option)}
                   >
-                    <div className="flex items-start gap-2">
-                      <div className={`h-5 w-5 mt-0.5 rounded-full border flex items-center justify-center ${selectedIntro === option ? 'border-[#6a0dad]' : 'border-gray-300'}`}>
-                        {selectedIntro === option && <div className="w-3 h-3 rounded-full bg-[#6a0dad]" />}
+                    <div className="flex items-start gap-3">
+                      <div className={`h-5 w-5 mt-0.5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${selectedIntro === option ? 'border-white bg-white/20' : 'border-zinc-500 group-hover:border-zinc-400'}`}>
+                        {selectedIntro === option && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
                       </div>
-                      <span className="text-sm">{option}</span>
+                      <span className="text-sm text-white leading-relaxed font-medium">{option}</span>
                     </div>
                   </div>
                 ))}
@@ -390,86 +429,108 @@ export default function PortfolioCtaButtons({
             </div>
             
             {/* Message textarea */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Your message
-                <span className="text-gray-400 text-xs ml-2">
-                  {message.length}/350 characters
+            <div className="space-y-3 pt-2">
+              <div className="flex items-baseline justify-between">
+                <label className="text-sm font-semibold text-white/90 tracking-wide uppercase text-xs">
+                  Your message
+                </label>
+                <span className="text-white/40 text-xs font-medium">
+                  {message.length}/350
                 </span>
-              </label>
+              </div>
               <Textarea
                 placeholder="Write a short note..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value.slice(0, 350))}
-                className="min-h-[120px] resize-none"
+                className="min-h-[120px] resize-none !bg-zinc-900/80 !border-zinc-700 !text-white !placeholder:text-zinc-400 focus:!border-primary focus:!ring-1 focus:!ring-primary px-4 py-3 rounded-xl transition-all duration-200"
               />
             </div>
             
             {/* File attachment section */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Attachment (optional)</label>
+            <div className="space-y-3 pt-2">
+              <label className="text-sm font-semibold text-white/90 tracking-wide uppercase text-xs">Attachment <span className="text-white/40 font-normal lowercase">(optional)</span></label>
               
               {!file ? (
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center text-gray-500">
-                  <Paperclip className="h-8 w-8 mb-2" />
-                  <p className="text-sm text-center mb-2">Drag files here or click to upload</p>
+                <div 
+                  className={`relative border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center text-zinc-300 bg-zinc-900/50 transition-all duration-200 cursor-pointer group ${
+                    isDragging 
+                      ? 'border-primary bg-primary/10' 
+                      : 'border-zinc-700 hover:bg-zinc-800/50 hover:border-zinc-600'
+                  }`}
+                  onClick={() => fileInputRef.current?.click()}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
+                  <Paperclip className={`h-10 w-10 mb-3 transition-colors ${
+                    isDragging ? 'text-primary' : 'text-zinc-400 group-hover:text-zinc-300'
+                  }`} />
+                  <p className="text-sm text-center mb-1 text-white font-medium">
+                    {isDragging ? 'Drop file here' : 'Click to upload or drag files here'}
+                  </p>
+                  <p className="text-xs text-zinc-400">PDF, DOC, images up to 10MB</p>
                   <input
+                    ref={fileInputRef}
                     type="file"
-                    id="file-upload"
                     onChange={handleFileSelect}
-                    className="hidden"
+                    className="!hidden"
+                    style={{ 
+                      display: 'none !important' as any,
+                      position: 'absolute',
+                      opacity: 0,
+                      pointerEvents: 'none',
+                      width: 0,
+                      height: 0
+                    }}
+                    aria-hidden="true"
+                    tabIndex={-1}
                   />
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="mt-2"
-                    onClick={() => document.getElementById('file-upload')?.click()}
-                  >
-                    Select File
-                  </Button>
                 </div>
               ) : (
-                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 flex items-center justify-between">
-                  <div className="flex items-center">
-                    <File className="h-6 w-6 text-gray-400 mr-3" />
+                <div className="border-2 border-zinc-700 rounded-xl p-4 bg-zinc-900/50 flex items-center justify-between shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-zinc-800">
+                      <File className="h-5 w-5 text-white" />
+                    </div>
                     <div>
-                      <p className="text-sm font-medium">{file.name}</p>
-                      <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(0)} KB</p>
+                      <p className="text-sm font-semibold text-white">{file.name}</p>
+                      <p className="text-xs text-zinc-400 mt-0.5">{(file.size / 1024).toFixed(0)} KB</p>
                     </div>
                   </div>
                   <Button 
                     variant="ghost" 
                     size="sm" 
                     onClick={handleRemoveFile}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg"
                   >
-                    <X size={16} />
+                    <X size={18} />
                   </Button>
                 </div>
               )}
             </div>
             
             {/* Submit button */}
-            <div className="pt-4">
+            <div className="pt-6 pb-2 border-t border-white/20 mt-8">
               <Button 
                 onClick={handleSubmitRequest}
-                className="w-full bg-[#6a0dad] hover:bg-[#7b1fa2] text-white"
+                className="w-full h-12 neo-glass-button bg-gradient-to-r from-primary/80 to-primary hover:from-primary hover:to-primary/80 font-semibold text-base"
                 disabled={connectionMutation.isPending}
                 data-testid="button-send-connection-request"
               >
                 {connectionMutation.isPending ? (
                   <>
-                    <Loader2 size={16} className="mr-2 animate-spin" />
+                    <Loader2 size={18} className="mr-2 animate-spin" />
                     Sending...
                   </>
                 ) : (
                   <>
-                    <Send size={16} className="mr-2" />
+                    <Send size={18} className="mr-2" />
                     Send Request
                   </>
                 )}
               </Button>
             </div>
+          </div>
           </div>
         </DialogContent>
       </Dialog>

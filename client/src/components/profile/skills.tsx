@@ -5,7 +5,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Loader2, Pencil, Trash2, Plus, Lightbulb } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -244,7 +243,7 @@ export default function Skills() {
                     <div className="flex items-center space-x-1 ml-2">
                       <button 
                         onClick={() => handleEditSkill(skill)} 
-                        className="text-white/60 hover:text-white focus:outline-none rounded-full p-1 hover:bg-white/10 backdrop-blur-sm transition-all duration-200"
+                        className="text-gray-400 hover:text-white focus:outline-none rounded-full p-1 hover:bg-white/10 backdrop-blur-sm transition-all duration-200"
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </button>
@@ -257,7 +256,7 @@ export default function Skills() {
                     </div>
                   </div>
                   <div className="mt-2">
-                    <span className="inline-block text-xs text-white/80 px-2 py-0.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-2">
+                    <span className="inline-block text-xs text-gray-400 px-2 py-0.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-2">
                       {skill.level || 'No level set'}
                     </span>
                     <div className="mt-2">
@@ -333,14 +332,14 @@ export default function Skills() {
             
             <div className="grid grid-cols-4 items-center gap-4">
               <Label className="text-right text-white">
-                Proficiency Percentage <span className="text-xs text-white/60">(auto-set based on level)</span>
+                Proficiency Percentage <span className="text-xs text-gray-400">(auto-set based on level)</span>
               </Label>
               <div className="col-span-3 px-2">
                 <div className="mb-2 flex justify-between">
-                  <span className="text-xs text-white/60">Beginner</span>
-                  <span className="text-xs text-white/60">Intermediate</span>
-                  <span className="text-xs text-white/60">Advanced</span>
-                  <span className="text-xs text-white/60">Expert</span>
+                  <span className="text-xs text-gray-400">Beginner</span>
+                  <span className="text-xs text-gray-400">Intermediate</span>
+                  <span className="text-xs text-gray-400">Advanced</span>
+                  <span className="text-xs text-gray-400">Expert</span>
                 </div>
                 <div className="mb-3">
                   <Slider

@@ -264,7 +264,7 @@ export default function WorkExperienceComponent({ userFirebaseId, userNumericId 
                     <SelectTrigger className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
                       <SelectValue placeholder="Select location..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-gray-700">
+                    <SelectContent className="bg-black/90 border-white/20">
                       {workExperienceLocations.map((location) => (
                         <SelectItem key={location} value={location}>
                           {location}
@@ -286,7 +286,7 @@ export default function WorkExperienceComponent({ userFirebaseId, userNumericId 
                     <SelectTrigger className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
                       <SelectValue placeholder="Select industry..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-gray-700">
+                    <SelectContent className="bg-black/90 border-white/20">
                       {industryOptions.map((option) => (
                         <SelectItem key={option.key} value={option.value}>
                           {option.label}

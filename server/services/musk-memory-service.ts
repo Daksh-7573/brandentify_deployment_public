@@ -2,7 +2,7 @@
  * Musk Memory Service
  * 
  * This service manages Musk's conversational memory and emotional intelligence capabilities
- * based on the Brandentifier AI Career Assistant design.
+ * based on the Brandentify AI Career Assistant design.
  */
 
 import { db } from '../db';

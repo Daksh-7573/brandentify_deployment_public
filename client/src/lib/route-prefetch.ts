@@ -14,7 +14,7 @@ const routeChunks: Record<string, () => Promise<any>> = {
   "/quantum-card": () => import("@/pages/quantum-card"),
   "/connections": () => import("@/pages/ConnectionsPage"),
   "/search": () => import("@/pages/search-fixed"),
-  "/radar": () => import("@/pages/radar"),
+  "/radar": () => import("@/pages/smart-radar-coming-soon"),
   "/privacy": () => import("@/pages/privacy"),
 };
 

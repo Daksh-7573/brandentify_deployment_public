@@ -51,8 +51,8 @@ const FashionQuantumCard: React.FC<FashionQuantumCardProps> = ({
   isLoading = false,
 }) => {
   const profileLink = userData.randomProfileLink 
-    ? `brandentifier.com/r/${userData.randomProfileLink}` 
-    : `brandentifier.com/@${userData.brandName || userData.username}`;
+    ? `brandentify.com/r/${userData.randomProfileLink}` 
+    : `brandentify.com/@${userData.brandName || userData.username}`;
 
   const fashionTags = userData.domain 
     ? userData.domain.split(',').map(s => s.trim()).filter(Boolean).slice(0, 3)
@@ -352,3 +352,4 @@ const FashionQuantumCard: React.FC<FashionQuantumCardProps> = ({
 };
 
 export default FashionQuantumCard;
+

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Send, Sparkles, X } from 'lucide-react';
-import { NeoGlassCard, NeoGlassButton, NeoGlassInput, NeoGlassMuskBubble, NeoGlassSparkle } from '@/components/ui/neo-glass';
+import { NeoGlassCard, NeoGlassButton, NeoGlassMuskBubble, NeoGlassSparkle } from '@/components/ui/neo-glass';
+import { MuskChatInput } from '@/components/musk/musk-chat-input';
 import { cn } from '@/lib/utils';
 
 interface NeoGlassMuskAIProps {
@@ -111,7 +112,7 @@ const NeoGlassMuskAI: React.FC<NeoGlassMuskAIProps> = ({
           {/* Input */}
           <div className="p-3 border-t border-white/20">
             <form onSubmit={handleSubmit} className="flex gap-2">
-              <NeoGlassInput
+              <MuskChatInput
                 placeholder="Type your message..."
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}

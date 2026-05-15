@@ -42,7 +42,7 @@ const EasyLoginPage: React.FC = () => {
       setIsLoading(true);
       
       // Use demo values or form values
-      const userEmail = useDemo ? 'demo@brandentifier.com' : email;
+      const userEmail = useDemo ? 'demo@brandentify.com' : email;
       const userName = useDemo ? 'Demo User' : name || 'User';
       
       if (!useDemo && !email) {
@@ -112,7 +112,7 @@ const EasyLoginPage: React.FC = () => {
            style={{boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'}}>
         <div className="p-8">
           <div className="text-center mb-6">
-            <h2 className="text-3xl font-bold text-white">Brandentifier</h2>
+            <h2 className="text-3xl font-bold text-white">Brandentify</h2>
             <p className="text-gray-400 mt-1">Ultra-Simple Login (Works Everywhere)</p>
           </div>
           

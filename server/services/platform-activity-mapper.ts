@@ -1,7 +1,7 @@
 /**
  * Platform Activity Mapper
  * 
- * Maps quest types to ACTUAL Brandentifier platform activities.
+ * Maps quest types to ACTUAL Brandentify platform activities.
  * Ensures quests generate real, achievable actions instead of external deliverables.
  */
 
@@ -20,7 +20,7 @@ export interface PlatformActivity {
 }
 
 /**
- * Complete mapping of quest types to real Brandentifier features
+ * Complete mapping of quest types to real Brandentify features
  */
 export const PLATFORM_ACTIVITIES: Record<string, PlatformActivity> = {
   // === PROFILE UPDATE QUESTS (Text fields only) ===
@@ -84,12 +84,12 @@ export const PLATFORM_ACTIVITIES: Record<string, PlatformActivity> = {
     constraints: 'Achieve 100% profile completion'
   },
 
-  // === PULSE CREATION QUESTS (Post content on Brandentifier feed) ===
+  // === PULSE CREATION QUESTS (Post content on Brandentify feed) ===
   'pulse_creation_create_pulse': {
     questType: 'pulse_creation',
     targetAction: 'create_pulse',
     platformFeature: 'Industry Pulse → Create Post',
-    completionMethod: 'Post new content on Brandentifier Industry Pulse feed',
+    completionMethod: 'Post new content on Brandentify Industry Pulse feed',
     deliverableFormat: '300-800 words + up to 5 images',
     constraints: 'Public post visible in Industry Pulse'
   },
@@ -395,3 +395,4 @@ export function getRecommendedQuestType(
   // Default: pulse creation
   return 'pulse_creation_create_pulse';
 }
+

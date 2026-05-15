@@ -91,10 +91,41 @@ async function runMigration() {
         dismissed_reason TEXT,
         xp_earned INTEGER,
         badge_earned badge_type,
-        musk_response TEXT
+        musk_response TEXT,
+        last_tracked_at TIMESTAMP,
+        tracked_activities TEXT[],
+        auto_completed BOOLEAN DEFAULT FALSE,
+        completion_percentage INTEGER DEFAULT 0
       );
     `);
     console.log('Created user_quests table');
+
+    await executeQuery(`
+      ALTER TABLE user_quests
+      ADD COLUMN IF NOT EXISTS last_tracked_at TIMESTAMP;
+    `);
+
+    await executeQuery(`
+      ALTER TABLE user_quests
+      ADD COLUMN IF NOT EXISTS tracked_activities TEXT[];
+    `);
+
+    await executeQuery(`
+      ALTER TABLE user_quests
+      ADD COLUMN IF NOT EXISTS auto_completed BOOLEAN DEFAULT FALSE;
+    `);
+
+    await executeQuery(`
+      ALTER TABLE user_quests
+      ADD COLUMN IF NOT EXISTS completion_percentage INTEGER DEFAULT 0;
+    `);
+
+    await executeQuery(`
+      CREATE INDEX IF NOT EXISTS idx_user_quests_last_tracked
+      ON user_quests(user_id, last_tracked_at)
+      WHERE last_tracked_at IS NOT NULL;
+    `);
+    console.log('Ensured user_quests tracking columns and index');
 
     // Create user_xp table
     await executeQuery(`

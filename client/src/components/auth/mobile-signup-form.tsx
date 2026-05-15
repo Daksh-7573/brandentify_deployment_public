@@ -147,7 +147,7 @@ export function MobileSignupForm({ phoneNumber, onComplete }: MobileSignupFormPr
           
           <Button
             type="submit"
-            className="w-full"
+            className="neo-glass-button w-full"
             disabled={isSubmitting}
           >
             {isSubmitting ? (

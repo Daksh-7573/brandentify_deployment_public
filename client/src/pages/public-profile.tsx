@@ -372,7 +372,7 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
                             href={userData?.randomProfileLink ? `/r/${userData.randomProfileLink}` : `/@${userData?.username}`} 
                             className="text-primary hover:underline"
                           >
-                            {userData?.randomProfileLink ? `brandentifier.com/r/${userData.randomProfileLink}` : `brandentifier.com/@${userData?.username}`}
+                            {userData?.randomProfileLink ? `brandentify.com/r/${userData.randomProfileLink}` : `brandentify.com/@${userData?.username}`}
                           </a>
                         </div>
                       </div>

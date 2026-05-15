@@ -7,6 +7,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Users, Sparkles } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { useAuth } from '@/hooks/use-auth';
 
 interface ConversationListProps {
   filter?: 'recent' | 'unread' | 'all' | 'musk';
@@ -15,8 +16,13 @@ interface ConversationListProps {
 
 const ConversationList: React.FC<ConversationListProps> = ({ filter = 'recent', onMuskSelect }) => {
   const { conversations, currentConversation, setCurrentConversation, loadingConversations, markConversationAsRead } = useChat();
+  const { user } = useAuth();
+  const currentUserId = user?.id ? String(user.id) : (localStorage.getItem('userId') || '');
 
   const filteredConversations = React.useMemo(() => {
+    if (filter === 'musk') {
+      return [];
+    }
     if (filter === 'unread') {
       return conversations.filter(c => (c.unreadCount || 0) > 0);
     }
@@ -76,7 +82,7 @@ const ConversationList: React.FC<ConversationListProps> = ({ filter = 'recent', 
     
     // For direct messages, show the other participant's name
     const otherParticipants = conversation.participants?.filter(
-      (p) => p.userId.toString() !== localStorage.getItem('userId')
+      (p) => p.userId.toString() !== currentUserId
     ) || [];
     
     if (otherParticipants.length === 1 && otherParticipants[0].userName) {
@@ -94,7 +100,7 @@ const ConversationList: React.FC<ConversationListProps> = ({ filter = 'recent', 
     if (conversation.isGroup) return undefined;
     
     const otherParticipant = conversation.participants?.find(
-      (p) => p.userId.toString() !== localStorage.getItem('userId')
+      (p) => p.userId.toString() !== currentUserId
     );
     
     return otherParticipant?.userPhotoURL;

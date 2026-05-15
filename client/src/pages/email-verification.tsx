@@ -55,7 +55,7 @@ export default function EmailVerification() {
         <CardHeader>
           <CardTitle className="text-2xl text-center">Email Verification</CardTitle>
           <CardDescription className="text-center">
-            Brandentifier Account Verification
+            Brandentify Account Verification
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center pt-6">

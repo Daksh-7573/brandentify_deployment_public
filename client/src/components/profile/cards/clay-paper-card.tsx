@@ -59,7 +59,7 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   
   // Format profile link using brand name (or username as fallback)
-  const profileLink = `brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
+  const profileLink = `brandentify.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
   
   // Industry tags
   const industryTags = userData.industry ? userData.industry.split(/,\s*/).filter(tag => tag.trim()) : [];

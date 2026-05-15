@@ -7,7 +7,7 @@ import { createId } from '@paralleldrive/cuid2';
  */
 
 // Available Quantum Card designs (12 total)
-const QUANTUM_CARDS = [
+export const QUANTUM_CARDS = [
   'professional',
   'quantum',
   '3d-animated',
@@ -57,14 +57,14 @@ export class ReferralService {
   /**
    * Generate unique referral link for a user
    * @param userId - The user ID
-   * @param baseUrl - The base URL (e.g., https://brandentifier.replit.app)
+   * @param baseUrl - The base URL (e.g., https://brandentify.replit.app)
    */
   async generateReferralLink(userId: number, baseUrl?: string): Promise<{ code: string; link: string }> {
     const client = await pool.connect();
     
     try {
       // Determine the base URL for the link (prioritize production URL)
-      const appBaseUrl = baseUrl || process.env.APP_BASE_URL || process.env.REPLIT_DEV_DOMAIN || 'https://brandentifier.replit.app';
+      const appBaseUrl = baseUrl || process.env.APP_BASE_URL || process.env.REPLIT_DEV_DOMAIN || 'https://brandentify.replit.app';
       // Ensure no trailing slash
       const cleanBaseUrl = appBaseUrl.replace(/\/$/, '');
       
@@ -495,3 +495,4 @@ export class ReferralService {
 }
 
 export const referralService = new ReferralService();
+

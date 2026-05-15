@@ -71,7 +71,7 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onE
                   className="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200 cursor-pointer underline decoration-blue-400/50 hover:decoration-blue-300"
                   data-testid="link-profile-url"
                 >
-                  {`brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`}
+                  {`brandentify.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`}
                 </a>
               </div>
             </div>

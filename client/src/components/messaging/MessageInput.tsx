@@ -6,12 +6,14 @@ import { Send, Paperclip, Loader2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/use-auth';
 
 const MessageInput: React.FC = () => {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [attachments, setAttachments] = useState<Array<{ name: string; type: string; url: string }>>([]);
   const { currentConversation, sendMessage, isConnected } = useChat();
+  const { user } = useAuth();
   const { toast } = useToast();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -30,7 +32,7 @@ const MessageInput: React.FC = () => {
     
     try {
       // Get the recipient ID (for WebSocket delivery)
-      const userId = localStorage.getItem('userId');
+      const userId = user?.id ? String(user.id) : (localStorage.getItem('userId') || '');
       const recipient = currentConversation.participants?.find(
         p => p.userId.toString() !== userId
       );

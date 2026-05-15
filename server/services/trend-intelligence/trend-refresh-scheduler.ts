@@ -46,9 +46,9 @@ export class TrendRefreshScheduler {
       timeout: 15000
     }));
 
-    // Internal Brandentifier Adapter
+    // Internal Brandentify Adapter
     this.adapters.push(new InternalAdapter({
-      name: 'Brandentifier Analytics',
+      name: 'Brandentify Analytics',
       enabled: true,
       dailyLimit: 1000, // No external API limits
       timeout: 10000
@@ -70,8 +70,20 @@ export class TrendRefreshScheduler {
 
     // Run immediately on startup
     console.log('[TrendRefreshScheduler] Running initial trend refresh...');
-    this.refreshAllTrends().catch(error => {
-      console.error('[TrendRefreshScheduler] Initial refresh error:', error);
+    this.refreshAllTrends().catch((error: any) => {
+      const isNeonPaused = 
+        error.message?.includes("endpoint has been disabled") ||
+        error.message?.includes("Database temporarily unavailable") ||
+        error.message?.includes("endpoint is paused") ||
+        error.message?.includes("compute endpoint is suspended") ||
+        error.code === "57P03" ||
+        error.code === "XX000";
+      
+      if (isNeonPaused) {
+        console.warn('[TrendRefreshScheduler] ⏸️  Database paused during initial refresh - will retry on next scheduled run');
+      } else {
+        console.error('[TrendRefreshScheduler] ❌ Initial refresh error:', error);
+      }
     });
 
     // Schedule hourly refresh (at :00 of every hour)
@@ -121,8 +133,20 @@ export class TrendRefreshScheduler {
       try {
         const industryTrends = await this.fetchIndustryTrends(industry);
         totalTrendsIngested += industryTrends;
-      } catch (error) {
-        console.error(`[TrendRefreshScheduler] Error refreshing ${industry}:`, error);
+      } catch (error: any) {
+        const isNeonPaused = 
+          error.message?.includes("endpoint has been disabled") ||
+          error.message?.includes("Database temporarily unavailable") ||
+          error.message?.includes("endpoint is paused") ||
+          error.message?.includes("compute endpoint is suspended") ||
+          error.code === "57P03" ||
+          error.code === "XX000";
+        
+        if (isNeonPaused) {
+          console.warn(`[TrendRefreshScheduler] ⏸️  Database paused for ${industry} - skipping`);
+        } else {
+          console.error(`[TrendRefreshScheduler] ❌ Error refreshing ${industry}:`, error);
+        }
       }
     }
 
@@ -148,8 +172,20 @@ export class TrendRefreshScheduler {
         const stored = await adapter.storeNormalizedTrends(trends, 1);
         trendsIngested += stored.length;
 
-      } catch (error) {
-        console.error(`[TrendRefreshScheduler] Error with adapter for ${industry}:`, error);
+      } catch (error: any) {
+        const isNeonPaused = 
+          error.message?.includes("endpoint has been disabled") ||
+          error.message?.includes("Database temporarily unavailable") ||
+          error.message?.includes("endpoint is paused") ||
+          error.message?.includes("compute endpoint is suspended") ||
+          error.code === "57P03" ||
+          error.code === "XX000";
+        
+        if (isNeonPaused) {
+          console.warn(`[TrendRefreshScheduler] ⏸️  Database paused while processing adapter for ${industry} - skipping`);
+        } else {
+          console.error(`[TrendRefreshScheduler] ❌ Error with adapter for ${industry}:`, error);
+        }
       }
     }
 
@@ -187,3 +223,4 @@ export class TrendRefreshScheduler {
 
 // Export singleton instance
 export const trendRefreshScheduler = new TrendRefreshScheduler();
+

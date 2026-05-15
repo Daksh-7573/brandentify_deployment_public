@@ -1147,7 +1147,7 @@ export default function ArtisticPortfolio({
             className="text-sm"
             style={{ color: colors.sage }}
           >
-            © {new Date().getFullYear()} {userInfo.name}. Built with Brandentifier.
+            © {new Date().getFullYear()} {userInfo.name}. Built with Brandentify.
           </p>
         </footer>
       </div>
@@ -1310,3 +1310,4 @@ export default function ArtisticPortfolio({
     </div>
   );
 }
+

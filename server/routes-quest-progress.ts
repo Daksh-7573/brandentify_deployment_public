@@ -1,16 +1,27 @@
 /**
- * Quest Progress Routes
+ * Quest Progress Routes - Enhanced Version
  * 
  * This file adds middleware to existing API routes to automatically track
- * user actions and update quest progress for engagement-related quests.
+ * user actions and update quest progress for ALL quest types including:
+ * - Content creation (pulses, media, projects)
+ * - Engagement (likes, comments, reactions, shares)
+ * - Networking (connections, messages, profile views)
+ * - Profile updates (fields, skills, experience, recommendations)
+ * - Career capsule (goals, milestones, tasks)
+ * - Smart connect usage
+ * - Search and discovery
  */
 
 import { Router, Request, Response, NextFunction } from "express";
 import { IStorage } from "./storage";
 import { pool } from "./db";
+import { 
+  trackUserActionEnhanced, 
+  TrackingActionType 
+} from "./services/enhanced-quest-progress-tracker";
 
-// Action types that can trigger quest progress updates
-type ActionType = 
+// Legacy action types (for backward compatibility)
+type LegacyActionType = 
   | 'create_pulse'
   | 'add_comment'
   | 'add_reaction'
@@ -19,95 +30,28 @@ type ActionType =
   | 'add_hashtag';
 
 /**
- * Update quest progress when user performs an action
- * @param storage The storage interface
+ * Enhanced track user action - uses the new comprehensive tracking system
  * @param userId User ID
  * @param actionType Type of action performed
  * @param count Optional count to increment by (default: 1)
+ * @param metadata Optional metadata about the action
  */
 export async function trackUserAction(
-  storage: IStorage,
   userId: number,
-  actionType: ActionType,
-  count: number = 1
+  actionType: TrackingActionType,
+  count: number = 1,
+  metadata?: any
 ): Promise<void> {
   console.log(`[trackUserAction] User ${userId} performed action: ${actionType} (count: ${count})`);
   
   try {
-    // 1. Get user's active quests for the current week
-    const currentWeekQuests = await storage.getCurrentWeekUserQuests(userId);
-    if (!currentWeekQuests || currentWeekQuests.length === 0) {
-      console.log(`[trackUserAction] No active quests found for user ${userId}`);
-      return;
-    }
-
-    // 2. Get all quest definitions to match actions to target_action
-    const questDefinitions = await storage.getAllQuestDefinitions();
-    if (!questDefinitions || questDefinitions.length === 0) {
-      console.log(`[trackUserAction] No quest definitions found`);
-      return;
-    }
-
-    // 3. Map the user action to quest target_action values
-    const targetActionMapping: Record<ActionType, string> = {
-      'create_pulse': 'create_pulse',
-      'add_hashtag': 'add_hashtag',
-      'add_comment': 'add_comment',
-      'add_reaction': 'give_reaction',
-      'share_pulse': 'share_profile',
-      'add_media': 'upload_media'
-    };
-
-    const targetAction = targetActionMapping[actionType];
+    // Use the enhanced tracker
+    const results = await trackUserActionEnhanced(userId, actionType, count, metadata);
     
-    if (!targetAction) {
-      console.log(`[trackUserAction] Unknown action type: ${actionType}`);
-      return;
+    if (results.length > 0) {
+      const completedCount = results.filter(r => r.completed).length;
+      console.log(`[trackUserAction] Updated ${results.length} quests, ${completedCount} completed`);
     }
-    
-    // 4. Find matching quests that track this type of action
-    const matchingQuests = currentWeekQuests.filter((quest: any) => {
-      // Get the definition for this quest
-      const definition = questDefinitions.find(
-        def => def.id === quest.questDefinitionId
-      );
-      
-      // Only return quests that are active and match the target action
-      return (
-        quest.status === 'active' && 
-        definition?.targetAction === targetAction
-      );
-    });
-
-    if (matchingQuests.length === 0) {
-      console.log(`[trackUserAction] No matching quests found for action ${actionType}`);
-      return;
-    }
-
-    // 5. Update progress for each matching quest
-    for (const quest of matchingQuests) {
-      console.log(`[trackUserAction] Updating progress for quest ${quest.id}, action ${actionType}`);
-      
-      // Get current progress and definition
-      const currentProgress = quest.progress || 0;
-      const definition = questDefinitions.find(def => def.id === quest.questDefinitionId);
-      if (!definition) continue;
-
-      // Calculate new progress
-      const newProgress = currentProgress + count;
-      
-      // If new progress meets or exceeds target, complete the quest
-      if (newProgress >= definition.targetCount) {
-        console.log(`[trackUserAction] Quest ${quest.id} completed! New progress: ${newProgress}, Target: ${definition.targetCount}`);
-        await storage.completeUserQuest(quest.id, definition.xpReward);
-      } else {
-        // Otherwise just update the progress
-        console.log(`[trackUserAction] Updating quest ${quest.id} progress to ${newProgress}`);
-        await storage.updateUserQuest(quest.id, { progress: newProgress });
-      }
-    }
-
-    console.log(`[trackUserAction] Successfully processed action ${actionType} for user ${userId}`);
   } catch (error) {
     console.error(`[trackUserAction] Error tracking user action:`, error);
   }
@@ -115,9 +59,10 @@ export async function trackUserAction(
 
 // Factory function to create tracking middleware for different actions
 function createActionTrackingMiddleware(
-  actionType: ActionType,
-  userIdExtractor: (body: any) => number | undefined,
-  countExtractor: (body: any) => number = () => 1
+  actionType: TrackingActionType,
+  userIdExtractor: (req: Request, body: any) => number | undefined,
+  countExtractor: (req: Request, body: any) => number = () => 1,
+  metadataExtractor?: (req: Request, body: any) => any
 ) {
   return async (req: Request, res: Response, next: NextFunction) => {
     const originalSend = res.send;
@@ -129,17 +74,20 @@ function createActionTrackingMiddleware(
           // Parse response body if it's a string
           const responseBody = typeof body === 'string' ? JSON.parse(body) : body;
           
-          // Extract user ID
-          const userId = userIdExtractor(responseBody);
+          // Extract user ID from request or response
+          const userId = userIdExtractor(req, responseBody);
           
           if (userId) {
             console.log(`[trackAction:${actionType}] Tracking for user ${userId}`);
             
             // Extract count (if applicable)
-            const count = countExtractor(responseBody);
+            const count = countExtractor(req, responseBody);
+            
+            // Extract metadata (if applicable)
+            const metadata = metadataExtractor ? metadataExtractor(req, responseBody) : undefined;
             
             // Track action asynchronously (don't wait for completion)
-            trackUserAction(req.app.locals.storage, userId, actionType, count)
+            trackUserAction(userId, actionType, count, metadata)
               .catch(err => console.error(`[trackAction:${actionType}] Error tracking:`, err));
           }
         } catch (error) {
@@ -155,6 +103,25 @@ function createActionTrackingMiddleware(
   };
 }
 
+// Enhanced user ID extractor that checks both request and response
+function extractUserId(req: Request, body: any): number | undefined {
+  // Try request body first
+  if (req.body?.userId) return req.body.userId;
+  if (req.body?.senderId) return req.body.senderId;
+  if (req.body?.authorId) return req.body.authorId;
+  
+  // Try response body
+  if (body?.userId) return body.userId;
+  if (body?.senderId) return body.senderId;
+  if (body?.authorId) return body.authorId;
+  if (body?.id && body?.username) return body.id; // If full user object returned
+  
+  // Try query params
+  if (req.query?.userId) return parseInt(req.query.userId as string);
+  
+  return undefined;
+}
+
 export function setupQuestProgressMiddleware(apiRouter: Router, storage: IStorage) {
   console.log("Setting up Quest Progress Middleware");
   
@@ -164,75 +131,164 @@ export function setupQuestProgressMiddleware(apiRouter: Router, storage: IStorag
     next();
   });
   
-  // Create middleware for each action type
+  // Create middleware for each action type using enhanced tracking
   
   // Pulse creation tracking - tracks creating posts
   const trackPulseCreation = createActionTrackingMiddleware(
-    'create_pulse',
-    body => body?.userId,
+    'pulse_created',
+    extractUserId,
+    () => 1
+  );
+  
+  // Pulse with media tracking
+  const trackPulseWithMedia = createActionTrackingMiddleware(
+    'pulse_with_media_created',
+    extractUserId,
+    (req) => req.body?.mediaUrls?.length || 1
   );
   
   // Comment tracking - tracks commenting on pulses
   const trackPulseComment = createActionTrackingMiddleware(
-    'add_comment',
-    body => body?.userId,
+    'post_commented',
+    extractUserId,
+    () => 1
   );
   
   // Reaction tracking - tracks giving reactions
   const trackPulseReaction = createActionTrackingMiddleware(
-    'add_reaction',
-    body => body?.userId,
+    'post_liked',
+    extractUserId,
+    () => 1
   );
   
   // Share tracking - tracks sharing pulses
   const trackPulseShare = createActionTrackingMiddleware(
-    'share_pulse',
-    body => body?.senderId,
+    'post_shared',
+    extractUserId,
+    () => 1
   );
   
-  // Media upload tracking - tracks adding media to pulses
-  const trackMediaUpload = createActionTrackingMiddleware(
-    'add_media',
-    body => body?.userId,
-    body => body?.mediaUrls?.length || 1
+  // Profile update tracking
+  const trackProfileUpdate = createActionTrackingMiddleware(
+    'profile_field_updated',
+    extractUserId,
+    () => 1,
+    (req) => ({ fieldName: req.body?.fieldName })
   );
   
-  // Hashtag tracking - tracks adding hashtags
-  const trackHashtags = createActionTrackingMiddleware(
-    'add_hashtag',
-    body => body?.userId,
-    body => {
-      if (body?.content && typeof body.content === 'string') {
-        const matches = body.content.match(/#[a-zA-Z0-9_]+/g);
-        return matches ? matches.length : 0;
-      }
-      return 0;
-    }
+  // Connection request tracking
+  const trackConnectionRequest = createActionTrackingMiddleware(
+    'connection_request_sent',
+    extractUserId,
+    () => 1,
+    (req, body) => ({ targetUserId: body?.receiverId || body?.targetUserId })
+  );
+  
+  // Work experience added tracking
+  const trackWorkExperience = createActionTrackingMiddleware(
+    'work_experience_added',
+    extractUserId,
+    () => 1
+  );
+  
+  // Skill added tracking
+  const trackSkillAdded = createActionTrackingMiddleware(
+    'skill_added',
+    extractUserId,
+    () => 1,
+    (req) => ({ skillName: req.body?.skillName })
+  );
+  
+  // Career goal tracking
+  const trackCareerGoal = createActionTrackingMiddleware(
+    'career_goal_created',
+    extractUserId,
+    () => 1
+  );
+  
+  // Smart connect usage tracking
+  const trackSmartConnect = createActionTrackingMiddleware(
+    'smart_connect_used',
+    extractUserId,
+    () => 1
+  );
+  
+  // Search tracking
+  const trackSearch = createActionTrackingMiddleware(
+    'search_performed',
+    extractUserId,
+    () => 1,
+    (req) => ({ searchQuery: req.query?.q || req.body?.query })
+  );
+  
+  // Resume update tracking
+  const trackResumeUpdate = createActionTrackingMiddleware(
+    'resume_updated',
+    extractUserId,
+    () => 1
   );
   
   // Apply middleware to relevant routes
   
+  // === CONTENT CREATION ROUTES ===
   // Pulse creation tracking
   apiRouter.post("/pulses", trackPulseCreation);
   apiRouter.post("/news-pulses", trackPulseCreation);
+  apiRouter.post("/pulses", trackPulseWithMedia); // Also track media
   
+  // === ENGAGEMENT ROUTES ===
   // Comment tracking
   apiRouter.post("/pulse-comments", trackPulseComment);
   apiRouter.post("/comments", trackPulseComment);
+  apiRouter.post("/pulses/:id/comments", trackPulseComment);
   
   // Reaction tracking
   apiRouter.post("/pulse-reactions", trackPulseReaction);
   apiRouter.post("/reactions", trackPulseReaction);
+  apiRouter.post("/pulses/:id/reactions", trackPulseReaction);
   
   // Share tracking
   apiRouter.post("/pulse-shares", trackPulseShare);
   apiRouter.post("/shares", trackPulseShare);
   
-  // Media tracking
-  apiRouter.post("/media", trackMediaUpload);
+  // === PROFILE UPDATE ROUTES ===
+  // Profile field updates
+  apiRouter.put("/users/:id", trackProfileUpdate);
+  apiRouter.patch("/users/:id", trackProfileUpdate);
   
-  // Track hashtags on pulse creation too
-  apiRouter.post("/pulses", trackHashtags);
+  // Work experience
+  apiRouter.post("/work-experiences", trackWorkExperience);
+  apiRouter.post("/users/:id/work-experiences", trackWorkExperience);
   
-  console.log("Quest Progress Middleware setup complete");
+  // Skills
+  apiRouter.post("/skills", trackSkillAdded);
+  apiRouter.post("/users/:id/skills", trackSkillAdded);
+  
+  // === NETWORKING ROUTES ===
+  // Connection requests
+  apiRouter.post("/connection-requests", trackConnectionRequest);
+  apiRouter.post("/users/:userId/follow", trackConnectionRequest);
+  apiRouter.post("/users/:userId/connect", trackConnectionRequest);
+  
+  // === CAREER CAPSULE ROUTES ===
+  apiRouter.post("/career-goals", trackCareerGoal);
+  apiRouter.post("/career-capsule/goals", trackCareerGoal);
+  apiRouter.post("/api/career-capsule/goals", trackCareerGoal);
+  
+  // === SMART CONNECT ROUTES ===
+  apiRouter.post("/smart-connect", trackSmartConnect);
+  apiRouter.post("/smart-suggestions/connect", trackSmartConnect);
+  
+  // === SEARCH ROUTES ===
+  apiRouter.get("/search", trackSearch);
+  apiRouter.get("/users/search", trackSearch);
+  apiRouter.get("/search-users", trackSearch);
+  
+  // === RESUME ROUTES ===
+  apiRouter.post("/resumes", trackResumeUpdate);
+  apiRouter.post("/resume/parse", trackResumeUpdate);
+  apiRouter.put("/users/:userId/resume", trackResumeUpdate);
+  
+  console.log("✅ Enhanced Quest Progress Middleware setup complete");
+  console.log("📊 Tracking: Content, Engagement, Networking, Profile, Career, Search, Resume");
 }

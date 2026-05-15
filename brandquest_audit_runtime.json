@@ -1,0 +1,199 @@
+{
+  "fatal": null,
+  "timestamp": "2026-03-16T19:16:59.041Z",
+  "env": {
+    "hasDatabaseUrl": true
+  },
+  "pre": {
+    "totalUsers": 48,
+    "totalUserQuests": 2764,
+    "todayAssigned": 12
+  },
+  "forceModeCheck": {
+    "allocateDailyQuestsArity": 1,
+    "forceOptionImplemented": false
+  },
+  "run": {
+    "processed": 48,
+    "succeeded": 48,
+    "failed": 0,
+    "errors": []
+  },
+  "post": {
+    "totalUserQuests": 2768,
+    "todayAssigned": 16,
+    "newRowsCreated": 4,
+    "newTodayRows": 4
+  },
+  "duplicates": {
+    "within7Days": {
+      "count": 6,
+      "sample": [
+        {
+          "user_id": 29,
+          "quest_definition_id": 351,
+          "cnt": 2
+        },
+        {
+          "user_id": 25,
+          "quest_definition_id": 351,
+          "cnt": 2
+        },
+        {
+          "user_id": 29,
+          "quest_definition_id": 254,
+          "cnt": 2
+        },
+        {
+          "user_id": 23,
+          "quest_definition_id": 254,
+          "cnt": 2
+        },
+        {
+          "user_id": 25,
+          "quest_definition_id": 254,
+          "cnt": 2
+        },
+        {
+          "user_id": 40,
+          "quest_definition_id": 351,
+          "cnt": 2
+        }
+      ]
+    },
+    "sameWeekSameDefinition": {
+      "count": 0,
+      "sample": [],
+      "week": 12,
+      "year": 2026
+    }
+  },
+  "questTypeCoverage": {
+    "hasSocial": true,
+    "hasNormal": true,
+    "socialCount": 2,
+    "normalCount": 14,
+    "byTypeToday": [
+      {
+        "type": "profile_update",
+        "cnt": 9
+      },
+      {
+        "type": "networking",
+        "cnt": 5
+      },
+      {
+        "type": "social_quest",
+        "cnt": 2
+      }
+    ]
+  },
+  "profileBucketStats": {
+    "lowUnder20": {
+      "users": 29,
+      "avgQuestsToday": 0.34,
+      "min": 0,
+      "max": 4
+    },
+    "medium20to80": {
+      "users": 19,
+      "avgQuestsToday": 0.32,
+      "min": 0,
+      "max": 3
+    },
+    "highOver80": {
+      "users": 0,
+      "avgQuestsToday": 0,
+      "min": 0,
+      "max": 0
+    },
+    "errors": []
+  },
+  "dbStructure": {
+    "quest_definitions": [
+      "id",
+      "title",
+      "description",
+      "type",
+      "target_count",
+      "target_action",
+      "xp_reward",
+      "badge_reward",
+      "required_profile_completion",
+      "required_career_stage",
+      "required_industry",
+      "musk_tip",
+      "is_active",
+      "created_at",
+      "updated_at",
+      "category",
+      "difficulty",
+      "estimated_time_minutes",
+      "instructions",
+      "success_criteria",
+      "content_type",
+      "platform",
+      "difficulty_level",
+      "week_number",
+      "year",
+      "deliverable_format",
+      "quantity_value",
+      "quantity_type",
+      "platform_constraints",
+      "guidance_snippet",
+      "best_time_to_post",
+      "best_time_utc",
+      "time_confidence",
+      "verification_method",
+      "quest_content_hash",
+      "quest_category"
+    ],
+    "user_badges": [
+      "id",
+      "user_id",
+      "badge_type",
+      "earned_at",
+      "quest_id",
+      "display_on_profile",
+      "display_on_resume"
+    ],
+    "user_quests": [
+      "id",
+      "user_id",
+      "quest_definition_id",
+      "status",
+      "progress",
+      "assigned_at",
+      "completed_at",
+      "week_number",
+      "year",
+      "dismissed_reason",
+      "xp_earned",
+      "badge_earned",
+      "musk_response",
+      "assigned_day",
+      "day_name",
+      "assigned_date",
+      "recommended_post_time",
+      "recommendation_source",
+      "confidence_score",
+      "suggested_hashtags",
+      "hashtag_context",
+      "brand_goals_snapshot",
+      "profile_snapshot",
+      "generated_quest_id",
+      "generated_career_quest_id"
+    ],
+    "user_xp": [
+      "id",
+      "user_id",
+      "balance",
+      "lifetime_earned",
+      "current_month_earned",
+      "last_earned_at",
+      "last_reset_at",
+      "created_at",
+      "updated_at"
+    ]
+  }
+}

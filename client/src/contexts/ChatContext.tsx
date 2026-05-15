@@ -104,9 +104,41 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
         try {
           const data = JSON.parse(event.data);
           
+          console.log('[ChatContext] 📩 WebSocket message received:', data.type);
+          
           if (data.type === 'auth_success') {
             setIsConnected(true);
             console.log('WebSocket authenticated');
+          } else if (data.type === 'new_conversation') {
+            // Handle new conversation created (e.g., when connection request accepted)
+            console.log('[ChatContext] 🔔 New conversation available:', data);
+            toast({
+              title: "New Conversation",
+              description: data.message || `You can now message ${data.senderName || 'your connection'}`,
+            });
+            
+            // Refresh conversations list
+            queryClient.invalidateQueries({ 
+              predicate: (query) => {
+                const key = query.queryKey[0];
+                return typeof key === 'string' && key.includes('/api/messaging/conversations');
+              }
+            });
+          } else if (data.type === 'connection_accepted') {
+            // Handle connection accepted notification
+            console.log('[ChatContext] 🔔 Connection accepted:', data);
+            toast({
+              title: "Connection Accepted",
+              description: data.message || `${data.receiverName || 'Your connection'} accepted your request`,
+            });
+            
+            // Refresh conversations list to show new conversation
+            queryClient.invalidateQueries({ 
+              predicate: (query) => {
+                const key = query.queryKey[0];
+                return typeof key === 'string' && key.includes('/api/messaging/conversations');
+              }
+            });
           } else if (data.type === 'new_message') {
             // Handle incoming message with E2E decryption
             let displayContent = data.content;
@@ -191,6 +223,15 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
   const { data: conversationsData, isLoading: loadingConversations } = useQuery({
     queryKey: [`/api/messaging/conversations?userId=${userId}`],
     enabled: !!userId,
+    onSuccess: (data) => {
+      console.log(`[ChatContext] ✅ Loaded ${Array.isArray(data) ? data.length : 0} conversations for user ${userId}`);
+      if (Array.isArray(data) && data.length > 0) {
+        console.log(`[ChatContext] First conversation:`, data[0]);
+      }
+    },
+    onError: (error: any) => {
+      console.error(`[ChatContext] ❌ Error loading conversations:`, error);
+    },
   });
 
   // Convert data to proper types

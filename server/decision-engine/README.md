@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Decision Engine is a core component of Brandentifier that powers intelligent matching and recommendation features throughout the platform. It uses multiple matching dimensions, contextual data, and personalization to provide high-quality professional connections and recommendations.
+The Decision Engine is a core component of Brandentify that powers intelligent matching and recommendation features throughout the platform. It uses multiple matching dimensions, contextual data, and personalization to provide high-quality professional connections and recommendations.
 
 ## Core Components
 

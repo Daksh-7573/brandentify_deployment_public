@@ -214,7 +214,7 @@ export async function completeQuest(questId: number, userId: number): Promise<an
           musk_response as "muskResponse",
           week_number as "weekNumber",
           year
-      `, ['completed', xpEarned, badgeEarned, questId, userId]);
+          `, [completedAt, xpEarned, badgeEarned, questId, userId]);
       
       if (updateResult.rows.length === 0) {
         console.log(`[completeQuest] Failed to update quest ${questId} for user ${userId}`);

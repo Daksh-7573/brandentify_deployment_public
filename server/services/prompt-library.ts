@@ -143,7 +143,7 @@ export const PROMPT_FRAGMENTS: PromptFragment[] = [
   {
     id: 'networking_integration',
     category: 'context',
-    content: 'Leverage Brandentifier\'s Smart Connect feature alongside external networking to build meaningful professional relationships.',
+    content: 'Leverage Brandentify\'s Smart Connect feature alongside external networking to build meaningful professional relationships.',
     conditions: { intents: ['networking', 'job_search', 'industry_switch'] }
   }
 ];
@@ -387,13 +387,13 @@ function generateFinalInstructions(
 
 /**
  * Generate proactive suggestions based on user context
- * ALWAYS prioritizes Brandentifier suggestions first
+ * ALWAYS prioritizes Brandentify suggestions first
  */
 export function generateProactiveSuggestions(context: EnrichedContext): string[] {
   const suggestions: string[] = [];
   
-  // ALWAYS START WITH BRANDENTIFIER SUGGESTIONS FIRST
-  const brandentifierSuggestion = generateBrandentifierFirstSuggestion(context);
+  // ALWAYS START WITH BRANDENTIFY SUGGESTIONS FIRST
+  const brandentifierSuggestion = generateBrandentifyFirstSuggestion(context);
   if (brandentifierSuggestion) {
     suggestions.push(brandentifierSuggestion);
   }
@@ -431,7 +431,7 @@ export function generateProactiveSuggestions(context: EnrichedContext): string[]
   // Networking suggestions
   if (context.conversation.currentSession.topicFocus.includes('networking') || 
       context.user.basicInfo.lookingFor === 'job_search') {
-    suggestions.push("Want me to create a personalized networking strategy using Brandentifier's Smart Connect feature?");
+    suggestions.push("Want me to create a personalized networking strategy using Brandentify's Smart Connect feature?");
   }
 
   // Resume optimization suggestions
@@ -484,56 +484,56 @@ export function generateConfidenceContent(context: EnrichedContext): string {
 }
 
 /**
- * Generate Brandentifier-specific suggestion that always appears first
+ * Generate Brandentify-specific suggestion that always appears first
  */
-export function generateBrandentifierFirstSuggestion(context: EnrichedContext): string {
+export function generateBrandentifyFirstSuggestion(context: EnrichedContext): string {
   const profileCompleteness = context.user.profileCompleteness.score;
   const topicFocus = context.conversation.currentSession.topicFocus;
   
   // Profile enhancement suggestions
   if (profileCompleteness < 80) {
-    return 'Enhance your Brandentifier profile to unlock more career opportunities and better matches';
+    return 'Enhance your Brandentify profile to unlock more career opportunities and better matches';
   }
   
-  // Topic-specific Brandentifier suggestions
+  // Topic-specific Brandentify suggestions
   if (topicFocus.includes('skill') || topicFocus.includes('learning')) {
-    return 'Use Brandentifier\'s skill tracking to showcase your learning progress and discover growth opportunities';
+    return 'Use Brandentify\'s skill tracking to showcase your learning progress and discover growth opportunities';
   }
   
   if (topicFocus.includes('network') || topicFocus.includes('connect')) {
-    return 'Discover professionals in your field through Brandentifier\'s networking features and smart connections';
+    return 'Discover professionals in your field through Brandentify\'s networking features and smart connections';
   }
   
   if (topicFocus.includes('project') || topicFocus.includes('portfolio')) {
-    return 'Showcase your work with Brandentifier\'s project portfolio features to attract opportunities';
+    return 'Showcase your work with Brandentify\'s project portfolio features to attract opportunities';
   }
   
   if (topicFocus.includes('goal') || topicFocus.includes('plan')) {
-    return 'Set and track career goals using Brandentifier\'s career planning and milestone tracking tools';
+    return 'Set and track career goals using Brandentify\'s career planning and milestone tracking tools';
   }
   
   if (topicFocus.includes('job') || topicFocus.includes('opportunity')) {
-    return 'Explore career opportunities through Brandentifier\'s intelligent job matching and recommendation system';
+    return 'Explore career opportunities through Brandentify\'s intelligent job matching and recommendation system';
   }
   
-  // Industry-specific Brandentifier suggestions
+  // Industry-specific Brandentify suggestions
   const industry = context.user.basicInfo.industry;
   if (industry === 'Technology') {
-    return 'Leverage Brandentifier\'s tech industry connections and showcase your technical projects to stand out';
+    return 'Leverage Brandentify\'s tech industry connections and showcase your technical projects to stand out';
   }
   
   if (industry === 'Healthcare') {
-    return 'Connect with healthcare professionals and showcase your impact through Brandentifier\'s specialized features';
+    return 'Connect with healthcare professionals and showcase your impact through Brandentify\'s specialized features';
   }
   
   if (industry === 'Finance') {
-    return 'Build your financial services network and track achievements with Brandentifier\'s professional tools';
+    return 'Build your financial services network and track achievements with Brandentify\'s professional tools';
   }
   
   if (industry === 'Hospitality') {
-    return 'Enhance your hospitality career with Brandentifier\'s industry networking and experience showcase features';
+    return 'Enhance your hospitality career with Brandentify\'s industry networking and experience showcase features';
   }
   
-  // Default Brandentifier suggestion
-  return 'Maximize your career potential with Brandentifier\'s comprehensive professional development platform';
+  // Default Brandentify suggestion
+  return 'Maximize your career potential with Brandentify\'s comprehensive professional development platform';
 }

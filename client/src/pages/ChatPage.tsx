@@ -11,6 +11,7 @@ import Header from '@/components/layout/header';
 import { NeoGlassLayout } from '@/components/layout/neo-glass-layout';
 import '../styles/neo-glass-spotify.css';
 import { ChatPageSkeleton } from '@/components/ui/page-skeletons/chat-skeleton';
+import { Helmet } from "react-helmet";
 
 const ChatPage: React.FC = () => {
   // Get current user data from the auth context
@@ -58,22 +59,60 @@ const ChatPage: React.FC = () => {
     );
   }
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Brandentify Messages",
+    "description": "Professional messaging and networking communication platform",
+    "url": "https://brandentify.com/messages",
+    "applicationCategory": "SocialNetworkingApplication",
+    "operatingSystem": "Web Browser",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Professional Messaging",
+      "Network Communication",
+      "Career Collaboration",
+      "Secure Chat"
+    ]
+  };
+
   return (
     <div 
-      className="neo-spotify-container responsive-background flex flex-col h-screen overflow-hidden"
+      className="neo-spotify-container responsive-background flex flex-col min-h-screen overflow-y-auto"
       style={{ 
-        backgroundImage: `url(${backgroundImage})`
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundAttachment: 'fixed'
       }}
     >
+      <Helmet>
+        <title>Messages - Professional Networking Communication | Brandentify</title>
+        <meta name="description" content="Connect with professionals through secure messaging. Build your network, collaborate on projects, and advance your career through professional communication." />
+        <meta name="keywords" content="professional messaging, business communication, networking messages, career networking, professional connections" />
+        <meta property="og:title" content="Messages - Professional Networking Communication" />
+        <meta property="og:description" content="Secure professional messaging platform for career networking and collaboration" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://brandentify.com/messages-og-image.jpg" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Messages - Professional Communication" />
+        <link rel="canonical" href="https://brandentify.com/messages" />
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      </Helmet>
+
       {/* Glass UI overlay to maintain design consistency */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm fixed z-0"></div>
       
-      <div className="relative z-10 w-full flex flex-col h-full overflow-hidden">
+      <div className="relative z-10 w-full flex flex-col h-full">
         <Header />
         
-        <div className="flex-1 w-full overflow-hidden">
-          <div className="mt-1 mx-3 sm:mx-6 h-full flex flex-col">
-            <div className="neo-glass-panel rounded-lg p-3 sm:p-4 md:p-6 flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 w-full pb-12">
+          <div className="mt-1 mx-3 sm:mx-6 flex flex-col gap-8">
+            <div className="neo-glass-panel rounded-lg p-3 sm:p-4 md:p-6 flex flex-col h-[80vh]">
               {/* Page Heading */}
               <div className="pb-3 sm:pb-4 md:pb-6">
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-spotify-white mb-1 md:mb-2">Messages</h1>
@@ -86,6 +125,25 @@ const ChatPage: React.FC = () => {
                 </div>
               </ChatProvider>
             </div>
+
+            {/* Messages FAQ Section for SEO */}
+            <section id="messaging-faq" className="neo-glass-panel rounded-lg p-6 md:p-8 mb-8 max-w-4xl mx-auto w-full">
+              <h2 className="text-2xl font-bold mb-6 text-white">Messages FAQ</h2>
+              <div className="space-y-6" itemScope itemType="https://schema.org/FAQPage">
+                <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+                  <h3 itemProp="name" className="text-lg font-semibold text-white mb-2">How do professional messages work?</h3>
+                  <div itemProp="acceptedAnswer" itemScope itemType="https://schema.org/Answer">
+                    <p itemProp="text" className="text-gray-400">Connect with professionals in your network through secure messaging. Share ideas, collaborate on projects, and build meaningful professional relationships.</p>
+                  </div>
+                </div>
+                <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+                  <h3 itemProp="name" className="text-lg font-semibold text-white mb-2">Is professional messaging secure?</h3>
+                  <div itemProp="acceptedAnswer" itemScope itemType="https://schema.org/Answer">
+                    <p itemProp="text" className="text-gray-400">Yes, all professional messages are encrypted and secure. Your conversations with industry professionals are protected with enterprise-grade security.</p>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
         </div>
       </div>

@@ -26,7 +26,7 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   
   // Format profile link using brand name (or username as fallback)
-  const profileLink = `brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
+  const profileLink = `brandentify.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
   
   // Handle card reveal
   const toggleReveal = () => {

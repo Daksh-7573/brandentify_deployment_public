@@ -1,9 +1,9 @@
 // Enhanced Service Worker v9 - GLASS UI STYLING FIX
 const SW_VERSION = 'v9'; // Force complete cache refresh for glass UI styling
-const CACHE_NAME = 'brandentifier-v9';
-const STATIC_CACHE_NAME = 'brandentifier-static-v9';
-const API_CACHE_NAME = 'brandentifier-api-v9';
-const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v9';
+const CACHE_NAME = 'brandentify-v9';
+const STATIC_CACHE_NAME = 'brandentify-static-v9';
+const API_CACHE_NAME = 'brandentify-api-v9';
+const RUNTIME_CACHE_NAME = 'brandentify-runtime-v9';
 
 // Enhanced critical files for aggressive caching
 const STATIC_FILES = [

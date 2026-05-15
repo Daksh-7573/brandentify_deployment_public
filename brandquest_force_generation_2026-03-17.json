@@ -1,0 +1,354 @@
+{
+  "timestamp": "2026-03-16T19:47:00.159Z",
+  "totalUsersProcessed": 48,
+  "totalQuestsGenerated": 4,
+  "careerQuestsGenerated": 4,
+  "socialQuestsGenerated": 0,
+  "usersWithNewCareerQuests": 4,
+  "usersWithNewSocialQuests": 0,
+  "errors": [],
+  "perUser": [
+    {
+      "userId": 32,
+      "name": null,
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 6,
+      "name": "Michael Chen",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 33,
+      "name": null,
+      "generated": 1,
+      "career": 1,
+      "social": 0
+    },
+    {
+      "userId": 11,
+      "name": "Quick Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 5,
+      "name": "Sarah Johnson",
+      "generated": 1,
+      "career": 1,
+      "social": 0
+    },
+    {
+      "userId": 50,
+      "name": "Quest Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 1,
+      "name": "Test Name Change",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 49,
+      "name": "Quest Engine Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 12,
+      "name": "Quick Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 43,
+      "name": "Daksh",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 9,
+      "name": "Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 41,
+      "name": "Test User",
+      "generated": 1,
+      "career": 1,
+      "social": 0
+    },
+    {
+      "userId": 45,
+      "name": "Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 34,
+      "name": "Varaun Chawla",
+      "generated": 1,
+      "career": 1,
+      "social": 0
+    },
+    {
+      "userId": 44,
+      "name": "Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 18,
+      "name": "David Chen",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 31,
+      "name": null,
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 20,
+      "name": "Michael Rodriguez",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 13,
+      "name": "Sandeep Solanki",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 24,
+      "name": "Lisa Rodriguez",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 46,
+      "name": "Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 48,
+      "name": "Daksh Patel KU2407U858",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 23,
+      "name": "David Park",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 47,
+      "name": "Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 42,
+      "name": "Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 4,
+      "name": "Nishant Chopra",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 37,
+      "name": "Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 10,
+      "name": "Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 35,
+      "name": "Daksh P",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 36,
+      "name": "Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 26,
+      "name": "Pacific Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 19,
+      "name": "Priya Sharma",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 22,
+      "name": "Sarah Chen",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 3,
+      "name": "Musk",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 16,
+      "name": "Krunal Panchal",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 25,
+      "name": "Michael Anderson",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 28,
+      "name": "Referral Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 17,
+      "name": "Sarah Mitchell",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 14,
+      "name": "Test User Preview",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 7,
+      "name": "Priya Sharma",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 2,
+      "name": "Nishant Chopra",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 29,
+      "name": "Final Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 21,
+      "name": "Alex Thompson",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 30,
+      "name": "Notification Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 40,
+      "name": "Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 38,
+      "name": "Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 27,
+      "name": "Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    },
+    {
+      "userId": 39,
+      "name": "Test User",
+      "generated": 0,
+      "career": 0,
+      "social": 0
+    }
+  ],
+  "dbToday": {
+    "total": 20,
+    "career": 10,
+    "social": 0,
+    "active": 20
+  }
+}

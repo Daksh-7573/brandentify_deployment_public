@@ -14,7 +14,7 @@ const FixedSizeSharedCard: React.FC<FixedSizeSharedCardProps> = ({
   cardType,
 }) => {
   // Format profile link using randomProfileLink for permanent URL
-  const profileLink = userData.randomProfileLink ? `brandentifier.com/r/${userData.randomProfileLink}` : `brandentifier.com/@${userData.brandName || userData.username}`;
+  const profileLink = userData.randomProfileLink ? `brandentify.com/r/${userData.randomProfileLink}` : `brandentify.com/@${userData.brandName || userData.username}`;
   
   if (cardType === "artistic") {
     return (

@@ -1,7 +1,7 @@
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "./components/ui/toaster";
 import { AuthProvider } from "./context/simple-auth-context";
 import { useAuth } from "./hooks/use-auth";
 import { useEffect, Suspense, lazy, useState } from "react";
@@ -11,17 +11,18 @@ import GlobalMuskButton from "@/components/musk/global-musk-button";
 import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
 import { AppShell } from "@/components/layout/app-shell";
+import { FEATURES } from "@/config/features";
 const AuthCallback = lazy(() => import("@/pages/auth-callback"));
 const CatchAllAuthHandler = lazy(() => import("@/routes/CatchAllAuthHandler"));
 
 // Custom redirect component to handle page redirects
 const PageRedirect = ({ to }: { to: string }) => {
   const [_, navigate] = useLocation();
-  
+
   useEffect(() => {
     navigate(to);
   }, [navigate, to]);
-  
+
   return null;
 };
 
@@ -34,11 +35,11 @@ const useProgressiveLoading = () => {
   useEffect(() => {
     const perfStart = performance.now();
     console.log('[Progressive Loading] Starting tiered component loading');
-    
+
     // Tier 1: Critical components load immediately
     setCoreLoaded(true);
     console.log('[Progressive Loading] ⚡ Core components ready');
-    
+
     // Tier 2: Secondary components after first paint
     const secondaryTimer = setTimeout(() => {
       setSecondaryLoaded(true);
@@ -53,7 +54,7 @@ const useProgressiveLoading = () => {
             prefetchCommonRoutes();
             ["/industry-pulse", "/profile", "/brand-quests", "/search", "/career-capsule", "/radar", "/messaging"].forEach(route => prefetchRoute(route));
           };
-          
+
           if ('requestIdleCallback' in window) {
             (window as any).requestIdleCallback(prefetch);
           } else {
@@ -62,7 +63,7 @@ const useProgressiveLoading = () => {
         });
       }
     }, 1); // Maximum speed secondary load
-    
+
     // Tier 3: Admin/debug components load last
     const adminTimer = setTimeout(() => {
       setAdminLoaded(true);
@@ -83,7 +84,7 @@ function SimpleTestApp() {
   console.log("Simple React app mounted successfully");
   return (
     <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-      <h1>Brandentifier Loading Test</h1>
+      <h1>Brandentify Loading Test</h1>
       <p>If you see this, React is working correctly.</p>
       <p>Server is running and frontend is connecting properly.</p>
     </div>
@@ -140,6 +141,7 @@ const GoogleRedirectOnly = lazy(() => import("@/pages/google-redirect-only"));
 const DomainDebug = lazy(() => import("@/pages/domain-debug"));
 const FinalReplitAuth = lazy(() => import("@/pages/final-replit-auth"));
 const Radar = lazy(() => import("@/pages/radar"));
+const SmartRadarComingSoonPage = lazy(() => import("@/pages/smart-radar-coming-soon"));
 const FirebaseAuthTest = lazy(() => import("@/pages/auth-test"));
 const GoogleAuthTest = lazy(() => import("@/pages/google-auth-test"));
 const GoogleAuthDebug = lazy(() => import("@/pages/google-auth-debug"));
@@ -217,20 +219,74 @@ function LazyRoute({ component: Component, withShell = false }: { component: Rea
 // Protected route component that checks if the user is authenticated
 // Wraps all protected pages in AppShell for consistent layout
 // Includes Suspense boundary to support lazy-loaded components
-function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { component: React.ComponentType, path: string, fallback?: React.ReactNode, noShell?: boolean }) {
-  const { isAuthenticated, isLoading } = useAuth();
+function ProtectedRoute({ component: Component, fallback, noShell, requireCompleteProfile, ...rest }: { component: React.ComponentType, path: string, fallback?: React.ReactNode, noShell?: boolean, requireCompleteProfile?: boolean }) {
+  const { isAuthenticated, isLoading, user } = useAuth();
   const [_, navigate] = useLocation();
   const [location] = useLocation();
-  
+  const [isProfileCheckLoading, setIsProfileCheckLoading] = useState(false);
+  const [isProfileComplete, setIsProfileComplete] = useState(true);
+
+  useEffect(() => {
+    if (!requireCompleteProfile || !isAuthenticated || !user?.id) {
+      return;
+    }
+
+    let isActive = true;
+    const checkProfile = async () => {
+      setIsProfileCheckLoading(true);
+      try {
+        const response = await fetch(`/api/users/${user.id}/onboarding-status`, {
+          credentials: "include",
+          headers: { Accept: "application/json" }
+        });
+
+        if (!isActive) return;
+
+        if (!response.ok) {
+          setIsProfileComplete(false);
+          return;
+        }
+
+        const data = await response.json();
+        setIsProfileComplete(!!data?.isComplete);
+      } catch (error) {
+        if (isActive) {
+          setIsProfileComplete(false);
+        }
+      } finally {
+        if (isActive) {
+          setIsProfileCheckLoading(false);
+        }
+      }
+    };
+
+    checkProfile();
+
+    return () => {
+      isActive = false;
+    };
+  }, [requireCompleteProfile, isAuthenticated, user?.id]);
+
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       console.log('User not authenticated, redirecting to auth page');
       navigate('/auth');
     }
   }, [isAuthenticated, isLoading, navigate]);
-  
+
+  useEffect(() => {
+    if (!requireCompleteProfile || !isAuthenticated || !user?.id || isProfileCheckLoading) {
+      return;
+    }
+
+    if (!isProfileComplete) {
+      console.log('[Onboarding Guard] Incomplete profile, redirecting to onboarding');
+      navigate('/onboarding');
+    }
+  }, [requireCompleteProfile, isAuthenticated, user?.id, isProfileCheckLoading, isProfileComplete, navigate]);
+
   // During auth check, show loading state
-  if (isLoading) {
+  if (isLoading || (requireCompleteProfile && isProfileCheckLoading)) {
     if (noShell) {
       return <DynamicPageSkeleton route={location} />;
     }
@@ -240,12 +296,16 @@ function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { 
       </AppShell>
     );
   }
-  
+
   // Only block if we've confirmed user is NOT authenticated
   if (!isAuthenticated) {
     return null;
   }
-  
+
+  if (requireCompleteProfile && !isProfileComplete) {
+    return null;
+  }
+
   // Wrap page in AppShell and Suspense for consistent header, background, and lazy loading support
   if (noShell) {
     return (
@@ -254,7 +314,7 @@ function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { 
       </Suspense>
     );
   }
-  
+
   return (
     <AppShell>
       <Suspense fallback={<DynamicPageSkeleton route={location} />}>
@@ -266,14 +326,14 @@ function ProtectedRoute({ component: Component, fallback, noShell, ...rest }: { 
 
 function Router() {
   const { coreLoaded, secondaryLoaded, adminLoaded } = useProgressiveLoading();
-  
+
   return (
     <Switch>
       {/* Landing page */}
       <Route path="/" component={() => <LazyRoute component={Landing} />} />
       <Route path="/nav-test" component={() => <LazyRoute component={NavigationTest} />} />
       <Route path="/url-demo" component={() => <LazyRoute component={URLInputDemo} />} />
-      
+
       <Route path="/profile">
         {() => (
           <ProtectedRoute path="/profile" component={ProfileNeo} />
@@ -351,7 +411,7 @@ function Router() {
       <Route path="/auth-callback" component={() => <LazyRoute component={AuthCallbackPage} />} />
       <Route path="/_/auth/callback" component={() => <LazyRoute component={AuthCallbackPage} />} />
       <Route path="/auth/callback" component={() => <LazyRoute component={AuthCallbackPage} />} />
-      
+
       {/* Critical routes - must be outside conditional to avoid conflict with /@:username */}
       <Route path="/search">
         {() => (
@@ -364,7 +424,13 @@ function Router() {
           return <ProtectedRoute path="/brand-score" component={BrandScore} />;
         }}
       </Route>
-      
+      <Route path="/smart-radar">
+        {() => {
+          const SmartRadar = lazy(() => import("@/pages/smart-radar"));
+          return <ProtectedRoute path="/smart-radar" component={SmartRadar} />;
+        }}
+      </Route>
+
       {/* Tier 2: Secondary Routes (Load after 5ms) */}
       {secondaryLoaded && (
         <>
@@ -421,7 +487,7 @@ function Router() {
           </Route>
         </>
       )}
-      
+
       {/* Tier 3: Admin & Debug Routes (Load after 200ms) */}
       {adminLoaded && (
         <>
@@ -434,37 +500,37 @@ function Router() {
           <Route path="/simple-universal-login" component={() => <LazyRoute component={SimpleUniversalLoginPage} />} />
           <Route path="/easy-login" component={() => <LazyRoute component={EasyLoginPage} />} />
           <Route path="/fixed-login" component={() => {
-        const FixedLoginPage = lazy(() => import("@/pages/fixed-login"));
-        return <LazyRoute component={FixedLoginPage} />;
-      }} />
-      <Route path="/dev-auth" component={() => {
-        const DevAuthUtilityPage = lazy(() => import("@/pages/dev-auth-utility"));
-        return <LazyRoute component={DevAuthUtilityPage} />;
-      }} />
-      <Route path="/auth-test" component={() => <LazyRoute component={FirebaseAuthTest} />} />
-      <Route path="/google-auth-test" component={() => <LazyRoute component={GoogleAuthTest} />} />
-      <Route path="/google-auth-debug" component={() => <LazyRoute component={GoogleAuthDebug} />} />
-      <Route path="/auth-cleaner" component={() => <LazyRoute component={AuthCleaner} />} />
-      <Route path="/google-auth-fix" component={() => <LazyRoute component={GoogleAuthFixPage} />} />
-      <Route path="/universal-google-auth" component={() => <LazyRoute component={UniversalGoogleAuthPage} />} />
-      <Route path="/cross-domain-google-auth" component={() => <LazyRoute component={CrossDomainGoogleAuth} />} />
-      <Route path="/replit-login" component={() => <LazyRoute component={ReplitDomainLogin} />} />
-      <Route path="/replit-redirect-auth" component={() => <LazyRoute component={ReplitRedirectAuth} />} />
-      <Route path="/google-login" component={() => <LazyRoute component={GoogleRedirectOnly} />} />
-      <Route path="/domain-debug" component={() => <LazyRoute component={DomainDebug} />} />
-      <Route path="/replit-auth" component={() => <LazyRoute component={FinalReplitAuth} />} />
-      <Route path="/auth-debug" component={() => {
-        const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
-        return <LazyRoute component={AuthDebugPage} />;
-      }} />
-      <Route path="/auth-popup-debug" component={() => {
-        const AuthPopupDebugPage = lazy(() => import("@/pages/auth-popup-debug"));
-        return <LazyRoute component={AuthPopupDebugPage} />;
-      }} />
+            const FixedLoginPage = lazy(() => import("@/pages/fixed-login"));
+            return <LazyRoute component={FixedLoginPage} />;
+          }} />
+          <Route path="/dev-auth" component={() => {
+            const DevAuthUtilityPage = lazy(() => import("@/pages/dev-auth-utility"));
+            return <LazyRoute component={DevAuthUtilityPage} />;
+          }} />
+          <Route path="/auth-test" component={() => <LazyRoute component={FirebaseAuthTest} />} />
+          <Route path="/google-auth-test" component={() => <LazyRoute component={GoogleAuthTest} />} />
+          <Route path="/google-auth-debug" component={() => <LazyRoute component={GoogleAuthDebug} />} />
+          <Route path="/auth-cleaner" component={() => <LazyRoute component={AuthCleaner} />} />
+          <Route path="/google-auth-fix" component={() => <LazyRoute component={GoogleAuthFixPage} />} />
+          <Route path="/universal-google-auth" component={() => <LazyRoute component={UniversalGoogleAuthPage} />} />
+          <Route path="/cross-domain-google-auth" component={() => <LazyRoute component={CrossDomainGoogleAuth} />} />
+          <Route path="/replit-login" component={() => <LazyRoute component={ReplitDomainLogin} />} />
+          <Route path="/replit-redirect-auth" component={() => <LazyRoute component={ReplitRedirectAuth} />} />
+          <Route path="/google-login" component={() => <LazyRoute component={GoogleRedirectOnly} />} />
+          <Route path="/domain-debug" component={() => <LazyRoute component={DomainDebug} />} />
+          <Route path="/replit-auth" component={() => <LazyRoute component={FinalReplitAuth} />} />
+          <Route path="/auth-debug" component={() => {
+            const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
+            return <LazyRoute component={AuthDebugPage} />;
+          }} />
+          <Route path="/auth-popup-debug" component={() => {
+            const AuthPopupDebugPage = lazy(() => import("@/pages/auth-popup-debug"));
+            return <LazyRoute component={AuthPopupDebugPage} />;
+          }} />
           <Route path="/verify-email" component={() => <LazyRoute component={EmailVerification} />} />
         </>
       )}
-      
+
       {/* Routes that should always be available */}
       {/* Profile route - uses resolver to choose between BrandProfile and PublicProfile */}
       <Route path="/@:identifier">
@@ -474,7 +540,7 @@ function Router() {
           </Suspense>
         )}
       </Route>
-      
+
       {/* Additional protected routes */}
       <Route path="/ai-career">
         {() => (
@@ -490,7 +556,7 @@ function Router() {
           </Suspense>
         )}
       </Route>
-      
+
       <Route path="/smart-connect">
         {() => (
           <Suspense fallback={<LoadingPlaceholder />}>
@@ -498,7 +564,7 @@ function Router() {
           </Suspense>
         )}
       </Route>
-      
+
       <Route path="/services">
         {() => (
           <Suspense fallback={<LoadingPlaceholder />}>
@@ -506,7 +572,7 @@ function Router() {
           </Suspense>
         )}
       </Route>
-      
+
       <Route path="/add-service">
         {() => (
           <Suspense fallback={<LoadingPlaceholder />}>
@@ -514,16 +580,16 @@ function Router() {
           </Suspense>
         )}
       </Route>
-      
+
       {/* Dashboard route - direct to Industry Pulse */}
       <Route path="/dashboard">
         {() => (
           <Suspense fallback={<LoadingPlaceholder />}>
-            <ProtectedRoute path="/dashboard" component={IndustryPulsePage} />
+            <ProtectedRoute path="/dashboard" component={IndustryPulsePage} requireCompleteProfile />
           </Suspense>
         )}
       </Route>
-      
+
       <Route path="/news-sources">
         {() => (
           <Suspense fallback={<LoadingPlaceholder />}>
@@ -531,16 +597,30 @@ function Router() {
           </Suspense>
         )}
       </Route>
-      
+
       {/* Additional system routes */}
       <Route path="/radar">
         {() => (
           <Suspense fallback={<LoadingPlaceholder />}>
-            <ProtectedRoute path="/radar" component={Radar} />
+            <ProtectedRoute
+              path="/radar"
+              component={FEATURES.ENABLE_SMART_RADAR ? Radar : SmartRadarComingSoonPage}
+            />
           </Suspense>
         )}
       </Route>
-      
+
+      <Route path="/smart-radar">
+        {() => (
+          <Suspense fallback={<LoadingPlaceholder />}>
+            <ProtectedRoute
+              path="/smart-radar"
+              component={FEATURES.ENABLE_SMART_RADAR ? Radar : SmartRadarComingSoonPage}
+            />
+          </Suspense>
+        )}
+      </Route>
+
       <Route path="/musk-match">
         {() => (
           <Suspense fallback={<LoadingPlaceholder />}>
@@ -548,7 +628,7 @@ function Router() {
           </Suspense>
         )}
       </Route>
-      
+
       <Route path="/resume-builder">
         {() => (
           <Suspense fallback={<LoadingPlaceholder />}>
@@ -556,7 +636,7 @@ function Router() {
           </Suspense>
         )}
       </Route>
-      
+
       <Route path="/brand-quests">
         {() => (
           <Suspense fallback={<LoadingPlaceholder />}>
@@ -564,7 +644,7 @@ function Router() {
           </Suspense>
         )}
       </Route>
-      
+
       {/* Legacy route - keeping for backward compatibility */}
       <Route path="/career-quests">
         {() => (
@@ -597,18 +677,13 @@ function Router() {
         )}
       </Route>
       <Route path="/onboarding">
-        {() => (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <ProtectedRoute path="/onboarding" component={OnboardingFlowPage} />
-          </Suspense>
-        )}
+        {() => <ProtectedRoute path="/onboarding" component={OnboardingFlowPage} />}
+      </Route>
+      <Route path="/onboarding-flow">
+        {() => <ProtectedRoute path="/onboarding-flow" component={OnboardingFlowPage} />}
       </Route>
       <Route path="/onboarding-old">
-        {() => (
-          <Suspense fallback={<LoadingPlaceholder />}>
-            <ProtectedRoute path="/onboarding-old" component={OnboardingPage} />
-          </Suspense>
-        )}
+        {() => <ProtectedRoute path="/onboarding-old" component={OnboardingFlowPage} />}
       </Route>
       {/* Redirect old edit-profile route to profile page */}
       <Route path="/edit-profile">
@@ -649,7 +724,7 @@ function Router() {
           </Suspense>
         )}
       </Route>
-      
+
       <Route path="/direct-users">
         {() => (
           <Suspense fallback={<LoadingPlaceholder />}>
@@ -657,7 +732,7 @@ function Router() {
           </Suspense>
         )}
       </Route>
-      
+
       {/* Direct access to content for debugging */}
       <Route path="/direct-content">
         {() => (
@@ -689,7 +764,7 @@ function Router() {
           </Suspense>
         )}
       </Route>
-      
+
       {/* Profile Quest Routes - Nested under profile */}
       <Route path="/profile/:userId/quests">
         {(params) => (
@@ -698,7 +773,7 @@ function Router() {
           </Suspense>
         )}
       </Route>
-      
+
       <Route path="/admin">
         {() => (
           <Suspense fallback={<LoadingPlaceholder />}>
@@ -706,7 +781,7 @@ function Router() {
               const AdminLayout = lazy(() => import("@/pages/admin/layout"));
               const AdminDashboard = lazy(() => import("@/pages/admin/index"));
               const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
-              
+
               const AdminDashboardWithLayout = () => (
                 <Suspense fallback={<LoadingPlaceholder />}>
                   <AdminCheck>
@@ -716,7 +791,7 @@ function Router() {
                   </AdminCheck>
                 </Suspense>
               );
-              
+
               return <AdminDashboardWithLayout />;
             }} />
           </Suspense>
@@ -729,7 +804,7 @@ function Router() {
               const AdminLayout = lazy(() => import("@/pages/admin/layout"));
               const AdminUsers = lazy(() => import("@/pages/admin/users"));
               const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
-              
+
               const AdminUsersWithLayout = () => (
                 <Suspense fallback={<LoadingPlaceholder />}>
                   <AdminCheck>
@@ -739,7 +814,7 @@ function Router() {
                   </AdminCheck>
                 </Suspense>
               );
-              
+
               return <AdminUsersWithLayout />;
             }} />
           </Suspense>
@@ -753,7 +828,7 @@ function Router() {
               const AdminLayout = lazy(() => import("@/pages/admin/layout"));
               const AdminContentNew = lazy(() => import("@/pages/admin/content-new"));
               const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
-              
+
               const AdminContentWithLayout = () => (
                 <Suspense fallback={<LoadingPlaceholder />}>
                   <AdminCheck>
@@ -763,7 +838,7 @@ function Router() {
                   </AdminCheck>
                 </Suspense>
               );
-              
+
               return <AdminContentWithLayout />;
             }} />
           </Suspense>
@@ -773,7 +848,7 @@ function Router() {
         <ProtectedRoute path="/admin/analytics" component={() => {
           const AdminLayout = lazy(() => import("@/pages/admin/layout"));
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
-          
+
           const AdminAnalytics = () => (
             <Suspense fallback={<LoadingPlaceholder />}>
               <AdminCheck>
@@ -783,9 +858,9 @@ function Router() {
               </AdminCheck>
             </Suspense>
           );
-          
+
           const AnalyticsDashboard = lazy(() => import("@/pages/admin/analytics-new"));
-          
+
           return <AdminAnalytics />;
         }} />
       </Route>
@@ -794,7 +869,7 @@ function Router() {
         <ProtectedRoute path="/admin/analytics-new" component={() => {
           const AdminLayout = lazy(() => import("@/pages/admin/layout"));
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
-          
+
           const AdminAnalytics = () => (
             <Suspense fallback={<LoadingPlaceholder />}>
               <AdminCheck>
@@ -804,9 +879,9 @@ function Router() {
               </AdminCheck>
             </Suspense>
           );
-          
+
           const AnalyticsDashboard = lazy(() => import("@/pages/admin/analytics-new"));
-          
+
           return <AdminAnalytics />;
         }} />
       </Route>
@@ -814,7 +889,7 @@ function Router() {
         <ProtectedRoute path="/admin/settings" component={() => {
           const AdminLayout = lazy(() => import("@/pages/admin/layout"));
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
-          
+
           const AdminSettings = () => (
             <Suspense fallback={<LoadingPlaceholder />}>
               <AdminCheck>
@@ -824,9 +899,9 @@ function Router() {
               </AdminCheck>
             </Suspense>
           );
-          
+
           const SettingsPage = lazy(() => import("@/pages/admin/settings"));
-          
+
           return <AdminSettings />;
         }} />
       </Route>
@@ -834,7 +909,7 @@ function Router() {
         <ProtectedRoute path="/admin/roles" component={() => {
           const AdminLayout = lazy(() => import("@/pages/admin/layout"));
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
-          
+
           const AdminRoles = () => (
             <Suspense fallback={<LoadingPlaceholder />}>
               <AdminCheck>
@@ -844,27 +919,27 @@ function Router() {
               </AdminCheck>
             </Suspense>
           );
-          
+
           const RolesManagement = lazy(() => import("@/pages/admin/roles"));
-          
+
           return <AdminRoles />;
         }} />
       </Route>
-      
+
       {/* Pitch Deck Download page */}
       <Route path="/pitch-deck-download">
         <Suspense fallback={<LoadingPlaceholder />}>
           <PitchDeckDownload />
         </Suspense>
       </Route>
-      
+
       {/* Documentation Download page */}
       <Route path="/docs-download">
         <Suspense fallback={<LoadingPlaceholder />}>
           <DocsDownload />
         </Suspense>
       </Route>
-      
+
       {/* Shared Quantum Card View route */}
       <Route path="/profile/card/:userId">
         {(params) => (
@@ -874,7 +949,7 @@ function Router() {
         )}
       </Route>
       {/* Brand of the Day is now integrated into Nowboard panel */}
-      
+
       {/* Add catch-all route for handling any Google Auth redirects with common Firebase paths */}
       <Route path="/_/auth/*">
         <Suspense fallback={<LoadingPlaceholder />}><CatchAllAuthHandler /></Suspense>
@@ -891,7 +966,7 @@ function Router() {
       <Route path="/signin-callback">
         <Suspense fallback={<LoadingPlaceholder />}><CatchAllAuthHandler /></Suspense>
       </Route>
-      
+
       {/* Random profile link route */}
       <Route path="/r/:randomLink">
         {(params) => (
@@ -900,7 +975,7 @@ function Router() {
           </Suspense>
         )}
       </Route>
-      
+
       {/* Default 404 route */}
       <Route component={() => <LazyRoute component={NotFound} />} />
     </Switch>
@@ -927,3 +1002,4 @@ function App() {
 }
 
 export default App;
+

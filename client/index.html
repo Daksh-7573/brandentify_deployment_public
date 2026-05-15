@@ -1,120 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  
+
   <!-- EMERGENCY CACHE BUSTER - Forces browser to reload fresh code -->
   <script>
-    (function() {
+    (function () {
       const CACHE_VERSION = 'v2024111102'; // Updated version - MUSK REMOVED
       const currentVersion = localStorage.getItem('app_cache_version');
-      
+
       if (currentVersion !== CACHE_VERSION) {
         console.log('🔥 CACHE CLEAR: Detected old version, forcing hard reload...');
         localStorage.setItem('app_cache_version', CACHE_VERSION);
-        
+
         // Clear all caches
         if ('caches' in window) {
           caches.keys().then(names => {
             names.forEach(name => caches.delete(name));
           });
         }
-        
+
         // Force hard reload with cache bypass
         window.location.reload(true);
       }
     })();
   </script>
-  
-  <title>Brandentifier - Professional Networking & AI-Powered Career Platform</title>
-  
+
+  <title>Brandentify - Professional Networking & AI-Powered Career Platform</title>
+
   <!-- Enhanced Preconnect & DNS-Prefetch for Maximum Performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://accounts.google.com" crossorigin>
-  
+
   <!-- Critical Resource Preloading - Optimized for Fast First Paint -->
   <link rel="preload" href="/src/main.tsx" as="script" crossorigin>
   <link rel="modulepreload" href="/src/main.tsx" crossorigin>
-  
+
   <!-- Load fonts and styles asynchronously to prevent render-blocking -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap"
+    rel="stylesheet" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print"
+    onload="this.media='all'">
   <link rel="stylesheet" href="/src/index.css" media="print" onload="this.media='all'">
 </head>
+
 <body style="margin: 0; padding: 0; background: #000000; color: #ffffff;">
   <!-- Fast skeleton loading state - Inline Styles for Instant Rendering -->
-  <div id="app-loader" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000000; z-index: 9999; overflow: hidden; display: flex; flex-direction: column;">
+  <div id="app-loader"
+    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000000; z-index: 9999; overflow: hidden; display: flex; flex-direction: column;">
     <!-- Inline background to prevent white flash -->
-    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #111827 0%, #000000 50%, #1f2937 100%); opacity: 0.8;"></div>
-    
+    <div
+      style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #111827 0%, #000000 50%, #1f2937 100%); opacity: 0.8;">
+    </div>
+
     <!-- Header skeleton -->
-    <div style="position: relative; height: 64px; background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; padding: 0 24px;">
-      <div style="width: 180px; height: 32px; background: rgba(255,255,255,0.1); border-radius: 8px; animation: pulse 2s ease-in-out infinite;"></div>
+    <div
+      style="position: relative; height: 64px; background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: space-between; padding: 0 24px;">
+      <div
+        style="width: 180px; height: 32px; background: rgba(255,255,255,0.1); border-radius: 8px; animation: pulse 2s ease-in-out infinite;">
+      </div>
       <div style="display: flex; gap: 12px;">
-        <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: pulse 2s ease-in-out infinite;"></div>
-        <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: pulse 2s ease-in-out infinite;"></div>
-        <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: pulse 2s ease-in-out infinite;"></div>
+        <div
+          style="width: 32px; height: 32px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: pulse 2s ease-in-out infinite;">
+        </div>
+        <div
+          style="width: 32px; height: 32px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: pulse 2s ease-in-out infinite;">
+        </div>
+        <div
+          style="width: 32px; height: 32px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: pulse 2s ease-in-out infinite;">
+        </div>
       </div>
     </div>
-    
+
     <!-- Main content skeleton -->
     <div style="padding: 24px; max-width: 1200px; margin: 0 auto;">
       <!-- Feed skeleton -->
       <div style="display: flex; flex-direction: column; gap: 24px;">
         <!-- Card 1 -->
-        <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px;">
+        <div
+          style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px;">
           <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-            <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: pulse 2s ease-in-out infinite;"></div>
+            <div
+              style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: pulse 2s ease-in-out infinite;">
+            </div>
             <div style="flex: 1;">
-              <div style="width: 120px; height: 16px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 4px; animation: pulse 2s ease-in-out infinite;"></div>
-              <div style="width: 80px; height: 12px; background: rgba(255,255,255,0.1); border-radius: 4px; animation: pulse 2s ease-in-out infinite;"></div>
+              <div
+                style="width: 120px; height: 16px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 4px; animation: pulse 2s ease-in-out infinite;">
+              </div>
+              <div
+                style="width: 80px; height: 12px; background: rgba(255,255,255,0.1); border-radius: 4px; animation: pulse 2s ease-in-out infinite;">
+              </div>
             </div>
           </div>
-          <div style="width: 100%; height: 16px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 8px; animation: pulse 2s ease-in-out infinite;"></div>
-          <div style="width: 80%; height: 16px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 8px; animation: pulse 2s ease-in-out infinite;"></div>
-          <div style="width: 60%; height: 16px; background: rgba(255,255,255,0.1); border-radius: 4px; animation: pulse 2s ease-in-out infinite;"></div>
+          <div
+            style="width: 100%; height: 16px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 8px; animation: pulse 2s ease-in-out infinite;">
+          </div>
+          <div
+            style="width: 80%; height: 16px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 8px; animation: pulse 2s ease-in-out infinite;">
+          </div>
+          <div
+            style="width: 60%; height: 16px; background: rgba(255,255,255,0.1); border-radius: 4px; animation: pulse 2s ease-in-out infinite;">
+          </div>
         </div>
-        
+
         <!-- Card 2 -->
-        <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px;">
+        <div
+          style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px;">
           <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-            <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: pulse 2s ease-in-out infinite;"></div>
+            <div
+              style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; animation: pulse 2s ease-in-out infinite;">
+            </div>
             <div style="flex: 1;">
-              <div style="width: 120px; height: 16px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 4px; animation: pulse 2s ease-in-out infinite;"></div>
-              <div style="width: 80px; height: 12px; background: rgba(255,255,255,0.1); border-radius: 4px; animation: pulse 2s ease-in-out infinite;"></div>
+              <div
+                style="width: 120px; height: 16px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 4px; animation: pulse 2s ease-in-out infinite;">
+              </div>
+              <div
+                style="width: 80px; height: 12px; background: rgba(255,255,255,0.1); border-radius: 4px; animation: pulse 2s ease-in-out infinite;">
+              </div>
             </div>
           </div>
-          <div style="width: 100%; height: 16px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 8px; animation: pulse 2s ease-in-out infinite;"></div>
-          <div style="width: 75%; height: 16px; background: rgba(255,255,255,0.1); border-radius: 4px; animation: pulse 2s ease-in-out infinite;"></div>
+          <div
+            style="width: 100%; height: 16px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-bottom: 8px; animation: pulse 2s ease-in-out infinite;">
+          </div>
+          <div
+            style="width: 75%; height: 16px; background: rgba(255,255,255,0.1); border-radius: 4px; animation: pulse 2s ease-in-out infinite;">
+          </div>
         </div>
       </div>
     </div>
   </div>
-  
+
   <style>
     /* Enhanced Inline Critical CSS for Maximum Performance */
     @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
     }
-    
+
     @keyframes shimmer {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
+      0% {
+        transform: translateX(-100%);
+      }
+
+      100% {
+        transform: translateX(100%);
+      }
     }
-    
+
     /* Critical layout styles */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       line-height: 1.6;
@@ -123,13 +176,13 @@
       min-height: 100vh;
       overflow-x: hidden;
     }
-    
+
     /* Enhanced skeleton styles */
     .skeleton-container {
       background: linear-gradient(135deg, rgba(17, 24, 39, 0.9) 0%, rgba(0, 0, 0, 0.8) 50%, rgba(31, 41, 55, 0.9) 100%);
       min-height: 100vh;
     }
-    
+
     .skeleton-card {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -139,7 +192,7 @@
       position: relative;
       overflow: hidden;
     }
-    
+
     .skeleton-card::before {
       content: '';
       position: absolute;
@@ -147,65 +200,66 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.05),
-        transparent
-      );
+      background: linear-gradient(90deg,
+          transparent,
+          rgba(255, 255, 255, 0.05),
+          transparent);
       animation: shimmer 2s infinite;
     }
-    
+
     .skeleton-element {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 4px;
       animation: pulse 2s ease-in-out infinite;
     }
-    
+
     /* Critical header styles */
     .header-skeleton {
       height: 64px;
-      background: rgba(255,255,255,0.05);
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(12px);
     }
-    
+
     /* Optimized font loading */
-    @font-face {
-      font-family: 'Inter';
-      font-display: swap;
-      font-weight: 300 700;
-    }
-    
+
+
     /* Critical glass effects */
     .glass-effect {
       background: rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
-    
+
     /* Performance-optimized animations */
     .fade-in {
       animation: fadeIn 0.15s ease-out;
     }
-    
+
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
-  
+
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
-  
+
   <!-- Enhanced Service Worker + Performance Optimization -->
   <script>
     // Initialize Firebase BEFORE React for cached auth state
     window.__performance_start = performance.now();
     window.__firebase_init_start = performance.now();
-    
+
     // Cache Firebase auth state for faster subsequent loads
-    window.__brandentifier_cached_auth = function() {
+    window.__brandentifier_cached_auth = function () {
       try {
         const cachedUser = localStorage.getItem('brandentifier_auth_cache');
         return cachedUser ? JSON.parse(cachedUser) : null;
@@ -213,7 +267,7 @@
         return null;
       }
     };
-    
+
     // ⚠️ ENHANCED EMERGENCY FIX: Comprehensive Service Worker unregistration for all Replit domains
     // This prevents redirect loops caused by cached service workers on published domains
     function isReplitDomain() {
@@ -232,53 +286,53 @@
     // SERVICE WORKER TEMPORARILY DISABLED TO CLEAR CACHE ISSUES
     if ('serviceWorker' in navigator) {
       console.log('[SW DISABLED] Unregistering all service workers to clear cache');
-      
-      navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        const unregisterPromises = registrations.map(function(registration) {
+
+      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+        const unregisterPromises = registrations.map(function (registration) {
           console.log('[SW DISABLED] Unregistering SW:', registration.scope);
-          return registration.unregister().catch(function(error) {
+          return registration.unregister().catch(function (error) {
             console.warn('[SW DISABLED] Failed to unregister SW:', error);
           });
         });
-        
+
         return Promise.all(unregisterPromises);
-      }).then(function() {
+      }).then(function () {
         // Clear ALL caches
-        return caches.keys().then(function(cacheNames) {
-          const deletePromises = cacheNames.map(function(cacheName) {
+        return caches.keys().then(function (cacheNames) {
+          const deletePromises = cacheNames.map(function (cacheName) {
             console.log('[SW DISABLED] Deleting cache:', cacheName);
-            return caches.delete(cacheName).catch(function(error) {
+            return caches.delete(cacheName).catch(function (error) {
               console.warn('[SW DISABLED] Failed to delete cache:', cacheName, error);
             });
           });
           return Promise.all(deletePromises);
         });
-      }).then(function() {
+      }).then(function () {
         console.log('[SW DISABLED] ✅ All service workers and caches cleared - fresh content will load');
-      }).catch(function(error) {
+      }).catch(function (error) {
         console.error('[SW DISABLED] Error during cleanup:', error);
       });
     }
-    
+
     // Enhanced performance monitoring and reporting
-    window.addEventListener('load', function() {
+    window.addEventListener('load', function () {
       const totalTime = performance.now() - window.__performance_start;
       const firebaseTime = window.__firebase_init_start ? (performance.now() - window.__firebase_init_start) : 0;
-      
+
       console.log(`🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:`);
       console.log(`📊 Total page load time: ${totalTime.toFixed(2)}ms`);
       console.log(`🔥 Firebase init time: ${firebaseTime.toFixed(2)}ms`);
-      
+
       // Strategy #1: Preload & Preconnect Critical Resources
       const preconnectLinks = document.querySelectorAll('link[rel="preconnect"]').length;
       const preloadLinks = document.querySelectorAll('link[rel="preload"]').length;
       const modulePreloadLinks = document.querySelectorAll('link[rel="modulepreload"]').length;
-      
+
       if (preconnectLinks > 0 && preloadLinks > 0) {
         console.log(`✅ [Strategy 1] Preconnect/Preload: ${preconnectLinks} preconnect + ${preloadLinks} preload + ${modulePreloadLinks} modulepreload links active`);
         console.log(`⚡ Expected improvement: 100-300ms faster cold starts`);
       }
-      
+
       // Strategy #2: Firebase Auth Optimization
       if (window.__brandentifier_cached_auth) {
         console.log('✅ [Strategy 2] Firebase Auth Caching: Active - cached state available');
@@ -286,7 +340,7 @@
       } else {
         console.log('🔄 [Strategy 2] Firebase Auth Caching: Initializing for future loads');
       }
-      
+
       // Strategy #3: Progressive Rendering
       setTimeout(() => {
         const coreComponents = document.querySelectorAll('[data-progressive="core"]').length;
@@ -294,26 +348,26 @@
         console.log(`✅ [Strategy 3] Progressive Rendering: Core(${coreComponents}) + Secondary(${secondaryComponents}) components loaded`);
         console.log('⚡ Expected improvement: 50-100ms perceived performance boost');
       }, 300);
-      
+
       // Strategy #4: Service Worker + App Shell Caching
       if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
         console.log('✅ [Strategy 4] Service Worker v2: Active with enhanced caching');
         console.log('⚡ Return visits: Near-instant loading (0-50ms)');
-        
+
         // Get cache statistics
         if (navigator.serviceWorker.controller) {
           const channel = new MessageChannel();
-          channel.port1.onmessage = function(event) {
+          channel.port1.onmessage = function (event) {
             if (event.data.totalCached) {
               console.log(`💾 Cache Status: ${event.data.totalCached} files cached for offline access`);
             }
           };
-          navigator.serviceWorker.controller.postMessage({type: 'GET_CACHE_SIZE'}, [channel.port2]);
+          navigator.serviceWorker.controller.postMessage({ type: 'GET_CACHE_SIZE' }, [channel.port2]);
         }
       } else {
         console.log('🔄 [Strategy 4] Service Worker: Installing...');
       }
-      
+
       // Overall performance assessment
       if (totalTime < 500) {
         console.log('🎯 PERFORMANCE STATUS: EXCELLENT - All optimizations operational');
@@ -322,26 +376,26 @@
       } else {
         console.log('🎯 PERFORMANCE STATUS: OPTIMIZING - Further improvements in progress');
       }
-      
+
       console.log('📈 Performance Optimization Complete - All 4 strategies active!');
     });
   </script>
-  
+
   <!-- Enhanced loader removal with smooth transition -->
   <script>
     // Smooth loader transition with performance monitoring
-    window.addEventListener('DOMContentLoaded', function() {
+    window.addEventListener('DOMContentLoaded', function () {
       console.log('[Skeleton] DOM loaded, preparing smooth transition');
-      
+
       // Near-zero delay for instant switch-over once bundle is ready
-      var checkReady = setInterval(function() {
+      var checkReady = setInterval(function () {
         if (window.__APP_READY__) {
           clearInterval(checkReady);
           var loader = document.getElementById('app-loader');
           if (loader) {
             loader.style.opacity = '0';
             loader.style.transition = 'opacity 0.1s ease-out';
-            setTimeout(function() {
+            setTimeout(function () {
               loader.style.display = 'none';
               const skeletonTime = performance.now() - window.__performance_start;
               console.log(`⚡ [PERF] Skeleton-to-app transition: ${skeletonTime.toFixed(2)}ms`);
@@ -350,9 +404,9 @@
         }
       }, 10);
     });
-    
+
     // Backup loader removal for slower connections
-    setTimeout(function() {
+    setTimeout(function () {
       var loader = document.getElementById('app-loader');
       if (loader && loader.style.display !== 'none') {
         console.log('[Skeleton] Backup removal after 3s');
@@ -363,4 +417,5 @@
     }, 3000);
   </script>
 </body>
+
 </html>

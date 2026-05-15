@@ -65,9 +65,9 @@ interface ApiSettings {
 export default function SettingsPage() {
   // State for all setting sections
   const [generalSettings, setGeneralSettings] = useState<GeneralSettings>({
-    siteName: "Brandentifier",
+    siteName: "Brandentify",
     siteDescription: "Professional networking and AI-powered career platform",
-    supportEmail: "support@brandentifier.com",
+    supportEmail: "support@brandentify.com",
     timezone: "America/New_York",
     language: "en-US",
     dateFormat: "MM/DD/YYYY",
@@ -86,10 +86,10 @@ export default function SettingsPage() {
   const [emailSettings, setEmailSettings] = useState<EmailSettings>({
     smtpServer: "smtp.example.com",
     smtpPort: "587",
-    smtpUsername: "notifications@brandentifier.com",
+    smtpUsername: "notifications@brandentify.com",
     smtpPassword: "••••••••••",
-    fromEmail: "notifications@brandentifier.com",
-    replyToEmail: "no-reply@brandentifier.com",
+    fromEmail: "notifications@brandentify.com",
+    replyToEmail: "no-reply@brandentify.com",
     enableSsl: true,
     enableSmtpAuth: true
   });
@@ -99,7 +99,7 @@ export default function SettingsPage() {
     rateLimitPerMinute: 60,
     requireApiKey: true,
     allowCors: true,
-    allowedOrigins: "https://*.brandentifier.com, https://partner.example.com"
+    allowedOrigins: "https://*.brandentify.com, https://partner.example.com"
   });
   
   // Event handlers for settings changes

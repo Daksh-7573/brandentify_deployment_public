@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 export default function SimpleApp() {
-  const [message, setMessage] = useState('Loading Brandentifier...');
+  const [message, setMessage] = useState('Loading Brandentify...');
   const [isConnected, setIsConnected] = useState(false);
 
   // Test if we can connect to the backend
@@ -47,7 +47,7 @@ export default function SimpleApp() {
         maxWidth: "600px"
       }}>
         <h1 style={{ color: "#333", marginBottom: "20px" }}>
-          Brandentifier Platform
+          Brandentify Platform
         </h1>
         <p style={{ color: "#666", marginBottom: "20px" }}>
           Dynamic Contextual Link Generation System

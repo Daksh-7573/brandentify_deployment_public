@@ -76,7 +76,7 @@ const GraphicQuantumCard: React.FC<GraphicQuantumCardProps> = ({ userData, isLoa
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const profileLink = `brandentifier.com/@${(userData.brandName || userData.username || 'user').toLowerCase().replace(/\s+/g, '-')}`;
+  const profileLink = `brandentify.com/@${(userData.brandName || userData.username || 'user').toLowerCase().replace(/\s+/g, '-')}`;
   const profileHref = `/@${(userData.brandName || userData.username || 'user').toLowerCase().replace(/\s+/g, '-')}`;
 
   useEffect(() => {
@@ -465,3 +465,4 @@ const GraphicQuantumCard: React.FC<GraphicQuantumCardProps> = ({ userData, isLoa
 };
 
 export default GraphicQuantumCard;
+

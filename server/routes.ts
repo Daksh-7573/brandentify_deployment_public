@@ -14,12 +14,14 @@ import fs from "fs";
 import fileUpload from "express-fileupload";
 import jwt from "jsonwebtoken";
 import { projectThumbnailUpload, getFileUrl } from "./utils/upload";
+import { upload as muskResumeUpload } from "./middleware/upload";
 // Resume parsing functionality
 import { handleParseResume } from "./routes-parse-resume";
 import { upload, extractTextFromFile, cleanupFile, parseResume } from "./services/resume-parser-service";
 import { handleCreateDemoProfiles } from "./routes-demo-profiles";
 import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from "./routes-radar";
-import { handleMuskChat, handleResumeUpload, handlePitchDeckUpload, handleGenerateContextualSuggestions } from "./routes-musk";
+import { handleMuskChat, handlePitchDeckUpload, handleGenerateContextualSuggestions, handleMuskHistory, handleResumeUpload } from "./routes-musk";
+import resumeAnalysisRoutes from "./routes/resume";
 import muskSuggestionRoutes from "./routes-musk-suggestions";
 import muskMatchRoutes from "./routes-musk-match";
 import { registerSmartConnectRoutes } from "./routes-smart-connect";
@@ -29,8 +31,9 @@ import { setupCareerQuestsRoutes } from "./routes-career-quests";
 import { setupInstantQuestsRoutes } from "./routes-instant-quests";
 import { setupQuestProgressMiddleware } from "./routes-quest-progress";
 import { postSuggestionService } from "./services/post-suggestion-service";
+import smartQuestRoutes from "./routes-smart-quests";
 import mentorshipRoutes from "./routes-mentorship";
-import connectionRoutes from "./routes-connection";
+import { createConnectionRouter } from "./routes-connection";
 import brandsOfTheDayRoutes from "./routes-brands-of-the-day";
 import messagingRoutes from "./routes-messaging";
 import mentorRoutes from "./routes-mentor";
@@ -51,7 +54,8 @@ import { registerCareerIntelligenceRoutes } from "./routes-career-intelligence";
 import { registerTrendGraphRoutes } from "./routes-trend-graph";
 import { registerMuskCareerInsightsRoutes } from "./routes-musk-career-insights";
 import { registerReferralRoutes } from "./routes-referral";
-import { referralService } from "./services/referral-service";
+import { registerShareTrackingRoutes } from "./routes-share-tracking";
+import { referralService, QUANTUM_CARDS } from "./services/referral-service";
 import { registerMuskAIEnhancedRoutes } from "./routes-musk-ai-enhanced";
 import { setupMuskTestingRoutes } from "./routes-musk-testing";
 import muskFeedbackRoutes from "./routes-musk-feedback";
@@ -65,6 +69,7 @@ import personalizedFeedRoutes from "./routes-personalized-feed";
 import notificationRoutes from "./routes-notifications";
 import directAccessRoutes from "./routes-direct-access";
 import directAnalyticsRoutes from "./routes-direct-analytics";
+import { generateAIResponse } from "./services/central-ai-provider";
 import { createBrandGoalsRoutes } from "./routes-brand-goals";
 import { createUserUpdateRoutes } from "./routes-user-update";
 import encryptionRoutes from "./routes-encryption";
@@ -77,6 +82,7 @@ import { UserContextBuilder } from "./services/user-context-builder.js";
 import { AIFeedRanker } from "./services/ai-feed-ranker.js";
 import { feedCache } from "./services/feed-cache.js";
 import { createGoogleOAuthURLRoute, handleGoogleOAuthCallbackRoute, checkSessionRoute, acceptSessionRoute, logoutRoute, setSessionFromTokenRoute } from "./auth-oauth-routes";
+import { registerMuskAIRoutes } from "./routes/musk-ai";
 import { 
   createNotification, 
   createXpEarnedNotification,
@@ -91,8 +97,8 @@ import {
 } from "./routes-decision-engine";
 import { objectStorageService } from "./services/object-storage-service";
 import { generatePortfolioPdf, cleanupOldPortfolioPdfs } from "./services/portfolio-pdf-generator";
+import { convertMarkdownToPdf } from "./services/markdown-to-pdf";
 import { 
-  insertUserSchema, 
   insertResumeSchema, 
   insertWorkExperienceSchema,
   insertEducationSchema,
@@ -143,6 +149,7 @@ import * as xaiService from "./services/xai-service";
 import { getDatabaseFingerprint, createDatabaseFingerprint } from "./db";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  registerMuskAIRoutes(app);
   // Auth cleaner endpoint - MUST be before any other routes
   app.get('/fix-auth', (req: Request, res: Response) => {
     console.log("[AUTH-FIX] Serving auth cleaner HTML inline");
@@ -266,6 +273,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       uptime: process.uptime(),
       version: "1.0.0"
     });
+  });
+
+  // Ollama LLM service health check
+  apiRouter.get("/health/ollama", async (req: Request, res: Response) => {
+    try {
+      const { getOllamaHealth } = await import('./services/ollama-service');
+      const health = await getOllamaHealth();
+      
+      const statusCode = health.available ? 200 : 503;
+      res.status(statusCode).json({
+        service: 'ollama',
+        ...health,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(503).json({
+        service: 'ollama',
+        available: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
   });
 
   // 🔍 DATABASE FINGERPRINTING ENDPOINT - Critical for database unification verification
@@ -1261,6 +1289,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error in shared card endpoint:", error);
       res.status(500).json({ message: "Internal server error fetching shared card" });
+    }
+  });
+
+  apiRouter.post("/share/open", async (req: Request, res: Response) => {
+    const { refUser, cardId, viewerId } = req.body || {};
+
+    console.log("[POST /share/open] Payload:", { refUser, cardId, viewerId });
+
+    if (!refUser || !cardId) {
+      return res.status(400).json({ message: "refUser and cardId are required" });
+    }
+
+    const refUserId = parseInt(String(refUser), 10);
+    if (Number.isNaN(refUserId)) {
+      return res.status(400).json({ message: "refUser must be a numeric user ID" });
+    }
+
+    const viewerIdNumber = viewerId ? parseInt(String(viewerId), 10) : null;
+    if (viewerIdNumber && viewerIdNumber === refUserId) {
+      return res.status(200).json({ rewarded: false, reason: "self_referral" });
+    }
+
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      const refUserResult = await client.query(
+        "SELECT id FROM users WHERE id = $1",
+        [refUserId]
+      );
+
+      if (refUserResult.rows.length === 0) {
+        await client.query("ROLLBACK");
+        return res.status(404).json({ message: "Referrer not found" });
+      }
+
+      const trackingId = `card:${cardId}`;
+      const existingReward = await client.query(
+        `SELECT id FROM user_unlocks 
+         WHERE user_id = $1 AND unlock_type = 'share_open' AND unlock_id = $2`,
+        [refUserId, trackingId]
+      );
+
+      if (existingReward.rows.length > 0) {
+        await client.query("COMMIT");
+        return res.json({ rewarded: false, reason: "duplicate" });
+      }
+
+      console.log("Rewarding user:", refUserId);
+
+      await client.query(
+        `INSERT INTO user_unlocks (user_id, unlock_type, unlock_id, unlock_source)
+         VALUES ($1, 'share_open', $2, 'share_open')`,
+        [refUserId, trackingId]
+      );
+
+      const unlockedCardsResult = await client.query(
+        `SELECT unlock_id FROM user_unlocks 
+         WHERE user_id = $1 AND unlock_type = 'quantum_card'`,
+        [refUserId]
+      );
+
+      const unlockedCards = unlockedCardsResult.rows.map((row: any) => row.unlock_id);
+      const lockedCards = QUANTUM_CARDS.filter(card => !unlockedCards.includes(card));
+
+      if (lockedCards.length === 0) {
+        await client.query("COMMIT");
+        return res.json({ rewarded: false, reason: "all_unlocked" });
+      }
+
+      const randomCard = lockedCards[Math.floor(Math.random() * lockedCards.length)];
+      await client.query(
+        `INSERT INTO user_unlocks (user_id, unlock_type, unlock_id, unlock_source)
+         VALUES ($1, 'quantum_card', $2, 'share_open')`,
+        [refUserId, randomCard]
+      );
+
+      console.log(`[Share Open] Unlocked Quantum Card: ${randomCard} for user ${refUserId}`);
+
+      await client.query("COMMIT");
+      return res.json({ rewarded: true, unlockId: randomCard });
+    } catch (error) {
+      await client.query("ROLLBACK");
+      console.error("[POST /share/open] Error:", error);
+      return res.status(500).json({ message: "Failed to process share open" });
+    } finally {
+      client.release();
     }
   });
 
@@ -5948,34 +6063,27 @@ ${extractedText.substring(0, 5000)}
               }
             } else {
               // Not a PDF, try the original approach with OpenAI
-              console.log("Not a PDF, attempting direct OpenAI parsing of binary data");
-              const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+              console.log("Not a PDF, attempting centralized AI parsing of binary data");
               
               // Only use a portion of the data to stay within token limits
               const truncatedContent = fileData.substring(0, 25000);
               console.log(`Truncated content length for API: ${truncatedContent.length} characters`);
               
-              console.log("Sending request to OpenAI API...");
-              const response = await openai.chat.completions.create({
-                model: "gpt-4o",
-                messages: [
-                  { 
-                    role: "system", 
-                    content: "You are an expert resume analyzer. Extract professional information in a structured format."
-                  },
-                  { 
-                    role: "user", 
-                    content: "I have a resume in base64 format. Please extract any professional information such as work experience, education, skills, job title, and location. Format your response in structured text with clear section headings."
-                  }
-                ],
-                temperature: 0.1,
-              });
-              
-              console.log("OpenAI API response received successfully");
-              
+              console.log("Sending request to centralized AI provider...");
+              const response = await generateAIResponse(
+                "I have a resume in base64 format. Please extract any professional information such as work experience, education, skills, job title, and location. Format your response in structured text with clear section headings.",
+                {
+                  systemPrompt: "You are an expert resume analyzer. Extract professional information in a structured format.",
+                  maxTokens: 1200,
+                  temperature: 0.1,
+                }
+              );
+
+              console.log("Centralized AI response received successfully");
+
               // Now we use the response text as our input for further processing
-              resumeText = "Resume extracted from binary file:\n\n" + response.choices[0].message.content;
-              console.log("GPT extracted text from binary file for further processing");
+              resumeText = "Resume extracted from binary file:\n\n" + response.text;
+              console.log("AI extracted text from binary file for further processing");
               console.log("Extracted text sample (first 300 chars):", resumeText.substring(0, 300).replace(/\n/g, ' '));
             }
           } catch (openaiError: any) {
@@ -8654,17 +8762,29 @@ ${extractedText.substring(0, 5000)}
   apiRouter.post("/musk/chat", async (req: Request, res: Response) => {
     await handleMuskChat(req, res);
   });
-
-  // Route for handling resume uploads for Musk AI analysis
-  // express-fileupload middleware is already configured globally in index.ts
-  apiRouter.post("/musk/resume-upload", async (req: Request, res: Response) => {
-    await handleResumeUpload(req, res);
+  apiRouter.post("/musk-chat/message", async (req: Request, res: Response) => {
+    await handleMuskChat(req, res);
+  });
+  apiRouter.get("/musk-chat/history/:userId", async (req: Request, res: Response) => {
+    await handleMuskHistory(req, res);
+  });
+  apiRouter.post("/musk-chat/upload-resume", (req: Request, res: Response) => {
+    muskResumeUpload.single("resume")(req, res, (err: unknown) => {
+      if (err) {
+        const message = err instanceof Error ? err.message : "Resume upload failed.";
+        return res.status(400).json({ success: false, error: message });
+      }
+      return handleResumeUpload(req, res);
+    });
   });
   
   // Route for handling pitch deck uploads for Musk AI analysis
   apiRouter.post("/musk/pitchdeck-upload", async (req: Request, res: Response) => {
     await handlePitchDeckUpload(req, res);
   });
+  
+  // Resume analysis route: PDF -> extract text -> Ollama primary -> OpenAI fallback
+  apiRouter.use("/resume", resumeAnalysisRoutes);
   
   // Route for generating AI-powered contextual suggestions
   apiRouter.post("/musk/contextual-suggestions", async (req: Request, res: Response) => {
@@ -9220,9 +9340,12 @@ ${extractedText.substring(0, 5000)}
   app.use('/api', mentorshipRoutes);
   console.log("Mentorship Connect routes loaded");
   
-  // Connection Request routes
-  app.use('/api', connectionRoutes);
-  console.log("Connection Request routes loaded");
+  // Smart Quest routes with weekly prevention and post suggestions
+  app.use('/api/smart-quests', smartQuestRoutes);
+  console.log("Smart Quest routes with weekly prevention loaded");
+  
+  // NOTE: Connection Request routes moved to after WebSocket setup (see below)
+  // This allows passing the WebSocket clients map for real-time notifications
   
   // Domain-independent authentication routes
   app.use(directAuthRoutes);
@@ -9305,6 +9428,10 @@ ${extractedText.substring(0, 5000)}
   // Register Referral System routes (Share to Unlock)
   registerReferralRoutes(app);
   console.log("Referral System routes loaded");
+  
+  // Register Share Tracking routes (Quantum Card share unlock)
+  registerShareTrackingRoutes(app);
+  console.log("Share Tracking routes loaded");
   
   // Register Musk Career Insights routes
   registerMuskCareerInsightsRoutes(app);
@@ -10113,6 +10240,12 @@ ${extractedText.substring(0, 5000)}
     });
   });
   
+  // ✅ Connection Request routes with WebSocket support
+  // Mounted here to pass the WebSocket clients map for real-time notifications
+  const connectionRoutes = createConnectionRouter(clients);
+  app.use('/api', connectionRoutes);
+  console.log("✅ Connection Request routes loaded with WebSocket support");
+  
   // Auto-deletion system routes
   app.post('/api/flag/:itemType/:itemId', async (req: Request, res: Response) => {
     try {
@@ -10207,6 +10340,24 @@ ${extractedText.substring(0, 5000)}
     } catch (error) {
       console.error(`[GET /api/users/${req.params.id}] Error:`, error);
       res.status(500).json({ message: 'Error fetching user' });
+    }
+  });
+
+  // Get user unlocks (quantum cards and portfolios)
+  app.get('/api/users/:id/unlocks', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.id);
+      
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      const unlocks = await storage.getUserUnlocks(userId);
+      
+      res.json({ unlocks });
+    } catch (error) {
+      console.error(`[GET /api/users/${req.params.id}/unlocks] Error:`, error);
+      res.status(500).json({ message: 'Error fetching user unlocks' });
     }
   });
 
@@ -11028,11 +11179,11 @@ ${extractedText.substring(0, 5000)}
   // Documentation download endpoints
   app.get('/api/docs/marketing', async (req: Request, res: Response) => {
     try {
-      const filePath = path.join(process.cwd(), 'docs', 'BRANDENTIFIER_MARKETING_GUIDE.md');
+      const filePath = path.join(process.cwd(), 'docs', 'BRANDENTIFY_MARKETING_GUIDE.md');
       if (fs.existsSync(filePath)) {
         const content = fs.readFileSync(filePath, 'utf-8');
         res.setHeader('Content-Type', 'text/markdown');
-        res.setHeader('Content-Disposition', 'attachment; filename="Brandentifier_Marketing_Guide.md"');
+        res.setHeader('Content-Disposition', 'attachment; filename="Brandentify_Marketing_Guide.md"');
         res.send(content);
       } else {
         res.status(404).json({ error: 'Marketing guide not found' });
@@ -11045,11 +11196,11 @@ ${extractedText.substring(0, 5000)}
 
   app.get('/api/docs/team', async (req: Request, res: Response) => {
     try {
-      const filePath = path.join(process.cwd(), 'docs', 'BRANDENTIFIER_TEAM_REFERENCE.md');
+      const filePath = path.join(process.cwd(), 'docs', 'BRANDENTIFY_TEAM_REFERENCE.md');
       if (fs.existsSync(filePath)) {
         const content = fs.readFileSync(filePath, 'utf-8');
         res.setHeader('Content-Type', 'text/markdown');
-        res.setHeader('Content-Disposition', 'attachment; filename="Brandentifier_Team_Reference.md"');
+        res.setHeader('Content-Disposition', 'attachment; filename="Brandentify_Team_Reference.md"');
         res.send(content);
       } else {
         res.status(404).json({ error: 'Team reference not found' });
@@ -11142,24 +11293,26 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
-  // PDF download endpoints using markdown-pdf
+  // PDF download endpoints using puppeteer-based markdown to PDF conversion
   app.get('/api/docs/marketing/pdf', async (req: Request, res: Response) => {
     try {
-      const markdownPdf = require('markdown-pdf');
-      const filePath = path.join(process.cwd(), 'docs', 'BRANDENTIFIER_MARKETING_GUIDE.md');
-      const pdfPath = path.join(process.cwd(), 'docs', 'Brandentifier_Marketing_Guide.pdf');
+      const filePath = path.join(process.cwd(), 'docs', 'BRANDENTIFY_MARKETING_GUIDE.md');
+      const pdfPath = path.join(process.cwd(), 'docs', 'Brandentify_Marketing_Guide.pdf');
       
       if (!fs.existsSync(filePath)) {
         return res.status(404).json({ error: 'Marketing guide not found' });
       }
 
-      markdownPdf().from(filePath).to(pdfPath, () => {
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'attachment; filename="Brandentifier_Marketing_Guide.pdf"');
-        const stream = fs.createReadStream(pdfPath);
-        stream.pipe(res);
-        stream.on('end', () => {
-          fs.unlinkSync(pdfPath); // Clean up
+      await convertMarkdownToPdf(filePath, pdfPath);
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="Brandentify_Marketing_Guide.pdf"');
+      const stream = fs.createReadStream(pdfPath);
+      stream.pipe(res);
+      stream.on('end', () => {
+        // Clean up PDF after sending
+        fs.unlink(pdfPath, (err) => {
+          if (err) console.warn('Failed to clean up PDF:', err);
         });
       });
     } catch (error) {
@@ -11170,21 +11323,23 @@ ${extractedText.substring(0, 5000)}
 
   app.get('/api/docs/team/pdf', async (req: Request, res: Response) => {
     try {
-      const markdownPdf = require('markdown-pdf');
-      const filePath = path.join(process.cwd(), 'docs', 'BRANDENTIFIER_TEAM_REFERENCE.md');
-      const pdfPath = path.join(process.cwd(), 'docs', 'Brandentifier_Team_Reference.pdf');
+      const filePath = path.join(process.cwd(), 'docs', 'BRANDENTIFY_TEAM_REFERENCE.md');
+      const pdfPath = path.join(process.cwd(), 'docs', 'Brandentify_Team_Reference.pdf');
       
       if (!fs.existsSync(filePath)) {
         return res.status(404).json({ error: 'Team reference not found' });
       }
 
-      markdownPdf().from(filePath).to(pdfPath, () => {
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'attachment; filename="Brandentifier_Team_Reference.pdf"');
-        const stream = fs.createReadStream(pdfPath);
-        stream.pipe(res);
-        stream.on('end', () => {
-          fs.unlinkSync(pdfPath); // Clean up
+      await convertMarkdownToPdf(filePath, pdfPath);
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="Brandentify_Team_Reference.pdf"');
+      const stream = fs.createReadStream(pdfPath);
+      stream.pipe(res);
+      stream.on('end', () => {
+        // Clean up PDF after sending
+        fs.unlink(pdfPath, (err) => {
+          if (err) console.warn('Failed to clean up PDF:', err);
         });
       });
     } catch (error) {
@@ -11196,3 +11351,4 @@ ${extractedText.substring(0, 5000)}
   console.log('WebSocket server initialized on path: /ws');
   return httpServer;
 }
+

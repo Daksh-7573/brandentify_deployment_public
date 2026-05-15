@@ -26,7 +26,7 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
   const cardRef = useRef<HTMLDivElement>(null);
 
   // Format profile link using brand name (or username as fallback)
-  const profileLink = `brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
+  const profileLink = `brandentify.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
   
   // Define industry tags
   const industryTags = userData.industry ? userData.industry.split(/,\s*/) : [];

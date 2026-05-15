@@ -24,6 +24,7 @@ export interface ConversationMessage {
   message: string;
   timestamp: Date;
   intent?: string;
+  metadata?: Record<string, any>;
 }
 
 export interface ConversationMemory {
@@ -116,7 +117,8 @@ export async function addMessageToMemory(
   userId: string, 
   role: 'user' | 'musk', 
   message: string,
-  intent?: string
+  intent?: string,
+  metadata?: Record<string, any>
 ): Promise<void> {
   const userIdNum = parseInt(userId, 10);
   if (isNaN(userIdNum)) {
@@ -129,7 +131,10 @@ export async function addMessageToMemory(
     await db.insert(chatMessages).values({
       userId: userIdNum,
       message: message,
-      sender
+      sender,
+      role,
+      intent,
+      metadata: metadata ?? {}
     });
 
     invalidateCache(userId);
@@ -178,9 +183,11 @@ export async function getConversationMemory(userId: string): Promise<Conversatio
     const messages: ConversationMessage[] = dbMessages
       .reverse()
       .map(msg => ({
-        role: msg.sender === 'ai' ? 'musk' as const : 'user' as const,
+        role: (msg.role === 'musk' || msg.sender === 'ai') ? 'musk' as const : 'user' as const,
         message: msg.message,
-        timestamp: msg.timestamp ?? new Date()
+        timestamp: msg.createdAt ?? msg.timestamp ?? new Date(),
+        intent: msg.intent ?? undefined,
+        metadata: (msg.metadata as Record<string, any> | null) ?? undefined
       }));
 
     const memory: ConversationMemory = {

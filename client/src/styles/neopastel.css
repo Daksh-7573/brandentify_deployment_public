@@ -421,6 +421,32 @@ input:focus, textarea:focus, select:focus, .select-trigger:focus {
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
 }
 
+@media (max-width: 640px) {
+  .tabs-list,
+  .dark-tabs-list {
+    width: 100% !important;
+    max-width: 100% !important;
+    justify-content: flex-start !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    white-space: nowrap !important;
+    scrollbar-width: none !important;
+    border-radius: 14px !important;
+  }
+
+  .tabs-list::-webkit-scrollbar,
+  .dark-tabs-list::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .dark-tabs-trigger,
+  .tabs-list [role="tab"],
+  .dark-tabs-list [role="tab"] {
+    flex: 0 0 auto !important;
+    min-height: 40px !important;
+  }
+}
+
 /* Make sure click events work on tabs */
 [data-radix-collection-item],
 [role="tab"] {

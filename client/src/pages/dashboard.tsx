@@ -13,6 +13,8 @@ import { useState, useEffect } from "react";
 import { ArrowLeft, FileCode, Github, Globe, Calendar, User } from "lucide-react";
 import { format } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { QuestPanel } from "@/components/brand-quests/quest-panel";
+import { Helmet } from "react-helmet";
 
 // Project Detail Component with NeoGlass Design
 function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: () => void }) {
@@ -430,13 +432,48 @@ export default function Dashboard() {
     return <ProjectDetailView projectId={projectId} onBack={handleBackToDashboard} />;
   }
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Brandentify Dashboard",
+    "description": "Professional career management dashboard for tracking projects, skills, and career development",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web Browser",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Project Management",
+      "Skill Tracking",
+      "Career Development",
+      "Professional Networking"
+    ]
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
+      <Helmet>
+        <title>Dashboard - Professional Career Management | Brandentify</title>
+        <meta name="description" content="Manage your professional career with Brandentify dashboard. Track projects, skills, experience, and complete career development quests." />
+        <meta name="keywords" content="professional dashboard, career management, project tracking, skill development, career growth" />
+        <meta property="og:title" content="Dashboard - Professional Career Management" />
+        <meta property="og:description" content="Comprehensive dashboard for professional career development and project management" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://brandentify.com/dashboard-og-image.jpg" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Dashboard - Professional Career Management" />
+        <link rel="canonical" href="https://brandentify.com/dashboard" />
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      </Helmet>
       <Header />
       <div className="flex">
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-4">
           <div className="max-w-7xl mx-auto">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-4">
               <h1 className="text-3xl font-bold">Dashboard</h1>
               <Button onClick={() => setLocation('/profile')}>
                 Complete Profile
@@ -444,12 +481,12 @@ export default function Dashboard() {
             </div>
             
             {profileCompletionPercentage < 80 && (
-              <div className="mb-6">
+              <div className="mb-4">
                 <ProfileCompletion percentage={profileCompletionPercentage} />
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <Card>
                 <CardHeader>
                   <CardTitle>Projects</CardTitle>
@@ -492,6 +529,48 @@ export default function Dashboard() {
                   >
                     Manage Skills
                   </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="mt-8">
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <CardTitle>Brand Quests</CardTitle>
+                      <CardDescription>Your live career and social quest feed</CardDescription>
+                    </div>
+                    <Button variant="outline" onClick={() => setLocation('/brand-quests')}>
+                      Open Full Quest Board
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <QuestPanel userId={userId} />
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Dashboard FAQ Section for SEO */}
+            <div className="mt-8">
+              <Card id="dashboard-faq" className="py-2">
+                <CardHeader>
+                  <CardTitle className="text-2xl font-bold">Dashboard FAQ</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div itemScope itemType="https://schema.org/Question">
+                    <h3 itemProp="name" className="text-lg font-semibold mb-2">How do I add projects to my dashboard?</h3>
+                    <div itemProp="acceptedAnswer" itemScope itemType="https://schema.org/Answer">
+                      <p itemProp="text" className="text-gray-600">Navigate to the Projects section in your dashboard and click "Manage Projects" to add new projects with details, skills, and media.</p>
+                    </div>
+                  </div>
+                  <div itemScope itemType="https://schema.org/Question">
+                    <h3 itemProp="name" className="text-lg font-semibold mb-2">What is profile completion percentage?</h3>
+                    <div itemProp="acceptedAnswer" itemScope itemType="https://schema.org/Answer">
+                      <p itemProp="text" className="text-gray-600">Profile completion shows how much of your professional information is filled out. Higher completion increases visibility and networking opportunities.</p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>

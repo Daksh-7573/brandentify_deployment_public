@@ -1,4 +1,4 @@
-# Brandentifier Automated Test Suite
+# Brandentify Automated Test Suite
 
 Comprehensive testing suite for validating all features before and after deployment.
 
@@ -13,7 +13,7 @@ Comprehensive testing suite for validating all features before and after deploym
 ./scripts/test-suite.sh --verbose
 
 # Test against live deployment
-./scripts/test-suite.sh --url https://brandentifier.replit.dev
+./scripts/test-suite.sh --url https://brandentify.replit.dev
 ```
 
 ### Run Specific Test Suites
@@ -22,7 +22,7 @@ Comprehensive testing suite for validating all features before and after deploym
 ./scripts/test-reactions.sh
 
 # Test against different environment
-./scripts/test-reactions.sh --url https://brandentifier.replit.dev --verbose
+./scripts/test-reactions.sh --url https://brandentify.replit.dev --verbose
 ```
 
 ## Test Coverage
@@ -140,7 +140,7 @@ echo "Exit code: $?"
 ### Successful Run
 ```
 ╔════════════════════════════════════════════════════════════════════════╗
-║          BRANDENTIFIER AUTOMATED TEST SUITE                            ║
+║          BRANDENTIFY AUTOMATED TEST SUITE                            ║
 ║          Target: http://localhost:5000
 ╚════════════════════════════════════════════════════════════════════════╝
 
@@ -363,3 +363,4 @@ For issues or feature requests for the test suite, check:
 **Last Updated:** November 2025
 **Test Coverage:** 40+ endpoints
 **Status:** Production Ready ✅
+

@@ -6,6 +6,7 @@
  * 
  * KEY FEATURES:
  * - AI-generated content using FREE local Ollama
+ * - Falls back to deterministic generator if AI unavailable
  * - Platform-specific guidance (LinkedIn vs Twitter vs Instagram)
  * - Audience-based platform selection (uses user's primary/secondary audiences)
  * - Goal-aligned content generation
@@ -16,6 +17,7 @@ import { db } from '../db';
 import { users, brandGoals, questDefinitions } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 import { localAIService } from './local-ai-service';
+import { deterministicFallbackGenerator } from './deterministic-fallback-generator';
 
 export interface DetailedSocialQuest {
   templateId: number;
@@ -279,7 +281,7 @@ Generate a quest that asks them to create content for ${platform}. The quest sho
       
     } catch (error) {
       console.error(`[SocialQuestV2] AI generation failed for ${platform}:`, error);
-      return this.getFallbackQuest(userProfile, platform, questDef);
+      return await this.getFallbackQuest(userProfile, platform, questDef);
     }
   }
   
@@ -320,20 +322,28 @@ Generate a quest that asks them to create content for ${platform}. The quest sho
   /**
    * Fallback quest when AI fails
    */
-  private getFallbackQuest(userProfile: any, platform: string, questDef: any): DetailedSocialQuest {
-    const name = userProfile.name || 'professional';
-    const domain = userProfile.domain || 'your field';
+  private async getFallbackQuest(userProfile: any, platform: string, questDef: any): Promise<DetailedSocialQuest> {
+    console.log(`[SocialQuestV2] 📋 Using deterministic fallback for ${platform}`);
+    
+    // Use deterministic fallback generator
+    const fallbackQuest = await deterministicFallbackGenerator.generateFallbackSocialQuest(
+      userProfile.id || 0,
+      questDef.id || 1,
+      platform,
+      userProfile
+    );
     
     return {
       templateId: 1,
       platform: platform,
-      personalizedTitle: `Share Your Expertise on ${platform}`,
-      personalizedDescription: `Post valuable content on ${platform} that showcases your ${domain} expertise. Share insights, tips, or behind-the-scenes content that your audience will find valuable.`,
-      personalizedMuskTip: `${name}, ${platform} is your stage. Show them what you know about ${domain}. Be authentic, be bold.`,
+      personalizedTitle: fallbackQuest.personalizedTitle,
+      personalizedDescription: fallbackQuest.personalizedDescription,
+      personalizedMuskTip: fallbackQuest.personalizedMuskTip,
       variablesUsed: {
-        user_name: name,
+        user_name: userProfile.name || 'professional',
         platform: platform,
-        fallback: true
+        fallback: true,
+        fallbackMethod: 'deterministic_generator'
       }
     };
   }

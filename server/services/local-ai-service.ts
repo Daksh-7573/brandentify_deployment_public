@@ -1,10 +1,16 @@
 /**
  * Local AI Service
  * Replaces OpenAI with cost-effective local AI models
- * Supports multiple backends: Ollama, LM Studio, Hugging Face Transformers
+ * Supports multiple backends: Ollama (local only), LM Studio, Hugging Face Transformers
+ * 
+ * CRITICAL ARCHITECTURE:
+ * - Local Ollama (localhost:11434) is PRIMARY and MUST succeed
+ * - If Ollama fails, use deterministic fallback (NEVER throw error)
+ * - OpenAI is optional fallback only for non-critical tasks
+ * - System NEVER crashes due to AI provider failure
  */
 
-import fetch from 'node-fetch';
+import { deterministicFallbackGenerator } from './deterministic-fallback-generator';
 
 interface AIResponse {
   content: string;
@@ -25,25 +31,51 @@ interface LocalAIConfig {
   temperature: number;
 }
 
-export class LocalAIService {
-  private config: LocalAIConfig;
-  private fallbackToOpenAI: boolean;
+export interface LocalAICompletionResult {
+  text: string;
+  provider: 'ollama' | 'openai' | 'deterministic';
+  model: string;
+  fallbackUsed: boolean;
+}
 
-  constructor() {
+export class LocalAIService {
+  private static instance: LocalAIService;
+  private config: LocalAIConfig;
+  private openaiDisabledUntil: number = 0;
+  private lastOpenAiError: Date | null = null;
+  private ollamaAvailabilityCache = {
+    available: true,
+    checkedAt: 0,
+  };
+
+  private constructor() {
+    // ARCHITECTURE FIX: Always use LOCAL Ollama as primary
+    // Remove any VPS/remote Ollama references
+    const baseUrl = 'http://localhost:11434'; // LOCKED to localhost only
+    const model = process.env.OLLAMA_MODEL || 'phi3'; // Default to phi3
+
     this.config = {
-      provider: (process.env.AI_PROVIDER as any) || 'ollama',
-      baseUrl: process.env.AI_BASE_URL || 'http://localhost:11434',
-      model: process.env.AI_MODEL || 'llama3.2:3b',
-      apiKey: process.env.AI_API_KEY,
+      provider: 'ollama',
+      baseUrl,
+      model,
+      apiKey: process.env.OPENAI_API_KEY || process.env.AI_API_KEY,
       maxTokens: parseInt(process.env.AI_MAX_TOKENS || '2000'),
       temperature: parseFloat(process.env.AI_TEMPERATURE || '0.7')
     };
     
-    // Enable fallback to OpenAI for reliability when Ollama fails
-    // Note: This only triggers if Ollama is down - keeps costs minimal
-    this.fallbackToOpenAI = process.env.AI_FALLBACK_OPENAI !== 'false';
-    
-    console.log(`[Local AI] Initialized with provider: ${this.config.provider}, model: ${this.config.model}`);
+    console.log(`[Local AI] Initialized with PRIMARY provider: LOCAL OLLAMA at ${baseUrl}`);
+    console.log(`[Local AI] Model: ${model}`);
+    console.log(`[Local AI] IMPORTANT: All AI calls are local-first. System never depends on external APIs.`);
+  }
+
+  /**
+   * Get singleton instance (ensures only ONE LocalAIService throughout app)
+   */
+  public static getInstance(): LocalAIService {
+    if (!LocalAIService.instance) {
+      LocalAIService.instance = new LocalAIService();
+    }
+    return LocalAIService.instance;
   }
 
   /**
@@ -88,9 +120,20 @@ export class LocalAIService {
 
   /**
    * Generate news content for personalized Musk Pulses (FREE with Ollama)
+   * Falls back to deterministic content if AI unavailable
    */
   async generateNewsContent(prompt: string): Promise<string> {
-    return this._generateCompletion(prompt, 'news-pulse-generation');
+    try {
+      return await this._generateCompletion(prompt, 'news-pulse-generation');
+    } catch (error) {
+      console.warn('[Local AI] Pulse generation failed, using deterministic fallback:', error instanceof Error ? error.message : String(error));
+      // Return deterministic fallback instead of crashing
+      return deterministicFallbackGenerator.generateFallbackPulseContent({
+        industry: 'Technology',
+        role: 'Professional',
+        location: 'Global'
+      });
+    }
   }
 
   /**
@@ -121,6 +164,14 @@ export class LocalAIService {
     guidanceSnippet: string;
     estimatedTime: number;
   }> {
+    const safeParse = (jsonText: string): any | null => {
+      try {
+        return JSON.parse(jsonText);
+      } catch {
+        return null;
+      }
+    };
+
     const prompt = this.buildCareerQuestPrompt(questContext);
     const response = await this._generateCompletion(prompt, 'career-quest-generation');
     
@@ -129,11 +180,14 @@ export class LocalAIService {
       // Extract JSON from response (AI might wrap it in markdown code blocks)
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
+        const parsed = safeParse(jsonMatch[0]);
+        if (parsed) {
+          return parsed;
+        }
       }
       throw new Error('No valid JSON found in AI response');
     } catch (parseError) {
-      console.error('[Local AI] Failed to parse quest JSON:', parseError);
+      console.warn('[Local AI] Invalid AI JSON for quest generation, using safe fallback object');
       // Fallback: extract sections manually
       return this.parseQuestFromText(response, questContext);
     }
@@ -264,61 +318,236 @@ Be specific, use real examples from ${questContext.userProfile.location}, and ma
   }
 
   /**
+   * Structured completion result for routes/services that need accurate provider metadata.
+   */
+  async generateCompletionDetailed(
+    prompt: string,
+    temperature?: number,
+    maxTokens?: number,
+    taskType: string = 'general-completion'
+  ): Promise<LocalAICompletionResult> {
+    const originalTemp = this.config.temperature;
+    const originalTokens = this.config.maxTokens;
+
+    if (temperature !== undefined) {
+      this.config.temperature = temperature;
+    }
+    if (maxTokens !== undefined) {
+      this.config.maxTokens = maxTokens;
+    }
+
+    try {
+      console.log(`\n[Local AI] ${'═'.repeat(60)}`);
+      console.log(`[Local AI] AI STAGE A: Checking Ollama health...`);
+      console.log(`[Local AI] Task type: ${taskType}`);
+      console.log(`[Local AI] Provider: LOCAL OLLAMA at ${this.config.baseUrl}`);
+      console.log(`[Local AI] Model: ${this.config.model}`);
+
+      console.log(`[Local AI] AI STAGE B: Sending prompt to Ollama (${prompt.length} chars)...`);
+      const ollamaText = await this.generateWithOllama(prompt);
+      if (!ollamaText || !ollamaText.trim()) {
+        throw new Error('Ollama returned empty response');
+      }
+
+      console.log(`[Local AI] AI STAGE C: Ollama succeeded ✅`);
+      return {
+        text: ollamaText,
+        provider: 'ollama',
+        model: this.config.model,
+        fallbackUsed: false,
+      };
+    } catch (ollamaError) {
+      const errorMsg = ollamaError instanceof Error ? ollamaError.message : String(ollamaError);
+      console.error(`[Local AI] AI STAGE B FAILED: ${errorMsg}`);
+
+      if (this.shouldUseOpenAI() && process.env.OPENAI_API_KEY) {
+        try {
+          console.log(`[Local AI] AI STAGE D: Attempting OpenAI fallback...`);
+          const openAiText = await this.generateWithOpenAI(prompt);
+          console.log(`[Local AI] AI STAGE D: OpenAI succeeded ✅`);
+          return {
+            text: openAiText,
+            provider: 'openai',
+            model: 'gpt-4o-mini',
+            fallbackUsed: true,
+          };
+        } catch (openaiError) {
+          const openaiErrorMsg = openaiError instanceof Error ? openaiError.message : String(openaiError);
+          console.error(`[Local AI] AI STAGE D FAILED: ${openaiErrorMsg}`);
+
+          if (openaiErrorMsg.includes('429') || openaiErrorMsg.includes('rate_limit_exceeded')) {
+            console.error('[Local AI] 🚨 OpenAI quota exceeded. Cooling down for 5 minutes.');
+            this.openaiDisabledUntil = Date.now() + 5 * 60 * 1000;
+            this.lastOpenAiError = new Date();
+          }
+        }
+      } else {
+        if (!this.shouldUseOpenAI()) {
+          const remainingMs = Math.max(0, this.openaiDisabledUntil - Date.now());
+          console.log(`[Local AI] OpenAI cooldown active (${Math.ceil(remainingMs / 1000)}s remaining)`);
+        } else {
+          console.log(`[Local AI] OpenAI not configured (no API key)`);
+        }
+      }
+
+      console.warn(`\n[Local AI] AI STAGE E: Falling back to deterministic generator...`);
+      return {
+        text: this.buildDeterministicFallbackText(taskType, prompt),
+        provider: 'deterministic',
+        model: 'deterministic-fallback',
+        fallbackUsed: true,
+      };
+    } finally {
+      this.config.temperature = originalTemp;
+      this.config.maxTokens = originalTokens;
+    }
+  }
+
+  private buildDeterministicFallbackText(taskType: string, prompt: string): string {
+    if (taskType === 'health-check') {
+      return 'Deterministic fallback active';
+    }
+
+    if (taskType === 'hashtag-suggestions') {
+      return '#CareerGrowth #ProfessionalDevelopment #IndustryInsights #Leadership #Networking';
+    }
+
+    if (taskType === 'resume-analysis') {
+      return 'Resume analysis is temporarily unavailable because both AI providers are unavailable. Please retry shortly.';
+    }
+
+    if (taskType.includes('quest') || taskType.includes('custom-request')) {
+      // Always return strict JSON for quest-like tasks to prevent parser crashes.
+      return JSON.stringify({
+        personalizedTitle: 'Complete Your Profile',
+        personalizedDescription: 'Add missing profile details and publish one actionable update for your professional brand today.',
+        personalizedMuskTip: 'Execution beats theory. Ship one concrete improvement now.',
+        title: 'Complete Your Profile',
+        description: 'Add missing profile details and publish one actionable update for your professional brand today.',
+        category: 'Career',
+        difficulty: 'Easy',
+        xpReward: 50,
+        estimatedTime: 15,
+        deliverableFormat: 'Text input',
+        platformConstraints: 'Max 150 characters',
+        guidanceSnippet: '1. Open profile\n2. Fill one missing field\n3. Save changes',
+        quantityValue: 1,
+        quantityType: 'task'
+      });
+    }
+
+    const preview = prompt.trim().slice(0, 120);
+    return `AI services are temporarily unavailable. Deterministic fallback active for: ${preview || 'request'}. Please retry shortly.`;
+  }
+
+  private shouldUseOpenAI(): boolean {
+    return Date.now() >= this.openaiDisabledUntil;
+  }
+
+  private async isOllamaAvailable(): Promise<boolean> {
+    const now = Date.now();
+    const cacheTtlMs = 30_000;
+    if (now - this.ollamaAvailabilityCache.checkedAt < cacheTtlMs) {
+      return this.ollamaAvailabilityCache.available;
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1500);
+
+    try {
+      const res = await fetch(`${this.config.baseUrl}/api/tags`, {
+        method: 'GET',
+        signal: controller.signal,
+      } as any);
+      this.ollamaAvailabilityCache = { available: res.ok, checkedAt: now };
+      return res.ok;
+    } catch {
+      this.ollamaAvailabilityCache = { available: false, checkedAt: now };
+      return false;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
+  /**
    * Internal method for AI completion (private)
+   * ARCHITECTURE: Ollama (local) → Fallback generator (deterministic) → OpenAI (optional)
+   * System NEVER crashes due to AI failure
    */
   private async _generateCompletion(prompt: string, taskType: string): Promise<string> {
     const startTime = Date.now();
     
     try {
-      console.log(`[Local AI] Generating ${taskType} with ${this.config.provider}`);
-      console.log(`[Local AI] Base URL: ${this.config.baseUrl}`);
+      console.log(`\n[Local AI] ${'═'.repeat(60)}`);
+      console.log(`[Local AI] AI STAGE A: Checking Ollama health...`);
+      console.log(`[Local AI] Task type: ${taskType}`);
+      console.log(`[Local AI] Provider: LOCAL OLLAMA at ${this.config.baseUrl}`);
       console.log(`[Local AI] Model: ${this.config.model}`);
-      console.log(`[Local AI] Prompt length: ${prompt.length} chars`);
       
-      switch (this.config.provider) {
-        case 'ollama':
-          return await this.generateWithOllama(prompt);
-        case 'lmstudio':
-          return await this.generateWithLMStudio(prompt);
-        case 'huggingface':
-          return await this.generateWithHuggingFace(prompt);
-        case 'openai':
-          return await this.generateWithOpenAI(prompt);
-        default:
-          throw new Error(`Unsupported AI provider: ${this.config.provider}`);
+      console.log(`[Local AI] AI STAGE B: Sending prompt to Ollama (${prompt.length} chars)...`);
+      // ALWAYS try local Ollama first, but fail fast if unreachable.
+      const result = await this.generateWithOllama(prompt);
+      if (!result || !result.trim()) {
+        throw new Error('Ollama returned empty response');
       }
-    } catch (error) {
+      console.log(`[Local AI] AI STAGE C: Ollama succeeded ✅`);
+      return result;
+    } catch (ollamaError) {
       const elapsed = Date.now() - startTime;
-      const errorMsg = error instanceof Error ? error.message : String(error);
-      console.error(`[Local AI] Error with ${this.config.provider} after ${elapsed}ms:`, errorMsg);
+      const errorMsg = ollamaError instanceof Error ? ollamaError.message : String(ollamaError);
+      console.error(`\n[Local AI] AI STAGE B FAILED: Ollama error after ${elapsed}ms`);
+      console.error(`[Local AI] Error: ${errorMsg}`);
       
-      if (this.fallbackToOpenAI && this.config.provider !== 'openai') {
-        console.log('[Local AI] Falling back to OpenAI...');
-        console.log(`[Local AI] OpenAI API key present: ${!!process.env.OPENAI_API_KEY}`);
+      // Try OpenAI as optional fallback (with cooldown after 429)
+      if (this.shouldUseOpenAI() && process.env.OPENAI_API_KEY) {
         try {
+          console.log(`[Local AI] AI STAGE D: Attempting OpenAI fallback...`);
           const result = await this.generateWithOpenAI(prompt);
-          console.log(`[Local AI] OpenAI fallback succeeded after ${Date.now() - startTime}ms`);
+          console.log(`[Local AI] AI STAGE D: OpenAI succeeded ✅ (${Date.now() - startTime}ms)`);
           return result;
         } catch (openaiError) {
           const openaiErrorMsg = openaiError instanceof Error ? openaiError.message : String(openaiError);
-          console.error('[Local AI] OpenAI fallback also failed:', openaiErrorMsg);
-          throw new Error(`All AI providers failed. Ollama error: ${errorMsg}. OpenAI error: ${openaiErrorMsg}`);
+          console.error(`[Local AI] AI STAGE D FAILED: OpenAI error`);
+          console.error(`[Local AI] Error: ${openaiErrorMsg}`);
+          
+          // Check if it's a 429 error (quota exceeded)
+          if (openaiErrorMsg.includes('429') || openaiErrorMsg.includes('rate_limit_exceeded')) {
+            console.error('[Local AI] 🚨 OpenAI quota exceeded. Cooling down for 5 minutes.');
+            this.openaiDisabledUntil = Date.now() + 5 * 60 * 1000;
+            this.lastOpenAiError = new Date();
+          }
+        }
+      } else {
+        if (!this.shouldUseOpenAI()) {
+          const remainingMs = Math.max(0, this.openaiDisabledUntil - Date.now());
+          console.log(`[Local AI] OpenAI cooldown active (${Math.ceil(remainingMs / 1000)}s remaining)`);
+        } else {
+          console.log(`[Local AI] OpenAI not configured (no API key)`);
         }
       }
       
-      throw error;
+      // FALLBACK: Use deterministic generator
+      // This ensures system NEVER crashes
+      console.warn(`\n[Local AI] AI STAGE E: Falling back to deterministic generator...`);
+      return this.buildDeterministicFallbackText(taskType, prompt);
     }
   }
 
   /**
-   * Generate completion using Ollama (recommended for local deployment)
+   * Generate completion using LOCAL Ollama ONLY (no VPS)
+   * TIMEOUT: 15 seconds (fail fast for graceful fallback)
    */
   private async generateWithOllama(prompt: string): Promise<string> {
+    const reachable = await this.isOllamaAvailable();
+    if (!reachable) {
+      throw new Error('Local Ollama unavailable at http://localhost:11434 - skipping to fallback');
+    }
+
     const controller = new AbortController();
-    const OLLAMA_TIMEOUT = 60000; // 60 second timeout for longer prompts like resume analysis
+    const OLLAMA_TIMEOUT = 15000; // 15 second timeout - fail fast
     const timeoutId = setTimeout(() => controller.abort(), OLLAMA_TIMEOUT);
     
-    console.log(`[Ollama] Connecting to ${this.config.baseUrl}/api/generate...`);
+    console.log(`[Ollama] Connecting to localhost at ${this.config.baseUrl}/api/generate...`);
     const requestStart = Date.now();
     
     try {
@@ -337,32 +566,45 @@ Be specific, use real examples from ${questContext.userProfile.location}, and ma
           }
         }),
         signal: controller.signal
-      });
+      } as any);
 
       clearTimeout(timeoutId);
       const elapsed = Date.now() - requestStart;
       console.log(`[Ollama] Response received in ${elapsed}ms, status: ${response.status}`);
 
       if (!response.ok) {
-        throw new Error(`Ollama API error: ${response.status} ${response.statusText}`);
+        const errorText = await response.text().catch(() => '');
+        const err = new Error(`Ollama API error: ${response.status} ${response.statusText}`);
+        (err as any).debug = {
+          provider: 'ollama',
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+          body: errorText
+        };
+        throw err;
       }
 
       const data = await response.json() as any;
-      console.log(`[Ollama] Generation complete, response length: ${data.response?.length || 0} chars`);
-      return data.response || 'No response generated';
+      const text = typeof data.response === 'string' ? data.response.trim() : '';
+      console.log(`[Ollama] ✅ Generation complete, response length: ${text.length} chars`);
+      if (!text) {
+        throw new Error('Ollama returned empty response');
+      }
+      return text;
     } catch (error: any) {
       clearTimeout(timeoutId);
       const elapsed = Date.now() - requestStart;
       
       if (error.name === 'AbortError') {
-        console.error(`[Ollama] Request TIMEOUT after ${elapsed}ms (limit: ${OLLAMA_TIMEOUT}ms)`);
-        throw new Error(`Ollama request timeout after ${OLLAMA_TIMEOUT/1000} seconds - VPS may be unreachable from this environment`);
+        console.error(`[Ollama] ⏱️ TIMEOUT after ${elapsed}ms (limit: ${OLLAMA_TIMEOUT}ms)`);
+        throw new Error(`Local Ollama timeout after ${OLLAMA_TIMEOUT/1000}s - Make sure ollama serve is running`);
       }
       
-      // Check for network errors (common in development environments)
+      // Check for connection errors
       if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND' || error.code === 'ETIMEDOUT') {
-        console.error(`[Ollama] Network error: ${error.code} after ${elapsed}ms`);
-        throw new Error(`Cannot connect to Ollama VPS (${error.code}) - network issue from this environment`);
+        console.error(`[Ollama] 🔌 Connection error: ${error.code} after ${elapsed}ms`);
+        throw new Error(`Cannot connect to local Ollama (${error.code}). Start Ollama with: ollama serve`);
       }
       
       console.error(`[Ollama] Error after ${elapsed}ms:`, error.message || error);
@@ -396,7 +638,16 @@ Be specific, use real examples from ${questContext.userProfile.location}, and ma
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error(`LM Studio API error: ${response.status} ${response.statusText}`);
+        const errorText = await response.text().catch(() => '');
+        const err = new Error(`LM Studio API error: ${response.status} ${response.statusText}`);
+        (err as any).debug = {
+          provider: 'lmstudio',
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+          body: errorText
+        };
+        throw err;
       }
 
       const data = await response.json() as any;
@@ -442,7 +693,16 @@ Be specific, use real examples from ${questContext.userProfile.location}, and ma
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error(`Hugging Face API error: ${response.status} ${response.statusText}`);
+        const errorText = await response.text().catch(() => '');
+        const err = new Error(`Hugging Face API error: ${response.status} ${response.statusText}`);
+        (err as any).debug = {
+          provider: 'huggingface',
+          status: response.status,
+          statusText: response.statusText,
+          headers: Object.fromEntries(response.headers.entries()),
+          body: errorText
+        };
+        throw err;
       }
 
       const data = await response.json() as any;
@@ -457,40 +717,65 @@ Be specific, use real examples from ${questContext.userProfile.location}, and ma
   }
 
   /**
-   * Fallback to OpenAI when local models are unavailable
+   * Optional OpenAI fallback (only if Ollama fails)
+   * IMPORTANT: This is NOT required for system stability
+   * Handles 429 (quota) errors gracefully
    */
   private async generateWithOpenAI(prompt: string): Promise<string> {
-    console.log('[OpenAI] Starting fallback generation...');
+    console.log(`[OpenAI] Using OpenAI as optional fallback...`);
     const startTime = Date.now();
     
-    if (!process.env.OPENAI_API_KEY) {
-      console.error('[OpenAI] No API key found in environment!');
-      throw new Error('OpenAI API key is required for fallback - please set OPENAI_API_KEY secret');
+    const openAiKey = process.env.OPENAI_API_KEY || process.env.AI_API_KEY;
+    if (!openAiKey) {
+      throw new Error('OpenAI API key not configured - skipping OpenAI fallback');
     }
     
-    console.log(`[OpenAI] API key present (length: ${process.env.OPENAI_API_KEY.length})`);
+    console.log(`[OpenAI] API key present (length: ${openAiKey.length})`);
 
     try {
       const { OpenAI } = await import('openai');
-      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      const openai = new OpenAI({ apiKey: openAiKey, timeout: 15000, maxRetries: 1 }); // Reduced timeout and retries
 
-      console.log('[OpenAI] Calling gpt-4o-mini...');
-      const response = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: [{ role: 'user', content: prompt }],
-        max_tokens: this.config.maxTokens,
-        temperature: this.config.temperature
-      });
+      const tryModels = ['gpt-4o-mini', 'gpt-4o'];
+      let response: any;
+
+      for (const model of tryModels) {
+        try {
+          response = await openai.chat.completions.create({
+            model,
+            messages: [{ role: 'user', content: prompt }],
+            max_tokens: this.config.maxTokens,
+            temperature: this.config.temperature
+          });
+          break;
+        } catch (modelError: any) {
+          const status = modelError?.status;
+          const code = modelError?.error?.code;
+          
+          // Handle 429 (rate limit/quota exceeded) - apply cooldown instead of permanent disable
+          if (status === 429 || code === 'rate_limit_exceeded') {
+            console.error(`[OpenAI] 🚨 QUOTA EXCEEDED (429). Cooling down for 5 minutes.`);
+            this.openaiDisabledUntil = Date.now() + 5 * 60 * 1000;
+            this.lastOpenAiError = new Date();
+            throw new Error('OpenAI quota exceeded (429) - cooldown active');
+          }
+          
+          const isModelError = status === 404 || code === 'model_not_found' || code === 'invalid_model';
+          if (!isModelError || model === tryModels[tryModels.length - 1]) {
+            throw modelError;
+          }
+        }
+      }
 
       const elapsed = Date.now() - startTime;
       const content = response.choices[0]?.message?.content || 'No response generated';
-      console.log(`[OpenAI] Success in ${elapsed}ms, response length: ${content.length} chars`);
+      console.log(`[OpenAI] ✅ Fallback succeeded in ${elapsed}ms`);
       
       return content;
     } catch (error) {
       const elapsed = Date.now() - startTime;
       const errorMsg = error instanceof Error ? error.message : String(error);
-      console.error(`[OpenAI] Failed after ${elapsed}ms:`, errorMsg);
+      console.warn(`[OpenAI] Fallback failed after ${elapsed}ms:`, errorMsg);
       throw error;
     }
   }
@@ -628,12 +913,22 @@ Hashtags:`;
   }> {
     try {
       const startTime = Date.now();
-      await this._generateCompletion('Test prompt for health check', 'health-check');
+      const result = await this.generateCompletionDetailed('Test prompt for health check', undefined, undefined, 'health-check');
       const latency = Date.now() - startTime;
 
+      if (result.provider === 'deterministic') {
+        return {
+          provider: this.config.provider,
+          model: this.config.model,
+          status: 'unhealthy',
+          latency,
+          error: 'Primary and fallback AI providers unavailable; deterministic fallback active'
+        };
+      }
+
       return {
-        provider: this.config.provider,
-        model: this.config.model,
+        provider: result.provider,
+        model: result.model,
         status: 'healthy',
         latency
       };
@@ -649,7 +944,7 @@ Hashtags:`;
 }
 
 // Export singleton instance
-export const localAIService = new LocalAIService();
+export const localAIService = LocalAIService.getInstance();
 
 // Export as localAI for backward compatibility
 export const localAI = localAIService;

@@ -238,7 +238,7 @@ async function generateWithAnthropic(message: string, context: any): Promise<str
  */
 async function generateWithOpenAI(message: string, context: any): Promise<string> {
   // Initialize FREE Local AI Service (uses VPS Ollama)
-  const localAI = new LocalAIService();
+  const localAI = LocalAIService.getInstance();
 
   const systemPrompt = buildEnhancedSystemPrompt(context);
   const userPrompt = buildEnhancedUserPrompt(message, context);
@@ -275,7 +275,7 @@ function buildEnhancedSystemPrompt(context: any): string {
 - Career Goal: ${userProfile.lookingFor || 'career advancement'}
 
 **Response Guidelines:**
-1. **Always prioritize Brandentifier features first** when making platform recommendations
+1. **Always prioritize Brandentify features first** when making platform recommendations
 2. Provide specific, actionable advice tailored to their exact situation
 3. Use industry-specific insights and current market trends
 4. Address both immediate tactics and long-term strategy

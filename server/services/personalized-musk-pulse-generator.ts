@@ -12,7 +12,7 @@ import { InsertPulse } from "@shared/schema";
 import { storage } from "../storage";
 import { LocalAIService } from "./local-ai-service";
 
-const localAI = new LocalAIService();
+const localAI = LocalAIService.getInstance();
 
 interface UserProfile {
   id: number;
@@ -337,7 +337,7 @@ export class PersonalizedMuskPulseGenerator {
     };
 
     const prompt = `
-You are Musk, ${user.name}'s personal AI career assistant on Brandentifier.
+You are Musk, ${user.name}'s personal AI career assistant on Brandentify.
 
 Generate a ${timeOfDay} personalized news pulse for ${user.name} based on their professional profile:
 
@@ -349,7 +349,7 @@ Requirements:
 - Reference their career goals or specialty when relevant
 - Be direct, personal, and actionable
 - Include 2-3 relevant hashtags from their interests
-- Encourage specific actions they can take on Brandentifier (update portfolio, connect with peers, etc.)
+- Encourage specific actions they can take on Brandentify (update portfolio, connect with peers, etc.)
 
 ${timePrompts[timeOfDay]}
 
@@ -388,7 +388,7 @@ Respond ONLY with valid JSON format (no markdown, no extra text):
       // Fallback personalized content
       return {
         title: `${user.name}'s ${timeOfDay.charAt(0).toUpperCase() + timeOfDay.slice(1)} Update`,
-        content: `${user.name}, stay updated with the latest in ${user.industry || 'your industry'}. Check out new connections and opportunities on Brandentifier.`,
+        content: `${user.name}, stay updated with the latest in ${user.industry || 'your industry'}. Check out new connections and opportunities on Brandentify.`,
         hashtags: user.followedHashtags?.slice(0, 3) || ['#CareerGrowth']
       };
     }
@@ -446,3 +446,4 @@ Respond ONLY with valid JSON format (no markdown, no extra text):
 }
 
 export const personalizedMuskPulseGenerator = new PersonalizedMuskPulseGenerator();
+

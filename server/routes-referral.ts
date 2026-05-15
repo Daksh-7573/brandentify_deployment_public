@@ -73,7 +73,7 @@ export function registerReferralRoutes(app: Express) {
       
       // Build the base URL from the request
       const protocol = req.protocol || 'https';
-      const host = req.get('host') || 'brandentifier.replit.app';
+      const host = req.get('host') || 'brandentify.replit.app';
       const baseUrl = `${protocol}://${host}`;
       
       console.log('[Referral] Generating link with baseUrl:', baseUrl);
@@ -223,3 +223,4 @@ export function registerReferralRoutes(app: Express) {
   
   console.log('[Referral Routes] Registered successfully');
 }
+

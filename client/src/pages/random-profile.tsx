@@ -129,6 +129,40 @@ const RandomProfile = () => {
     enabled: !!userData?.id,
   });
 
+  // Track quantum card share opens for unlock rewards
+  useEffect(() => {
+    // Get ref parameter from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const refUser = urlParams.get('ref');
+    
+    if (refUser && userData?.id) {
+      console.log('[Share Tracking] Detected shared link', { refUser, cardOwner: userData.id, randomLink });
+      
+      // Send tracking request to backend
+      fetch('/api/share/quantum-open', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Include auth cookie if present
+        body: JSON.stringify({
+          refUser: parseInt(refUser),
+          cardId: randomLink || userData.randomProfileLink || `user-${userData.id}`,
+        }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('[Share Tracking] Backend response:', data);
+          if (data.success && data.unlockedCard && data.unlockedCard !== 'all_unlocked') {
+            console.log(`[Share Tracking] ✅ User ${refUser} unlocked: ${data.unlockedCard}`);
+          }
+        })
+        .catch(error => {
+          console.error('[Share Tracking] Error tracking share:', error);
+        });
+    }
+  }, [userData?.id, randomLink]);
+
   // Handle loading state
   if (!randomLink && !userId) {
     return (

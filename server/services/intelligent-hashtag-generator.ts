@@ -159,8 +159,8 @@ export class IntelligentHashtagGenerator {
       'post': ['#TwitterThread', '#XPlatform', '#TechTwitter'],
       'thread': ['#ThreadUnrolled', '#TwitterTips', '#ThreadReader']
     },
-    'Brandentifier': {
-      'pulse': ['#IndustryPulse', '#ProfessionalInsights', '#Brandentifier'],
+    'Brandentify': {
+      'pulse': ['#IndustryPulse', '#ProfessionalInsights', '#Brandentify'],
       'project': ['#PortfolioShowcase', '#ProjectSuccess', '#WorkShowcase']
     }
   };
@@ -440,3 +440,4 @@ export class IntelligentHashtagGenerator {
 }
 
 export const intelligentHashtagGenerator = new IntelligentHashtagGenerator();
+

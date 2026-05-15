@@ -1,0 +1,655 @@
+{
+  "latestRows": [
+    {
+      "id": 7677,
+      "user_id": 33,
+      "quest_definition_id": 263,
+      "assigned_date": "2026-03-15T18:30:00.000Z",
+      "status": "active",
+      "week_number": 12,
+      "year": 2026,
+      "type": "networking",
+      "title": "Send 5 Personalized Connection Requests",
+      "xp_reward": 50,
+      "difficulty_level": "beginner"
+    },
+    {
+      "id": 7676,
+      "user_id": 5,
+      "quest_definition_id": 263,
+      "assigned_date": "2026-03-15T18:30:00.000Z",
+      "status": "active",
+      "week_number": 12,
+      "year": 2026,
+      "type": "networking",
+      "title": "Send 5 Personalized Connection Requests",
+      "xp_reward": 50,
+      "difficulty_level": "beginner"
+    },
+    {
+      "id": 7675,
+      "user_id": 34,
+      "quest_definition_id": 263,
+      "assigned_date": "2026-03-15T18:30:00.000Z",
+      "status": "active",
+      "week_number": 12,
+      "year": 2026,
+      "type": "networking",
+      "title": "Send 5 Personalized Connection Requests",
+      "xp_reward": 50,
+      "difficulty_level": "beginner"
+    },
+    {
+      "id": 7674,
+      "user_id": 41,
+      "quest_definition_id": 264,
+      "assigned_date": "2026-03-15T18:30:00.000Z",
+      "status": "active",
+      "week_number": 12,
+      "year": 2026,
+      "type": "networking",
+      "title": "Engage with 3 Thought Leaders",
+      "xp_reward": 60,
+      "difficulty_level": "intermediate"
+    },
+    {
+      "id": 7673,
+      "user_id": 41,
+      "quest_definition_id": 263,
+      "assigned_date": "2026-03-15T18:30:00.000Z",
+      "status": "active",
+      "week_number": 12,
+      "year": 2026,
+      "type": "networking",
+      "title": "Send 5 Personalized Connection Requests",
+      "xp_reward": 50,
+      "difficulty_level": "beginner"
+    },
+    {
+      "id": 7672,
+      "user_id": 33,
+      "quest_definition_id": 255,
+      "assigned_date": "2026-03-15T18:30:00.000Z",
+      "status": "active",
+      "week_number": 12,
+      "year": 2026,
+      "type": "profile_update",
+      "title": "Complete Profile to 80%",
+      "xp_reward": 100,
+      "difficulty_level": "beginner"
+    },
+    {
+      "id": 7671,
+      "user_id": 5,
+      "quest_definition_id": 255,
+      "assigned_date": "2026-03-15T18:30:00.000Z",
+      "status": "active",
+      "week_number": 12,
+      "year": 2026,
+      "type": "profile_update",
+      "title": "Complete Profile to 80%",
+      "xp_reward": 100,
+      "difficulty_level": "beginner"
+    },
+    {
+      "id": 7670,
+      "user_id": 34,
+      "quest_definition_id": 255,
+      "assigned_date": "2026-03-15T18:30:00.000Z",
+      "status": "active",
+      "week_number": 12,
+      "year": 2026,
+      "type": "profile_update",
+      "title": "Complete Profile to 80%",
+      "xp_reward": 100,
+      "difficulty_level": "beginner"
+    },
+    {
+      "id": 7669,
+      "user_id": 41,
+      "quest_definition_id": 255,
+      "assigned_date": "2026-03-15T18:30:00.000Z",
+      "status": "active",
+      "week_number": 12,
+      "year": 2026,
+      "type": "profile_update",
+      "title": "Complete Profile to 80%",
+      "xp_reward": 100,
+      "difficulty_level": "beginner"
+    },
+    {
+      "id": 7668,
+      "user_id": 4,
+      "quest_definition_id": 254,
+      "assigned_date": "2026-03-15T18:30:00.000Z",
+      "status": "active",
+      "week_number": 12,
+      "year": 2026,
+      "type": "profile_update",
+      "title": "Define 3-5 Core Values",
+      "xp_reward": 60,
+      "difficulty_level": "intermediate"
+    },
+    {
+      "id": 7667,
+      "user_id": 33,
+      "quest_definition_id": 254,
+      "assigned_date": "2026-03-15T18:30:00.000Z",
+      "status": "active",
+      "week_number": 12,
+      "year": 2026,
+      "type": "profile_update",
+      "title": "Define 3-5 Core Values",
+      "xp_reward": 60,
+      "difficulty_level": "intermediate"
+    },
+    {
+      "id": 7665,
+      "user_id": 35,
+      "quest_definition_id": 355,
+      "assigned_date": "2026-03-15T18:30:00.000Z",
+      "status": "active",
+      "week_number": 12,
+      "year": 2026,
+      "type": "social_quest",
+      "title": "Share Your systematic professional approach on LinkedIn",
+      "xp_reward": 75,
+      "difficulty_level": "beginner"
+    },
+    {
+      "id": 7664,
+      "user_id": 35,
+      "quest_definition_id": 354,
+      "assigned_date": "2026-03-15T18:30:00.000Z",
+      "status": "active",
+      "week_number": 12,
+      "year": 2026,
+      "type": "social_quest",
+      "title": "Share Your systematic professional approach on LinkedIn",
+      "xp_reward": 75,
+      "difficulty_level": "beginner"
+    },
+    {
+      "id": 7666,
+      "user_id": 41,
+      "quest_definition_id": 254,
+      "assigned_date": "2026-03-15T18:30:00.000Z",
+      "status": "active",
+      "week_number": 12,
+      "year": 2026,
+      "type": "profile_update",
+      "title": "Define 3-5 Core Values",
+      "xp_reward": 60,
+      "difficulty_level": "intermediate"
+    },
+    {
+      "id": 7663,
+      "user_id": 34,
+      "quest_definition_id": 254,
+      "assigned_date": "2026-03-15T18:30:00.000Z",
+      "status": "active",
+      "week_number": 12,
+      "year": 2026,
+      "type": "profile_update",
+      "title": "Define 3-5 Core Values",
+      "xp_reward": 60,
+      "difficulty_level": "intermediate"
+    },
+    {
+      "id": 7662,
+      "user_id": 5,
+      "quest_definition_id": 254,
+      "assigned_date": "2026-03-15T18:30:00.000Z",
+      "status": "active",
+      "week_number": 12,
+      "year": 2026,
+      "type": "profile_update",
+      "title": "Define 3-5 Core Values",
+      "xp_reward": 60,
+      "difficulty_level": "intermediate"
+    },
+    {
+      "id": 7661,
+      "user_id": 21,
+      "quest_definition_id": 353,
+      "assigned_date": "2026-03-12T18:30:00.000Z",
+      "status": "expired",
+      "week_number": 11,
+      "year": 2026,
+      "type": "social_quest",
+      "title": "Share Your systematic FinTech approach on LinkedIn",
+      "xp_reward": 75,
+      "difficulty_level": "beginner"
+    },
+    {
+      "id": 7660,
+      "user_id": 12,
+      "quest_definition_id": 353,
+      "assigned_date": "2026-03-12T18:30:00.000Z",
+      "status": "expired",
+      "week_number": 11,
+      "year": 2026,
+      "type": "social_quest",
+      "title": "Share Your systematic FinTech approach on LinkedIn",
+      "xp_reward": 75,
+      "difficulty_level": "beginner"
+    },
+    {
+      "id": 7659,
+      "user_id": 30,
+      "quest_definition_id": 353,
+      "assigned_date": "2026-03-11T18:30:00.000Z",
+      "status": "expired",
+      "week_number": 11,
+      "year": 2026,
+      "type": "social_quest",
+      "title": "Share Your systematic FinTech approach on LinkedIn",
+      "xp_reward": 75,
+      "difficulty_level": "beginner"
+    },
+    {
+      "id": 7658,
+      "user_id": 30,
+      "quest_definition_id": 253,
+      "assigned_date": "2026-03-11T18:30:00.000Z",
+      "status": "expired",
+      "week_number": 11,
+      "year": 2026,
+      "type": "profile_update",
+      "title": "Write Your Value Proposition",
+      "xp_reward": 70,
+      "difficulty_level": "intermediate"
+    },
+    {
+      "id": 7657,
+      "user_id": 17,
+      "quest_definition_id": 353,
+      "assigned_date": "2026-03-11T18:30:00.000Z",
+      "status": "expired",
+      "week_number": 11,
+      "year": 2026,
+      "type": "social_quest",
+      "title": "Share Your systematic FinTech approach on LinkedIn",
+      "xp_reward": 75,
+      "difficulty_level": "beginner"
+    },
+    {
+      "id": 7656,
+      "user_id": 17,
+      "quest_definition_id": 253,
+      "assigned_date": "2026-03-11T18:30:00.000Z",
+      "status": "expired",
+      "week_number": 11,
+      "year": 2026,
+      "type": "profile_update",
+      "title": "Write Your Value Proposition",
+      "xp_reward": 70,
+      "difficulty_level": "intermediate"
+    },
+    {
+      "id": 7655,
+      "user_id": 7,
+      "quest_definition_id": 353,
+      "assigned_date": "2026-03-11T18:30:00.000Z",
+      "status": "expired",
+      "week_number": 11,
+      "year": 2026,
+      "type": "social_quest",
+      "title": "Share Your systematic FinTech approach on LinkedIn",
+      "xp_reward": 75,
+      "difficulty_level": "beginner"
+    },
+    {
+      "id": 7654,
+      "user_id": 26,
+      "quest_definition_id": 353,
+      "assigned_date": "2026-03-11T18:30:00.000Z",
+      "status": "expired",
+      "week_number": 11,
+      "year": 2026,
+      "type": "social_quest",
+      "title": "Share Your systematic FinTech approach on LinkedIn",
+      "xp_reward": 75,
+      "difficulty_level": "beginner"
+    },
+    {
+      "id": 7653,
+      "user_id": 19,
+      "quest_definition_id": 353,
+      "assigned_date": "2026-03-11T18:30:00.000Z",
+      "status": "expired",
+      "week_number": 11,
+      "year": 2026,
+      "type": "social_quest",
+      "title": "Share Your systematic FinTech approach on LinkedIn",
+      "xp_reward": 75,
+      "difficulty_level": "beginner"
+    },
+    {
+      "id": 7652,
+      "user_id": 19,
+      "quest_definition_id": 253,
+      "assigned_date": "2026-03-11T18:30:00.000Z",
+      "status": "expired",
+      "week_number": 11,
+      "year": 2026,
+      "type": "profile_update",
+      "title": "Write Your Value Proposition",
+      "xp_reward": 70,
+      "difficulty_level": "intermediate"
+    },
+    {
+      "id": 7651,
+      "user_id": 28,
+      "quest_definition_id": 353,
+      "assigned_date": "2026-03-11T18:30:00.000Z",
+      "status": "expired",
+      "week_number": 11,
+      "year": 2026,
+      "type": "social_quest",
+      "title": "Share Your systematic FinTech approach on LinkedIn",
+      "xp_reward": 75,
+      "difficulty_level": "beginner"
+    },
+    {
+      "id": 7650,
+      "user_id": 28,
+      "quest_definition_id": 253,
+      "assigned_date": "2026-03-11T18:30:00.000Z",
+      "status": "expired",
+      "week_number": 11,
+      "year": 2026,
+      "type": "profile_update",
+      "title": "Write Your Value Proposition",
+      "xp_reward": 70,
+      "difficulty_level": "intermediate"
+    },
+    {
+      "id": 7649,
+      "user_id": 14,
+      "quest_definition_id": 353,
+      "assigned_date": "2026-03-11T18:30:00.000Z",
+      "status": "expired",
+      "week_number": 11,
+      "year": 2026,
+      "type": "social_quest",
+      "title": "Share Your systematic FinTech approach on LinkedIn",
+      "xp_reward": 75,
+      "difficulty_level": "beginner"
+    },
+    {
+      "id": 7648,
+      "user_id": 14,
+      "quest_definition_id": 253,
+      "assigned_date": "2026-03-11T18:30:00.000Z",
+      "status": "expired",
+      "week_number": 11,
+      "year": 2026,
+      "type": "profile_update",
+      "title": "Write Your Value Proposition",
+      "xp_reward": 70,
+      "difficulty_level": "intermediate"
+    }
+  ],
+  "duplicateWeekYear": [
+    {
+      "user_id": 23,
+      "quest_definition_id": 253,
+      "week_number": 3,
+      "year": 2026,
+      "cnt": 14
+    },
+    {
+      "user_id": 27,
+      "quest_definition_id": 253,
+      "week_number": 2,
+      "year": 2026,
+      "cnt": 12
+    },
+    {
+      "user_id": 3,
+      "quest_definition_id": 253,
+      "week_number": 2,
+      "year": 2026,
+      "cnt": 12
+    },
+    {
+      "user_id": 30,
+      "quest_definition_id": 253,
+      "week_number": 2,
+      "year": 2026,
+      "cnt": 12
+    },
+    {
+      "user_id": 29,
+      "quest_definition_id": 269,
+      "week_number": 3,
+      "year": 2026,
+      "cnt": 12
+    },
+    {
+      "user_id": 29,
+      "quest_definition_id": 253,
+      "week_number": 3,
+      "year": 2026,
+      "cnt": 12
+    },
+    {
+      "user_id": 27,
+      "quest_definition_id": 269,
+      "week_number": 2,
+      "year": 2026,
+      "cnt": 12
+    },
+    {
+      "user_id": 29,
+      "quest_definition_id": 253,
+      "week_number": 2,
+      "year": 2026,
+      "cnt": 11
+    },
+    {
+      "user_id": 24,
+      "quest_definition_id": 253,
+      "week_number": 3,
+      "year": 2026,
+      "cnt": 11
+    },
+    {
+      "user_id": 23,
+      "quest_definition_id": 253,
+      "week_number": 2,
+      "year": 2026,
+      "cnt": 11
+    },
+    {
+      "user_id": 30,
+      "quest_definition_id": 269,
+      "week_number": 2,
+      "year": 2026,
+      "cnt": 11
+    },
+    {
+      "user_id": 29,
+      "quest_definition_id": 269,
+      "week_number": 2,
+      "year": 2026,
+      "cnt": 11
+    },
+    {
+      "user_id": 32,
+      "quest_definition_id": 253,
+      "week_number": 2,
+      "year": 2026,
+      "cnt": 11
+    },
+    {
+      "user_id": 4,
+      "quest_definition_id": 253,
+      "week_number": 2,
+      "year": 2026,
+      "cnt": 10
+    },
+    {
+      "user_id": 5,
+      "quest_definition_id": 253,
+      "week_number": 2,
+      "year": 2026,
+      "cnt": 10
+    },
+    {
+      "user_id": 39,
+      "quest_definition_id": 269,
+      "week_number": 3,
+      "year": 2026,
+      "cnt": 10
+    },
+    {
+      "user_id": 10,
+      "quest_definition_id": 269,
+      "week_number": 2,
+      "year": 2026,
+      "cnt": 10
+    },
+    {
+      "user_id": 25,
+      "quest_definition_id": 269,
+      "week_number": 2,
+      "year": 2026,
+      "cnt": 10
+    },
+    {
+      "user_id": 27,
+      "quest_definition_id": 269,
+      "week_number": 3,
+      "year": 2026,
+      "cnt": 10
+    },
+    {
+      "user_id": 30,
+      "quest_definition_id": 269,
+      "week_number": 3,
+      "year": 2026,
+      "cnt": 10
+    },
+    {
+      "user_id": 6,
+      "quest_definition_id": 253,
+      "week_number": 2,
+      "year": 2026,
+      "cnt": 10
+    },
+    {
+      "user_id": 6,
+      "quest_definition_id": 269,
+      "week_number": 2,
+      "year": 2026,
+      "cnt": 10
+    },
+    {
+      "user_id": 32,
+      "quest_definition_id": 269,
+      "week_number": 2,
+      "year": 2026,
+      "cnt": 10
+    },
+    {
+      "user_id": 27,
+      "quest_definition_id": 253,
+      "week_number": 3,
+      "year": 2026,
+      "cnt": 10
+    },
+    {
+      "user_id": 24,
+      "quest_definition_id": 269,
+      "week_number": 3,
+      "year": 2026,
+      "cnt": 10
+    },
+    {
+      "user_id": 21,
+      "quest_definition_id": 253,
+      "week_number": 3,
+      "year": 2026,
+      "cnt": 10
+    },
+    {
+      "user_id": 10,
+      "quest_definition_id": 253,
+      "week_number": 2,
+      "year": 2026,
+      "cnt": 10
+    },
+    {
+      "user_id": 25,
+      "quest_definition_id": 253,
+      "week_number": 2,
+      "year": 2026,
+      "cnt": 10
+    },
+    {
+      "user_id": 21,
+      "quest_definition_id": 269,
+      "week_number": 3,
+      "year": 2026,
+      "cnt": 10
+    },
+    {
+      "user_id": 3,
+      "quest_definition_id": 269,
+      "week_number": 2,
+      "year": 2026,
+      "cnt": 10
+    }
+  ],
+  "duplicateWithin7Days": [
+    {
+      "user_id": 29,
+      "quest_definition_id": 351,
+      "cnt": 2,
+      "first_assigned": "2026-03-08T18:30:00.000Z",
+      "last_assigned": "2026-03-08T18:30:00.000Z"
+    },
+    {
+      "user_id": 25,
+      "quest_definition_id": 351,
+      "cnt": 2,
+      "first_assigned": "2026-03-08T18:30:00.000Z",
+      "last_assigned": "2026-03-08T18:30:00.000Z"
+    },
+    {
+      "user_id": 29,
+      "quest_definition_id": 254,
+      "cnt": 2,
+      "first_assigned": "2026-03-08T18:30:00.000Z",
+      "last_assigned": "2026-03-08T18:30:00.000Z"
+    },
+    {
+      "user_id": 23,
+      "quest_definition_id": 254,
+      "cnt": 2,
+      "first_assigned": "2026-03-08T18:30:00.000Z",
+      "last_assigned": "2026-03-08T18:30:00.000Z"
+    },
+    {
+      "user_id": 25,
+      "quest_definition_id": 254,
+      "cnt": 2,
+      "first_assigned": "2026-03-08T18:30:00.000Z",
+      "last_assigned": "2026-03-08T18:30:00.000Z"
+    },
+    {
+      "user_id": 40,
+      "quest_definition_id": 351,
+      "cnt": 2,
+      "first_assigned": "2026-03-08T18:30:00.000Z",
+      "last_assigned": "2026-03-08T18:30:00.000Z"
+    }
+  ],
+  "todayCoverage": {
+    "total": 16,
+    "social": 2,
+    "normal": 14
+  }
+}

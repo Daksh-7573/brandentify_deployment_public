@@ -1,12 +1,9 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
+import { Pool } from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres';
 import { sql } from 'drizzle-orm';
 export { sql };
-import ws from "ws";
 import * as schema from "@shared/schema";
 import crypto from "crypto";
-
-neonConfig.webSocketConstructor = ws;
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
@@ -14,9 +11,32 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
+function normalizeDatabaseUrl(rawUrl: string): string {
+  try {
+    const parsed = new URL(rawUrl);
+    const sslMode = parsed.searchParams.get("sslmode");
+
+    if (!sslMode || sslMode === "prefer" || sslMode === "require" || sslMode === "verify-ca") {
+      parsed.searchParams.set("sslmode", "verify-full");
+    }
+
+    return parsed.toString();
+  } catch {
+    return rawUrl;
+  }
+}
+
+const secureDatabaseUrl = normalizeDatabaseUrl(process.env.DATABASE_URL);
+
+if (secureDatabaseUrl !== process.env.DATABASE_URL) {
+  process.env.DATABASE_URL = secureDatabaseUrl;
+  console.log("[DB] DATABASE_URL normalized to use sslmode=verify-full");
+}
+
 // Configure the pool for maximum performance
 export const pool = new Pool({ 
-  connectionString: process.env.DATABASE_URL,
+  connectionString: secureDatabaseUrl,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: true } : false,
   // Optimize for fast connections
   connectionTimeoutMillis: 5000, // 5 seconds
   idleTimeoutMillis: 30000, // 30 seconds
@@ -32,7 +52,90 @@ pool.on('error', (err) => {
   // Don't crash the app, just log the error
 });
 
-export const db = drizzle({ client: pool, schema });
+export const db = drizzle(pool, { schema });
+
+export async function ensureMuskChatSchema() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS musk_chat_conversations (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      title TEXT NOT NULL DEFAULT 'New chat',
+      created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+    );
+  `);
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS musk_chat_conversations_user_updated_idx
+      ON musk_chat_conversations (user_id, updated_at DESC);
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS musk_chat_messages (
+      id SERIAL PRIMARY KEY,
+      conversation_id INTEGER NOT NULL REFERENCES musk_chat_conversations(id) ON DELETE CASCADE,
+      role TEXT NOT NULL CHECK (role IN ('user', 'assistant', 'system')),
+      content TEXT NOT NULL,
+      provider_used TEXT,
+      created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    );
+  `);
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS musk_chat_messages_conversation_created_idx
+      ON musk_chat_messages (conversation_id, created_at ASC);
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS musk_resume_uploads (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      conversation_id INTEGER REFERENCES musk_chat_conversations(id) ON DELETE SET NULL,
+      file_name TEXT NOT NULL,
+      file_url TEXT,
+      extracted_text TEXT NOT NULL,
+      ai_feedback TEXT NOT NULL,
+      score INTEGER,
+      provider_used TEXT,
+      created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    );
+  `);
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS musk_resume_uploads_user_created_idx
+      ON musk_resume_uploads (user_id, created_at DESC);
+  `);
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS musk_resume_uploads_conversation_idx
+      ON musk_resume_uploads (conversation_id);
+  `);
+}
+
+export async function ensureQuestEngineSchema() {
+  await pool.query(`
+    ALTER TABLE quest_definitions
+    ADD COLUMN IF NOT EXISTS verification_method TEXT DEFAULT 'manual';
+  `);
+
+  await pool.query(`
+    ALTER TABLE user_quests
+    ALTER COLUMN assigned_date TYPE DATE
+    USING assigned_date::date;
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS quest_assignment_retries (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL UNIQUE REFERENCES users(id),
+      retry_count INTEGER NOT NULL DEFAULT 0,
+      last_attempt TIMESTAMP DEFAULT NOW(),
+      status TEXT NOT NULL DEFAULT 'pending',
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    );
+  `);
+}
 
 // Add a ping function to verify database connection is working
 export async function pingDatabase() {
@@ -47,27 +150,68 @@ export async function pingDatabase() {
   }
 }
 
-// Retry mechanism for database operations
-export async function executeWithRetry<T>(operation: () => Promise<T>, maxRetries = 3, delay = 500): Promise<T> {
-  let lastError;
+// Safe error wrapper for Node.js compatibility (prevents mutation of read-only error properties)
+function wrapErrorSafely(error: unknown): Error {
+  // If it's already a regular Error, return as-is
+  if (error instanceof Error) {
+    return error;
+  }
   
-  for (let i = 0; i < maxRetries; i++) {
+  // For ErrorEvent or other non-Error objects, create a safe wrapper
+  const message = error instanceof ErrorEvent 
+    ? `${error.type}: ${error.message || 'unknown error'}`
+    : String(error);
+  
+  const wrappedError = new Error(message);
+  
+  // Preserve original error in a property (not the message field)
+  Object.defineProperty(wrappedError, 'originalError', {
+    value: error,
+    enumerable: false,
+    writable: true,
+    configurable: true
+  });
+  
+  return wrappedError;
+}
+
+// Enterprise-grade retry mechanism for database operations with Neon cold-start support
+export async function executeWithRetry<T>(operation: () => Promise<T>, maxRetries = 5): Promise<T> {
+  let attempt = 0;
+  
+  while (attempt < maxRetries) {
     try {
       return await operation();
-    } catch (error) {
-      console.error(`Database operation failed (attempt ${i + 1}/${maxRetries}):`, error);
-      lastError = error;
+    } catch (error: any) {
+      // Detect Neon-specific paused endpoint error
+      const isNeonDisabled = 
+        error.message?.includes("endpoint has been disabled") ||
+        error.message?.includes("endpoint is paused") ||
+        error.message?.includes("compute endpoint is suspended") ||
+        error.code === '57P03'; // Neon-specific error code
       
-      // Wait before retrying
-      if (i < maxRetries - 1) {
-        await new Promise(resolve => setTimeout(resolve, delay));
-        // Increase delay for next retry (exponential backoff)
-        delay *= 2;
+      if (isNeonDisabled) {
+        console.warn(`⏸️  Neon endpoint paused. Waiting for cold start... (attempt ${attempt + 1}/${maxRetries})`);
+      } else {
+        console.error(`❌ Database operation failed (attempt ${attempt + 1}/${maxRetries}):`, error.message || error);
       }
+      
+      attempt++;
+      
+      // If max retries reached, throw user-friendly error
+      if (attempt >= maxRetries) {
+        console.error('🚨 Database permanently failed after all retries');
+        throw new Error('Database temporarily unavailable. Please try again in a few moments.');
+      }
+      
+      // Exponential backoff: 2s, 4s, 6s, 8s, 10s (capped at 10s)
+      const backoffMs = Math.min(2000 * attempt, 10000);
+      console.log(`⏳ Retrying in ${backoffMs}ms...`);
+      await new Promise(resolve => setTimeout(resolve, backoffMs));
     }
   }
   
-  throw lastError;
+  throw new Error('Unexpected database failure.');
 }
 
 // Helper function to execute raw SQL queries with retry
@@ -193,4 +337,60 @@ export async function logDatabaseStartupInfo() {
   }
   
   console.log('=====================================\n');
+}
+
+// Automatic database warm-up on server start (wakes up Neon from cold start)
+export async function warmupDatabase() {
+  console.log('\n🔥 Warming up database connection...');
+  console.log('=====================================');
+  
+  try {
+    await ensureQuestEngineSchema();
+    await ensureMuskChatSchema();
+
+    await executeWithRetry(async () => {
+      const result = await pool.query('SELECT 1 as warmup_check, NOW() as warmup_time');
+      return result.rows[0];
+    });
+    
+    console.log('✅ Database warm-up complete - ready for queries');
+    console.log('=====================================\n');
+  } catch (error: any) {
+    console.error('🚨 Database warm-up failed:', error.message);
+    console.error('⚠️  Server will continue, but database may be unavailable');
+    console.error('=====================================\n');
+  }
+}
+
+// Database heartbeat to prevent Neon auto-pause during active development
+let heartbeatInterval: NodeJS.Timeout | null = null;
+
+export function startDatabaseHeartbeat(intervalMinutes: number = 4) {
+  // Clear existing heartbeat if any
+  if (heartbeatInterval) {
+    clearInterval(heartbeatInterval);
+  }
+  
+  const intervalMs = intervalMinutes * 60 * 1000;
+  console.log(`💓 Starting database heartbeat (every ${intervalMinutes} minutes)`);
+  
+  heartbeatInterval = setInterval(async () => {
+    try {
+      await pool.query('SELECT 1 as heartbeat');
+      console.log('💓 Database heartbeat OK');
+    } catch (error: any) {
+      console.error('💔 Database heartbeat error:', error.message);
+    }
+  }, intervalMs);
+  
+  // Ensure interval doesn't prevent Node.js from exiting
+  heartbeatInterval.unref();
+}
+
+export function stopDatabaseHeartbeat() {
+  if (heartbeatInterval) {
+    clearInterval(heartbeatInterval);
+    heartbeatInterval = null;
+    console.log('💔 Database heartbeat stopped');
+  }
 }

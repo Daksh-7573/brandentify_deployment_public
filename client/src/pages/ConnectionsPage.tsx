@@ -4,7 +4,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Check, X, UserPlus, Loader2, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ConnectionRequest {
@@ -25,17 +25,98 @@ export default function ConnectionsPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("received");
+  const wsRef = useRef<WebSocket | null>(null);
+
+  // 🔥 WebSocket connection for real-time connection request notifications
+  useEffect(() => {
+    if (!user?.id) return;
+
+    // Get WebSocket URL based on current environment
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    
+    console.log('[ConnectionsPage] 🔌 Connecting to WebSocket:', wsUrl);
+    
+    const ws = new WebSocket(wsUrl);
+    wsRef.current = ws;
+
+    ws.onopen = () => {
+      console.log('[ConnectionsPage] ✅ WebSocket connected');
+      // Authenticate the WebSocket connection
+      ws.send(JSON.stringify({
+        type: 'auth',
+        userId: user.id,
+      }));
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        console.log('[ConnectionsPage] 📩 WebSocket message received:', data);
+
+        if (data.type === 'auth_success') {
+          console.log('[ConnectionsPage] ✅ WebSocket authenticated');
+        } else if (data.type === 'connection_request') {
+          console.log('[ConnectionsPage] 🔔 New connection request received!', data);
+          
+          // Show toast notification
+          toast({
+            title: "New Connection Request",
+            description: `${data.senderName || 'Someone'} wants to connect with you!`,
+          });
+
+          // Automatically refresh the received connection requests query
+          queryClient.invalidateQueries({ 
+            queryKey: ['/api/users', user.id, 'received-connection-requests'] 
+          });
+          console.log('[ConnectionsPage] ♻️  Invalidated received-connection-requests query');
+        }
+      } catch (error) {
+        console.error('[ConnectionsPage] ❌ Error parsing WebSocket message:', error);
+      }
+    };
+
+    ws.onerror = (error) => {
+      console.error('[ConnectionsPage] ❌ WebSocket error:', error);
+    };
+
+    ws.onclose = () => {
+      console.log('[ConnectionsPage] 🔌 WebSocket disconnected');
+    };
+
+    // Cleanup on unmount
+    return () => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
+    };
+  }, [user?.id, toast]);
 
   // Fetch received connection requests
-  const { data: receivedRequests, isLoading: isLoadingReceived } = useQuery<ConnectionRequest[]>({
+  const { data: receivedRequests, isLoading: isLoadingReceived, error: receivedError } = useQuery<ConnectionRequest[]>({
     queryKey: ['/api/users', user?.id, 'received-connection-requests'],
     enabled: !!user?.id,
+    onSuccess: (data) => {
+      console.log(`[ConnectionsPage] ✅ Received requests loaded:`, data?.length || 0, 'requests');
+      if (data && data.length > 0) {
+        console.log(`[ConnectionsPage] First request:`, data[0]);
+      }
+    },
+    onError: (error: any) => {
+      console.error(`[ConnectionsPage] ❌ Error loading received requests:`, error);
+    },
   });
 
   // Fetch sent connection requests
-  const { data: sentRequests, isLoading: isLoadingSent } = useQuery<ConnectionRequest[]>({
+  const { data: sentRequests, isLoading: isLoadingSent, error: sentError } = useQuery<ConnectionRequest[]>({
     queryKey: ['/api/users', user?.id, 'sent-connection-requests'],
     enabled: !!user?.id,
+    onSuccess: (data) => {
+      console.log(`[ConnectionsPage] ✅ Sent requests loaded:`, data?.length || 0, 'requests');
+    },
+    onError: (error: any) => {
+      console.error(`[ConnectionsPage] ❌ Error loading sent requests:`, error);
+    },
   });
 
   // Accept connection request mutation

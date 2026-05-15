@@ -19,6 +19,7 @@ export interface UserData {
   emailVerified?: boolean;
   profileCompleted?: boolean;
   visitingCardType?: string | null;
+  selectedPortfolioLayout?: string | null;
   createdAt?: Date | string | null;
   // Subscription
   subscription_tier?: 'free' | 'premium';

@@ -1051,7 +1051,7 @@ export default function CreativeQuantum({
         {/* Footer */}
         <footer className="py-12 text-center border-t border-white/10">
           <p className="text-white/50 text-sm">
-            © {new Date().getFullYear()} {userInfo.name}. Built with Brandentifier.
+            © {new Date().getFullYear()} {userInfo.name}. Built with Brandentify.
           </p>
         </footer>
       </div>
@@ -1204,3 +1204,4 @@ export default function CreativeQuantum({
     </div>
   );
 }
+

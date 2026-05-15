@@ -31,118 +31,94 @@ class IntentClassifier {
 
   /**
    * Match against deterministic keyword rules
-   * Rules ordered by priority
+   * Rules ordered by priority: Action > Clarify > Probe > Resource > Confirm > Alternative > Close
    */
   private matchKeywordRules(message: string): ClassificationResult | null {
-    // ACTION intent - user wants the system to DO something
+    // 1. ACTION intent (High Priority) - User wants system to DO something
     if (this.matchActionIntent(message)) {
-      return { intent: 'action', confidence: 0.9, matchedRule: 'action-keywords' };
+      return { intent: 'action', confidence: 0.95, matchedRule: 'action-regex' };
     }
 
-    // CLARIFY intent - user asks clarifying questions or needs ambiguity resolved
+    // 2. CLARIFY intent - Asking for definitions/choices or ambiguous
     if (this.matchClarifyIntent(message)) {
-      return { intent: 'clarify', confidence: 0.85, matchedRule: 'clarify-keywords' };
+      return { intent: 'clarify', confidence: 0.9, matchedRule: 'clarify-regex' };
     }
 
-    // PROBE intent - user explores deeper, asks for more context
+    // 3. PROBE intent - Depth & context seeking
     if (this.matchProbeIntent(message)) {
-      return { intent: 'probe', confidence: 0.8, matchedRule: 'probe-keywords' };
+      return { intent: 'probe', confidence: 0.85, matchedRule: 'probe-regex' };
     }
 
-    // RESOURCE intent - user asks for templates, examples, tools
+    // 4. RESOURCE intent - Asking for templates, examples, tools
     if (this.matchResourceIntent(message)) {
-      return { intent: 'resource', confidence: 0.85, matchedRule: 'resource-keywords' };
+      return { intent: 'resource', confidence: 0.9, matchedRule: 'resource-regex' };
     }
 
-    // CONFIRM intent - user affirms previous suggestion
+    // 5. CONFIRM intent - Affirmation/Acceptance
     if (this.matchConfirmIntent(message)) {
-      return { intent: 'confirm', confidence: 0.9, matchedRule: 'confirm-keywords' };
+      return { intent: 'confirm', confidence: 0.95, matchedRule: 'confirm-regex' };
     }
 
-    // ALTERNATIVE intent - user rejects or asks for different approach
+    // 6. ALTERNATIVE intent - Rejecting or asking for different approach
     if (this.matchAlternativeIntent(message)) {
-      return { intent: 'alternative', confidence: 0.8, matchedRule: 'alternative-keywords' };
+      return { intent: 'alternative', confidence: 0.85, matchedRule: 'alternative-regex' };
     }
 
-    // CLOSE intent - user ends conversation
+    // 7. CLOSE intent - End of conversation
     if (this.matchCloseIntent(message)) {
-      return { intent: 'close', confidence: 0.85, matchedRule: 'close-keywords' };
+      return { intent: 'close', confidence: 0.9, matchedRule: 'close-regex' };
     }
 
     return null;
   }
 
   private matchActionIntent(message: string): boolean {
-    const actionKeywords = [
-      'draft', 'write', 'create', 'generate', 'schedule', 'book', 'send', 'share',
-      'post', 'publish', 'upload', 'export', 'download', 'apply', 'connect me',
-      'introduce me', 'show me', 'help me (create|draft|write|build)',
-      "i'd like you to", 'can you', 'could you', 'would you', 'shall i',
-      'should i', 'want to', 'need to create', 'need to draft'
-    ];
+    const actionRegex = /\b(draft|write|create|generate|schedule|book|send|share|post|publish|upload|export|download|apply|connect me|introduce me|show me)\b/i;
+    const phraseRegex = /(i'd like you to (draft|write|create|show))|(can you (draft|create|write|post))|(help me (create|draft|write|build))/i;
 
-    return actionKeywords.some(keyword => message.includes(keyword));
+    return actionRegex.test(message) || phraseRegex.test(message);
   }
 
   private matchClarifyIntent(message: string): boolean {
-    const clarifyKeywords = [
-      'do you mean', 'which', 'which one', 'which platform', 'which tool',
-      'did you mean', 'or do you mean', 'or is it', 'clarify', 'confused',
-      'not sure', 'mean by', 'understand'
-    ];
+    const clarifyRegex = /\b(do you mean|which (one|platform)|which (tool|format|version)|did you mean|or do you mean|clarify|confused|understand)\b/i;
+    const isShortQuestion = message.split(/\s+/).length < 10 && message.endsWith('?');
 
-    const hasClarifyKeyword = clarifyKeywords.some(keyword => message.includes(keyword));
-    const isShortQuestion = message.split(' ').length < 10 && message.includes('?');
+    // Ambiguous pronouns without clear context (simplified)
+    const hasAmbiguousPronouns = /\b(this|that|it|them|they)\b/i.test(message) && message.endsWith('?');
 
-    return hasClarifyKeyword || isShortQuestion;
+    return clarifyRegex.test(message) || isShortQuestion || hasAmbiguousPronouns;
   }
 
   private matchProbeIntent(message: string): boolean {
-    const probeKeywords = [
-      'why', 'what', 'how', 'tell me more', 'explain', 'more about',
-      'go deeper', 'examples', 'i want', "i'm trying to", 'my goal is',
-      'i need to', 'grow', 'get clients', 'pivot', 'monetize', 'expand'
-    ];
+    const probeKeywords = /\b(why|what|how|which|tell me more|explain|more about|go deeper|examples)\b/i;
+    const goalPhrases = /\b(i want|i'm trying to|my goal is|i need to)\b/i;
+    const goalGrowthWords = /\b(grow|get clients|pivot|monetize|expand)\b/i;
 
-    return probeKeywords.some(keyword => message.includes(keyword));
+    const isLongGoalMessage = message.split(/\s+/).length > 12 && goalGrowthWords.test(message);
+
+    return probeKeywords.test(message) || goalPhrases.test(message) || isLongGoalMessage;
   }
 
   private matchResourceIntent(message: string): boolean {
-    const resourceKeywords = [
-      'template', 'example', 'sample', 'checklist', 'outline', 'pack', 'tool',
-      'guide', 'resource', 'swipe file', 'do you have', 'send me', 'show sample',
-      'give example', 'want a', 'need a'
-    ];
+    const resourceRegex = /\b(template|example|sample|checklist|outline|templates|pack|tool|guide|resource|swipe file)\b/i;
+    const requestPhrases = /\b(do you have a template|send me|show sample|give example|want a|need a)\b/i;
 
-    return resourceKeywords.some(keyword => message.includes(keyword));
+    return resourceRegex.test(message) || requestPhrases.test(message);
   }
 
   private matchConfirmIntent(message: string): boolean {
-    const confirmKeywords = [
-      'yes', 'yep', 'sure', 'okay', 'do it', 'please proceed', 'confirm',
-      'sounds good', 'go ahead', "let's do it", 'absolutely', 'definitely',
-      'for sure', 'works for me'
-    ];
-
-    return confirmKeywords.some(keyword => message.includes(keyword));
+    const confirmRegex = /\b(yes|yep|sure|okay|ok|do it|please proceed|confirm|sounds good|go ahead|let's do it|absolutely|definitely|works for me)\b/i;
+    return confirmRegex.test(message);
   }
 
   private matchAlternativeIntent(message: string): boolean {
-    const alternativeKeywords = [
-      'or', 'instead', 'another', 'different', 'not that', "don't want",
-      'prefer', 'rather', 'alternative', 'other way', 'else'
-    ];
-
-    return alternativeKeywords.some(keyword => message.includes(keyword));
+    const alternativeRegex = /\b(or|instead|another|different|not that|don’t want|prefer|rather|alternative|else)\b/i;
+    return alternativeRegex.test(message);
   }
 
   private matchCloseIntent(message: string): boolean {
-    const closeKeywords = [
-      'thanks', 'thank you', "that's all", 'bye', 'done', 'not now',
-      'later', 'goodbye', 'see you', 'talk soon'
-    ];
-
-    return closeKeywords.some(keyword => message.includes(keyword));
+    const closeRegex = /\b(thanks|thank you|that’s all|bye|done|not now|later|goodbye|see you)\b/i;
+    return closeRegex.test(message);
   }
 
   /**

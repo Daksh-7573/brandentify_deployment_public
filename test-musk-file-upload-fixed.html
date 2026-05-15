@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musk Chat File Upload Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 28px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="file"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        input[type="file"] {
+            padding: 8px;
+        }
+        
+        .file-info {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-resume {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-resume:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-resume:active {
+            transform: translateY(0);
+        }
+        
+        .btn-pitchdeck {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .btn-pitchdeck:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 87, 108, 0.4);
+        }
+        
+        .btn-pitchdeck:active {
+            transform: translateY(0);
+        }
+        
+        .btn-clear {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .btn-clear:hover {
+            background: #e0e0e0;
+        }
+        
+        .progress-section {
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .progress-section.active {
+            display: block;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .progress-text {
+            font-size: 12px;
+            color: #888;
+            text-align: right;
+        }
+        
+        .status-section {
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .status-section.active {
+            display: block;
+        }
+        
+        .status-section.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .status-section.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .status-section.loading {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        
+        .status-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .status-message {
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+        
+        .response-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            display: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .response-section.active {
+            display: block;
+        }
+        
+        .response-title {
+            font-weight: 600;
+            font-size: 12px;
+            color: #667eea;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .response-content {
+            font-size: 12px;
+            color: #555;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: currentColor;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #003d82;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Musk Chat File Upload Test</h1>
+        
+        <div class="info-box">
+            <strong>Testing the fixed file upload handlers.</strong><br>
+            This tests both resume and pitch deck uploads with real FormData parsing.
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Configuration</div>
+            
+            <div class="form-group">
+                <label for="userId">User ID</label>
+                <input 
+                    type="text" 
+                    id="userId" 
+                    placeholder="e.g., 123 or Firebase UID"
+                    value="1"
+                />
+                <div class="file-info">Enter your numeric user ID or Firebase UID</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="apiUrl">API Base URL</label>
+                <input 
+                    type="text" 
+                    id="apiUrl" 
+                    placeholder="e.g., http://localhost:5000"
+                    value="http://localhost:5000"
+                />
+                <div class="file-info">The base URL where your Brandentifier server is running</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">File Upload</div>
+            
+            <div class="form-group">
+                <label for="fileInput">Select File</label>
+                <input 
+                    type="file" 
+                    id="fileInput"
+                    accept=".pdf,.doc,.docx,.txt"
+                />
+                <div class="file-info">PDF or Word document for resume, or PDF for pitch deck</div>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn-resume" onclick="uploadResume()">📄 Upload Resume</button>
+                <button class="btn-pitchdeck" onclick="uploadPitchDeck()">📊 Upload Pitch Deck</button>
+            </div>
+            
+            <button class="btn-clear" onclick="clearAll()">Clear Results</button>
+        </div>
+        
+        <div class="progress-section" id="progressSection">
+            <div class="section-title">Upload Progress</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text">
+                <span id="progressText">0%</span>
+            </div>
+        </div>
+        
+        <div class="status-section" id="statusSection"></div>
+        
+        <div class="response-section" id="responseSection">
+            <div class="response-title">Server Response</div>
+            <div class="response-content" id="responseContent"></div>
+        </div>
+    </div>
+
+    <script>
+        function updateStatus(message, type = 'loading') {
+            const statusSection = document.getElementById('statusSection');
+            statusSection.className = `status-section active ${type}`;
+            statusSection.innerHTML = `
+                <div class="status-title">
+                    ${type === 'loading' ? '<span class="spinner"></span>' : ''}
+                    ${type === 'success' ? '✓' : type === 'error' ? '✗' : 'ℹ'} ${
+                        type === 'loading' ? 'Processing' : 
+                        type === 'success' ? 'Success' : 
+                        type === 'error' ? 'Error' : 'Info'
+                    }
+                </div>
+                <div class="status-message">${message}</div>
+            `;
+        }
+
+        function updateProgress(percent) {
+            const progressSection = document.getElementById('progressSection');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            progressFill.style.width = percent + '%';
+            progressText.textContent = percent + '%';
+            
+            if (percent === 100) {
+                progressSection.classList.remove('active');
+            } else {
+                progressSection.classList.add('active');
+            }
+        }
+
+        function showResponse(data) {
+            const responseSection = document.getElementById('responseSection');
+            const responseContent = document.getElementById('responseContent');
+            
+            responseSection.classList.add('active');
+            responseContent.textContent = JSON.stringify(data, null, 2);
+        }
+
+        function clearAll() {
+            document.getElementById('fileInput').value = '';
+            document.getElementById('statusSection').classList.remove('active');
+            document.getElementById('progressSection').classList.remove('active');
+            document.getElementById('responseSection').classList.remove('active');
+            updateProgress(0);
+        }
+
+        function uploadFile(endpoint) {
+            const userId = document.getElementById('userId').value.trim();
+            const apiUrl = document.getElementById('apiUrl').value.trim();
+            const fileInput = document.getElementById('fileInput');
+            
+            if (!userId) {
+                updateStatus('Please enter a user ID', 'error');
+                return;
+            }
+            
+            if (!fileInput.files.length) {
+                updateStatus('Please select a file', 'error');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            
+            updateStatus(`Uploading ${file.name} to ${endpoint}...`, 'loading');
+            updateProgress(0);
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('userId', userId);
+            
+            const xhr = new XMLHttpRequest();
+            const uploadUrl = apiUrl.replace(/\/$/, '') + '/api/musk/' + endpoint;
+            
+            xhr.upload.addEventListener('progress', (event) => {
+                if (event.lengthComputable) {
+                    const percentComplete = Math.round((event.loaded / event.total) * 100);
+                    updateProgress(percentComplete);
+                }
+            });
+            
+            xhr.addEventListener('load', () => {
+                updateProgress(100);
+                
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        updateStatus(`✓ Upload successful! Received response from ${endpoint}`, 'success');
+                        showResponse(response);
+                    } catch (e) {
+                        updateStatus('Upload successful but response was not valid JSON', 'error');
+                        showResponse({ raw: xhr.responseText });
+                    }
+                } else {
+                    try {
+                        const error = JSON.parse(xhr.responseText);
+                        updateStatus(`Error: ${error.error || 'Unknown error'} - ${error.message || xhr.statusText}`, 'error');
+                        showResponse(error);
+                    } catch (e) {
+                        updateStatus(`HTTP ${xhr.status}: ${xhr.statusText}`, 'error');
+                        showResponse({ status: xhr.status, responseText: xhr.responseText });
+                    }
+                }
+            });
+            
+            xhr.addEventListener('error', () => {
+                updateStatus('Network error - could not reach server', 'error');
+            });
+            
+            xhr.addEventListener('abort', () => {
+                updateStatus('Upload was cancelled', 'error');
+            });
+            
+            xhr.open('POST', uploadUrl);
+            xhr.send(formData);
+        }
+
+        function uploadResume() {
+            uploadFile('resume-upload');
+        }
+
+        function uploadPitchDeck() {
+            uploadFile('pitchdeck-upload');
+        }
+
+        // Initialize
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                console.log('File selected:', e.target.files[0].name, e.target.files[0].size, 'bytes');
+            }
+        });
+    </script>
+</body>
+</html>

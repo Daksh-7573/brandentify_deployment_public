@@ -67,7 +67,7 @@ export function QuickAuthTest() {
     <div className="space-y-4">
       <div className="text-center">
         <h3 className="text-lg font-semibold text-white mb-2">Quick Test Authentication</h3>
-        <p className="text-sm text-gray-300 mb-4">Skip Google OAuth and test the Brandentifier system directly</p>
+        <p className="text-sm text-gray-300 mb-4">Skip Google OAuth and test the Brandentify system directly</p>
         
         <Button 
           onClick={handleQuickAuth}

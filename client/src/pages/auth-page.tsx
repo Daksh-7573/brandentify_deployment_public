@@ -1,62 +1,64 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Mail, Phone, Check, Sparkles, Target, Users, AlertTriangle, Clock, RefreshCw, Shield, WifiOff, UserX } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  Check,
+  Sparkles,
+  Target,
+  Users,
+  AlertTriangle,
+  Clock,
+  RefreshCw,
+  Shield,
+  WifiOff,
+  UserX,
+  ArrowLeft,
+  ChevronRight,
+  Zap,
+  Globe,
+  Rocket,
+  Brain,
+  Star
+} from "lucide-react";
 import { FastGoogleAuth } from "@/components/auth/FastGoogleAuth";
-import { FastQuickAuth } from "@/components/auth/FastQuickAuth";
-import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
-import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
+import { AuthPageSEO } from '@/components/seo/auth-page-seo';
+import { AuthPageStructuredData } from '@/components/seo/structured-data';
+import { AuthFAQSection } from '@/components/seo/auth-faq';
+
+// Animation Variants
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    }
+  }
+};
 
 export default function AuthPage() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const [_, setLocation] = useLocation();
   const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
-  const [useDemoBypass, setUseDemoBypass] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
-  const [simulateNewUser, setSimulateNewUser] = useState(false);
-  
+
   // Extract error from URL parameters
   const urlParams = new URLSearchParams(window.location.search);
   const errorType = urlParams.get('error');
   const errorMessage = urlParams.get('message');
-  
-  // Debug auth state on auth page
-  console.log('AuthPage: Current auth state:', {
-    isAuthenticated,
-    isLoading,
-    hasUser: !!user,
-    userEmail: user?.email
-  });
-  
-  // We used to bypass Google auth on the problematic domain, but now we're properly 
-  // supporting it directly and want to use Google auth instead
-  useEffect(() => {
-    // Instead of automatically enabling demo mode, we now properly support Google auth on all domains
-    setUseDemoBypass(false);
-  }, []);
-
-  // Disabled auth redirect handler - let the AuthContext handle this
-  // useEffect(() => {
-  //   const checkRedirect = async () => {
-  //     const { checkAndHandleAuthRedirect } = await import('@/utils/auth-redirect-handler');
-  //     await checkAndHandleAuthRedirect();
-  //   };
-  //   
-  //   checkRedirect();
-  // }, []);
 
   // Error message configuration
   const getErrorConfig = (errorType: string | null) => {
@@ -65,8 +67,7 @@ export default function AuthPage() {
         return {
           icon: Shield,
           title: 'Security Verification Failed',
-          message: 'The authentication request could not be verified. This usually happens when the session has been tampered with.',
-          guidance: 'Please try signing in again to restart the authentication process.',
+          message: 'The authentication request could not be verified.',
           color: 'border-red-500/50 bg-red-500/10',
           iconColor: 'text-red-400',
           retryable: true
@@ -74,361 +75,299 @@ export default function AuthPage() {
       case 'expired_state':
         return {
           icon: Clock,
-          title: 'Authentication Session Expired',
-          message: 'Your authentication session has expired. For security reasons, authentication requests are only valid for 15 minutes.',
-          guidance: 'Please start the sign-in process again to get a fresh authentication session.',
+          title: 'Session Expired',
+          message: 'Your authentication session has expired.',
           color: 'border-yellow-500/50 bg-yellow-500/10',
           iconColor: 'text-yellow-400',
-          retryable: true
-        };
-      case 'exchange_code_not_found':
-        return {
-          icon: WifiOff,
-          title: 'Connection Handoff Failed',
-          message: 'The secure session transfer between domains failed. This can happen if you took too long to complete the sign-in or if there was a network issue.',
-          guidance: 'Please try signing in again. The process should complete within a few minutes.',
-          color: 'border-orange-500/50 bg-orange-500/10',
-          iconColor: 'text-orange-400',
           retryable: true
         };
       case 'oauth_error':
         return {
           icon: AlertTriangle,
-          title: 'Google Sign-In Error',
-          message: 'Google encountered an error while processing your sign-in request.',
-          guidance: 'This is usually temporary. Please try again, or check if your Google account is accessible.',
-          color: 'border-red-500/50 bg-red-500/10',
-          iconColor: 'text-red-400',
-          retryable: true
-        };
-      case 'token_exchange_failed':
-        return {
-          icon: RefreshCw,
-          title: 'Authentication Token Error',
-          message: 'We couldn\'t complete the authentication process with Google. This might be due to a temporary server issue.',
-          guidance: 'Please wait a moment and try signing in again. If the problem persists, contact support.',
-          color: 'border-red-500/50 bg-red-500/10',
-          iconColor: 'text-red-400',
-          retryable: true
-        };
-      case 'user_info_failed':
-        return {
-          icon: UserX,
-          title: 'Profile Information Error',
-          message: 'We successfully authenticated with Google but couldn\'t retrieve your profile information.',
-          guidance: 'Please check your Google account permissions and try again.',
-          color: 'border-red-500/50 bg-red-500/10',
-          iconColor: 'text-red-400',
-          retryable: true
-        };
-      case 'invalid_exchange_code':
-        return {
-          icon: Shield,
-          title: 'Invalid Session Code',
-          message: 'The session transfer code is invalid or malformed.',
-          guidance: 'Please try signing in again to get a new session code.',
-          color: 'border-red-500/50 bg-red-500/10',
-          iconColor: 'text-red-400',
-          retryable: true
-        };
-      case 'exchange_code_expired':
-        return {
-          icon: Clock,
-          title: 'Session Transfer Expired',
-          message: 'The session transfer took too long and has expired for security reasons.',
-          guidance: 'Please complete the sign-in process within 5 minutes. Try again.',
-          color: 'border-yellow-500/50 bg-yellow-500/10',
-          iconColor: 'text-yellow-400',
-          retryable: true
-        };
-      case 'host_mismatch':
-        return {
-          icon: Shield,
-          title: 'Domain Security Check Failed',
-          message: 'The authentication request came from an unexpected domain.',
-          guidance: 'This is a security protection. Please try signing in again.',
-          color: 'border-red-500/50 bg-red-500/10',
-          iconColor: 'text-red-400',
-          retryable: true
-        };
-      case 'callback_error':
-        return {
-          icon: AlertTriangle,
-          title: 'Authentication Callback Error',
-          message: 'An unexpected error occurred during the authentication process.',
-          guidance: 'Please try again. If the problem persists, contact support.',
-          color: 'border-red-500/50 bg-red-500/10',
-          iconColor: 'text-red-400',
-          retryable: true
-        };
-      case 'session_accept_error':
-        return {
-          icon: WifiOff,
-          title: 'Session Setup Error',
-          message: 'We couldn\'t complete setting up your session after authentication.',
-          guidance: 'Please try signing in again. This is usually a temporary issue.',
-          color: 'border-orange-500/50 bg-orange-500/10',
-          iconColor: 'text-orange-400',
-          retryable: true
-        };
-      case 'missing_params':
-        return {
-          icon: AlertTriangle,
-          title: 'Authentication Parameters Missing',
-          message: 'Required authentication information was not received from Google.',
-          guidance: 'Please ensure you complete the Google sign-in process and try again.',
+          title: 'Sign-In Error',
+          message: 'Google encountered an error while processing your request.',
           color: 'border-red-500/50 bg-red-500/10',
           iconColor: 'text-red-400',
           retryable: true
         };
       default:
-        return null;
+        return errorType ? {
+          icon: AlertTriangle,
+          title: 'Authentication Error',
+          message: 'An unexpected error occurred. Please try again.',
+          color: 'border-orange-500/50 bg-orange-500/10',
+          iconColor: 'text-orange-400',
+          retryable: true
+        } : null;
     }
   };
 
   const errorConfig = getErrorConfig(errorType);
 
-  // Handle retry button click
-  const handleRetry = () => {
-    setIsRetrying(true);
-    // Clear error parameters from URL
-    window.history.replaceState({}, '', '/auth');
-    
-    // Reset retry state after a brief delay
-    setTimeout(() => {
-      setIsRetrying(false);
-    }, 1000);
+  const determineOnboardingRedirect = async (userId: number) => {
+    try {
+      const response = await fetch(`/api/users/${userId}/onboarding-status`, {
+        credentials: 'include',
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (!response.ok) {
+        return '/onboarding';
+      }
+
+      const data = await response.json();
+      return data?.isComplete ? '/dashboard' : '/onboarding';
+    } catch (error) {
+      return '/onboarding';
+    }
   };
 
-  // Auto-clear errors after 30 seconds to prevent stale error states
-  useEffect(() => {
-    if (errorType) {
-      const timer = setTimeout(() => {
-        window.history.replaceState({}, '', '/auth');
-      }, 30000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [errorType]);
+  const handleRetry = () => {
+    setIsRetrying(true);
+    window.history.replaceState({}, '', '/auth');
+    setTimeout(() => setIsRetrying(false), 1000);
+  };
 
-  // Simple redirect without loops - only redirect if explicitly on auth page
   useEffect(() => {
-    if (isAuthenticated && !isLoading) {
-      // Only redirect if we're specifically on the auth page
+    // Listen for auth state changes from context
+    const handleAuthChange = async (event: Event) => {
+      const customEvent = event as CustomEvent<{ user: AuthUser; authenticated: boolean }>;
+      if (customEvent.detail.authenticated && customEvent.detail.user) {
+        const targetPath = await determineOnboardingRedirect(customEvent.detail.user.id);
+        console.log('[Auth Page] Auth state changed, redirecting to:', targetPath);
+        setLocation(targetPath);
+      }
+    };
+    
+    window.addEventListener('auth-state-changed', handleAuthChange);
+    
+    return () => {
+      window.removeEventListener('auth-state-changed', handleAuthChange);
+    };
+  }, [setLocation]);
+
+  useEffect(() => {
+    if (isAuthenticated && !isLoading && user) {
       const currentPath = window.location.pathname;
       if (currentPath === '/auth') {
-        console.log("✅ User authenticated on auth page, redirecting to dashboard");
-        // Use setTimeout to avoid any timing issues
-        setTimeout(() => {
-          setLocation('/dashboard');
-        }, 100);
+        determineOnboardingRedirect(user.id).then((targetPath) => {
+          console.log(`[Auth Redirect] Routing to: ${targetPath}`);
+          setLocation(targetPath);
+        });
       }
     }
-  }, [isAuthenticated, isLoading, setLocation]);
+  }, [isAuthenticated, isLoading, user, setLocation]);
 
   return (
-    <div 
-      className="responsive-background min-h-screen w-full relative overflow-hidden"
-      style={{ 
-        backgroundImage: `url(${backgroundImage})`
-      }}
-    >
-      {/* Glass UI overlay to maintain design consistency */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+    <div className="min-h-screen bg-[#121212] text-white selection:bg-white/20 font-['Outfit'] overflow-x-hidden relative">
+      {/* Dynamic Background - Premium Dark Theme */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[20%] left-[-20%] w-[50%] h-[50%] bg-white/5 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-white/3 blur-[120px] rounded-full" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40" />
+      </div>
+
+      {/* Brandentify Logo - Top Left */}
+      <div className="fixed top-8 left-8 z-50">
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 bg-gradient-to-tr from-white/40 to-white/20 rounded-lg flex items-center justify-center shadow-lg shadow-white/5">
+            <Sparkles size={18} className="text-white" />
+          </div>
+          <span className="text-xl font-bold tracking-tight">Brandentify</span>
+        </div>
+      </div>
+
+      {/* Floating Back Button */}
+      <div className="fixed top-8 right-8 z-50">
+        <Button
+          size="sm"
+          className="neo-glass-button tertiary px-4"
+          onClick={() => setLocation("/")}
+          style={{ borderRadius: '5px' }}
+        >
+          <ArrowLeft size={16} className="mr-2" />
+          Back to Home
+        </Button>
+      </div>
+
+      <AuthPageSEO />
+      <AuthPageStructuredData />
       
-      {/* Content layer */}
-      <div className="relative z-10">
-        <NeoGlassLayout className="mt-0 pt-2 px-2 md:px-4 min-h-screen flex flex-col justify-start py-2 md:py-4">
-          {/* Error Alert Section */}
-          {errorConfig && (
-            <div className="max-w-4xl mx-auto mb-6 md:mb-8" data-testid="auth-error-alert">
-              <Alert className={`${errorConfig.color} border-2`}>
-                <div className="flex items-start space-x-4">
-                  <div className={`p-2 rounded-full bg-black/20 ${errorConfig.iconColor} flex-shrink-0`}>
-                    <errorConfig.icon className="h-5 w-5" />
+      <main className="relative z-10 pb-32 container mx-auto px-6" style={{ paddingTop: '10rem' }}>
+        <div className="max-w-6xl mx-auto">
+          {/* Error Section */}
+          <AnimatePresence>
+            {errorConfig && (
+              <motion.div
+                initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                animate={{ opacity: 1, height: "auto", marginBottom: 32 }}
+                exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                className="overflow-hidden"
+              >
+                <div className={`p-6 rounded-3xl border-2 ${errorConfig.color} flex items-start gap-5 backdrop-blur-sm`}>
+                  <div className={`p-3 rounded-2xl bg-black/20 ${errorConfig.iconColor}`}>
+                    <errorConfig.icon size={24} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-white mb-2" data-testid="error-title">
-                          {errorConfig.title}
-                        </h3>
-                        <AlertDescription className="text-gray-300 mb-3" data-testid="error-message">
-                          {errorConfig.message}
-                        </AlertDescription>
-                        <p className="text-sm text-gray-400" data-testid="error-guidance">
-                          {errorConfig.guidance}
-                        </p>
-                        {errorMessage && (
-                          <p className="text-xs text-gray-500 mt-2" data-testid="error-details">
-                            Technical details: {errorMessage}
-                          </p>
-                        )}
-                      </div>
-                      {errorConfig.retryable && (
-                        <div className="flex-shrink-0">
-                          <Button
-                            onClick={handleRetry}
-                            disabled={isRetrying}
-                            variant="outline"
-                            size="sm"
-                            className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/30"
-                            data-testid="button-retry-auth"
-                          >
-                            {isRetrying ? (
-                              <>
-                                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                                Clearing...
-                              </>
-                            ) : (
-                              <>
-                                <RefreshCw className="h-4 w-4 mr-2" />
-                                Try Again
-                              </>
-                            )}
-                          </Button>
-                        </div>
+                    <h3 className="text-lg font-bold text-white mb-1">{errorConfig.title}</h3>
+                    <p className="text-gray-300 text-sm mb-4">{errorConfig.message}</p>
+                    <Button
+                      onClick={handleRetry}
+                      disabled={isRetrying}
+                      size="sm"
+                      className="neo-glass-button secondary px-6"
+                      style={{ borderRadius: '5px' }}
+                    >
+                      {isRetrying ? (
+                        <RefreshCw size={14} className="mr-2 animate-spin" />
+                      ) : (
+                        <RefreshCw size={14} className="mr-2" />
                       )}
-                    </div>
+                      Try Again
+                    </Button>
                   </div>
                 </div>
-              </Alert>
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          {/* Header Section */}
-          <div className="text-center mb-6 md:mb-8">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent mb-3 md:mb-4">
-            Welcome to Brandentifier
-          </h1>
-          <p className="text-sm sm:text-base md:text-lg text-gray-300 px-2">
-            {errorConfig ? 'Please try signing in again' : 'Sign in to accelerate your professional growth with AI-powered career guidance'}
-          </p>
-          
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto">
-          {/* Left column - Auth forms */}
-          <NeoGlassSection>
-            <div className="space-y-4 md:space-y-6">
-              <Tabs defaultValue="email" onValueChange={(v) => setAuthMethod(v as "email" | "phone")}>
-                <TabsList className="grid grid-cols-2 mb-4 md:mb-6 dark-tabs-list w-full">
-                  <TabsTrigger value="email" className="flex items-center gap-1 md:gap-1.5 dark-tabs-trigger text-sm md:text-base">
-                    <Mail className="h-3 w-3 md:h-4 md:w-4" />
-                    <span>Email</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="phone" className="flex items-center gap-1 md:gap-1.5 dark-tabs-trigger text-sm md:text-base">
-                    <Phone className="h-3 w-3 md:h-4 md:w-4" />
-                    <span>Phone</span>
-                  </TabsTrigger>
-                </TabsList>
-
-                {/* Email Authentication */}
-                <TabsContent value="email">
-                  <div className="space-y-4 md:space-y-6">
-                    {/* Clean Google Authentication Only */}
-                    <div className="space-y-6">
-                      <div className="text-center space-y-3">
-                        <h3 className="text-xl font-semibold text-white">Welcome to Brandentifier</h3>
-                        <p className="text-gray-300">Your AI-powered career development platform</p>
-                      </div>
-                      
-                      <FastGoogleAuth />
-                      
-                      <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                          <span className="w-full border-t border-white/20" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                          <span className="bg-black/50 px-2 text-gray-300">or</span>
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <FastQuickAuth simulateNewUser={simulateNewUser} />
-                        
-                        <div className="flex items-center justify-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10">
-                          <Switch
-                            id="simulate-new-user"
-                            checked={simulateNewUser}
-                            onCheckedChange={setSimulateNewUser}
-                            data-testid="toggle-simulate-new-user"
-                          />
-                          <Label 
-                            htmlFor="simulate-new-user" 
-                            className="text-white/90 text-sm cursor-pointer flex items-center gap-2"
-                          >
-                            <span>Simulate New User</span>
-                            <span className="text-white/50 text-xs">(Test Onboarding)</span>
-                          </Label>
-                        </div>
-                      </div>
-                      
-                      <div className="text-center">
-                        <p className="text-sm text-gray-400">
-                          By continuing, you agree to our Terms of Service and Privacy Policy
-                        </p>
-                      </div>
-                    </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            {/* Left Column: Auth Card */}
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={fadeInUp}
+              className="relative group focus-within:z-20"
+            >
+              <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 md:p-12 overflow-hidden">
+                <div className="flex flex-col items-center text-center mb-10">
+                  <div className="w-16 h-16 bg-white/10 border border-white/20 rounded-3xl flex items-center justify-center mb-6">
+                    <Shield className="text-white/70" size={32} />
                   </div>
-                </TabsContent>
-
-                {/* Phone Authentication */}
-                <TabsContent value="phone">
-                  <div className="text-center space-y-4">
-                    <h3 className="text-lg font-semibold text-white">Phone Authentication</h3>
-                    <p className="text-gray-300 mb-4">Phone authentication is coming soon!</p>
-                    <p className="text-gray-400 text-sm">Please use the Email tab to sign in with Google for now.</p>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </div>
-          </NeoGlassSection>
-
-          {/* Right column - Features showcase */}
-          <NeoGlassSection>
-            <div className="space-y-4 md:space-y-6">
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6">Elevate Your Career</h2>
-              <p className="text-gray-300 text-base md:text-lg mb-6 md:mb-8">
-                Brandentifier helps you discover your professional strengths and connect with opportunities that match your unique profile.
-              </p>
-              
-              <div className="grid gap-3 md:gap-4">
-                <div className="flex items-start space-x-3 md:space-x-4 p-3 md:p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                  <div className="p-1.5 md:p-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 flex-shrink-0">
-                    <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-white" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold text-white mb-1 text-sm md:text-base">AI-Powered Career Guidance</h3>
-                    <p className="text-gray-300 text-xs md:text-sm">Get personalized advice tailored to your experience and goals</p>
-                  </div>
+                  <h2 className="text-3xl font-bold mb-2">Welcome Back</h2>
+                  <p className="text-gray-400">Enter your credentials to access your dashboard</p>
                 </div>
 
-                <div className="flex items-start space-x-3 md:space-x-4 p-3 md:p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                  <div className="p-1.5 md:p-2 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 flex-shrink-0">
-                    <Target className="h-4 w-4 md:h-5 md:w-5 text-white" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold text-white mb-1 text-sm md:text-base">Smart Opportunity Matching</h3>
-                    <p className="text-gray-300 text-xs md:text-sm">Discover roles and projects that align with your skills</p>
-                  </div>
-                </div>
+                <Tabs defaultValue="email" onValueChange={(v) => setAuthMethod(v as "email" | "phone")} className="w-full">
+                  <TabsList className="grid grid-cols-1 p-1.5 bg-white/5 border border-white/10 rounded-lg mb-10 h-14">
+                    <TabsTrigger
+                      value="email"
+                      className="rounded-lg data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-white/5 h-full font-bold text-gray-400 transition-all"
+                    >
+                      Email & Google
+                    </TabsTrigger>
+                    {false && (
+                      <TabsTrigger
+                        value="phone"
+                        className="rounded-lg data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-white/5 h-full font-bold text-gray-400 transition-all"
+                      >
+                        Phone SMS
+                      </TabsTrigger>
+                    )}
+                  </TabsList>
 
-                <div className="flex items-start space-x-3 md:space-x-4 p-3 md:p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                  <div className="p-1.5 md:p-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 flex-shrink-0">
-                    <Users className="h-4 w-4 md:h-5 md:w-5 text-white" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold text-white mb-1 text-sm md:text-base">Professional Networking</h3>
-                    <p className="text-gray-300 text-xs md:text-sm">Connect with industry professionals and mentors</p>
-                  </div>
+                  <TabsContent value="email" className="mt-0 space-y-8">
+                    <FastGoogleAuth />
+                  </TabsContent>
+
+                  {false && (
+                    <TabsContent value="phone" className="mt-0 text-center py-10">
+                      <div className="flex flex-col items-center justify-center space-y-6">
+                        <div className="w-20 h-20 bg-white/10 border border-white/20 rounded-full flex items-center justify-center relative">
+                          <div className="absolute inset-0 bg-white/10 blur-xl rounded-full" />
+                          <Phone className="text-white/70 relative z-10" size={32} />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold mb-2 text-white">SMS Auth Coming Soon</h3>
+                          <p className="text-gray-400 text-sm max-w-xs mx-auto leading-relaxed">
+                            We're currently scaling our SMS infrastructure for global delivery. Please use Google sign-in for now.
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <div className="w-1.5 h-1.5 rounded-full bg-white/40 animate-pulse" />
+                          <div className="w-1.5 h-1.5 rounded-full bg-white/40 animate-pulse delay-75" />
+                          <div className="w-1.5 h-1.5 rounded-full bg-white/40 animate-pulse delay-150" />
+                        </div>
+                      </div>
+                    </TabsContent>
+                  )}
+                </Tabs>
+
+                <div className="mt-12 text-center">
+                  <p className="text-xs text-gray-500 leading-safe">
+                    By signing in, you agree to our <a href="#" className="text-white/60 hover:text-white/80 underline transition-colors">Terms of Service</a> and <a href="#" className="text-white/60 hover:text-white/80 underline transition-colors">Privacy Policy</a>.
+                  </p>
                 </div>
               </div>
-            </div>
-          </NeoGlassSection>
+            </motion.div>
+
+            {/* Right Column: Feature List Bento */}
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={staggerContainer}
+              className="grid gap-6 auto-rows-fr"
+            >
+              <motion.div variants={fadeInUp} className="p-8 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 flex flex-col justify-center relative overflow-hidden group hover:bg-white/8 transition-all">
+                <div className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity">
+                  <img src="/feature-ai.png" className="w-full h-full object-cover scale-150 rotate-12" alt="AI" />
+                </div>
+                <div className="relative z-10">
+                  <div className="w-12 h-12 bg-white/10 border border-white/20 rounded-2xl flex items-center justify-center mb-6 text-white/70">
+                    <Brain size={24} />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">AI-Powered Career Guidance</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed">Get hyper-personalized advice tailored to your unique experience, industry trends, and professional goals.</p>
+                </div>
+              </motion.div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <motion.div variants={fadeInUp} className="p-8 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 flex flex-col justify-between relative overflow-hidden group hover:bg-white/8 transition-all">
+                  <div className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <img src="/feature-clarity.png" className="w-full h-full object-cover" alt="Target" />
+                  </div>
+                  <div className="relative z-10 h-full flex flex-col justify-between">
+                    <div className="w-10 h-10 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center mb-6 text-white/70">
+                      <Target size={20} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold mb-1">Smart Match</h3>
+                      <p className="text-gray-400 text-xs leading-relaxed">Discover roles that perfectly align with your current skills.</p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                <motion.div variants={fadeInUp} className="p-8 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 flex flex-col justify-between relative overflow-hidden group hover:bg-white/8 transition-all">
+                  <div className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <img src="/feature-network.png" className="w-full h-full object-cover -rotate-12" alt="Users" />
+                  </div>
+                  <div className="relative z-10 h-full flex flex-col justify-between">
+                    <div className="w-10 h-10 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center mb-6 text-white/70">
+                      <Users size={20} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold mb-1">Pro Network</h3>
+                      <p className="text-gray-400 text-xs leading-relaxed">Connect with mentors and industry-leading professionals.</p>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+
+                          </motion.div>
           </div>
-        </NeoGlassLayout>
-      </div>
+        </div>
+        {/* FAQ Section for AEO (Answer Engine Optimization) */}
+        <AuthFAQSection />
+      </main>
+
+      <footer className="py-10 border-t border-white/5 relative z-10 mt-20">
+        <div className="container mx-auto px-6 text-center">
+          <p className="text-xs text-gray-600 font-medium tracking-widest uppercase">
+            © 2026 Brandentify Inc. All Systems Operational
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }

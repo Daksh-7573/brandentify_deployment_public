@@ -466,7 +466,7 @@ function generateNetworkingSuggestions(user: UserProfileContext): Array<{
       expected_outcome: 'Expand professional network and increase visibility'
     },
     {
-      platform: 'Brandentifier',
+      platform: 'Brandentify',
       action: 'Use Smart Connect to find professionals with similar backgrounds',
       expected_outcome: 'Find mentors and collaboration opportunities'
     },

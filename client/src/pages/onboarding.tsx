@@ -22,7 +22,7 @@ export default function OnboardingPage() {
   const handleOnboardingComplete = () => {
     toast({
       title: "Profile setup complete!",
-      description: "Your profile has been successfully set up. Welcome to Brandentifier!",
+      description: "Your profile has been successfully set up. Welcome to Brandentify!",
     });
     
     // Redirect to profile page
@@ -39,7 +39,7 @@ export default function OnboardingPage() {
               <span className="text-white font-bold text-lg">B</span>
             </div>
             <span className="text-primary text-xl font-bold cursor-pointer bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80">
-              Brandentifier
+              Brandentify
             </span>
           </div>
           
@@ -60,7 +60,7 @@ export default function OnboardingPage() {
       <div className="pt-24 pb-6 container max-w-4xl px-4 sm:px-6 lg:px-8 mx-auto">
         <div className="text-center mb-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome to Brandentifier, {user?.displayName || 'Professional'}!
+            Welcome to Brandentify, {user?.displayName || 'Professional'}!
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Let's set up your professional profile in a few simple steps. 

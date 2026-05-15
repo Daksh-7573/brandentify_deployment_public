@@ -33,14 +33,16 @@ interface OnboardingTier2ComprehensiveProps {
     secondaryAudience?: string[];
   }) => void;
   onBack: () => void;
+  onSkip: () => void;
 }
 
 export default function OnboardingTier2Comprehensive({
   onComplete,
-  onBack
+  onBack,
+  onSkip
 }: OnboardingTier2ComprehensiveProps) {
   const { user } = useContext(AuthContext);
-  
+
   // Profile fields - auto-fetch name from Google
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
@@ -69,24 +71,26 @@ export default function OnboardingTier2Comprehensive({
   const [secondaryAudienceInput, setSecondaryAudienceInput] = useState("");
 
   const handleContinue = () => {
-    if (name.trim()) {
-      onComplete({
-        name,
-        company: company.trim() || undefined,
-        location: location.trim() || undefined,
-        lookingFor: lookingFor || undefined,
-        tagline: tagline.trim() || undefined,
-        visionStatement: visionStatement.trim() || undefined,
-        missionStatement: missionStatement.trim() || undefined,
-        coreValues: coreValues.length > 0 ? coreValues : undefined,
-        uniqueValueProposition: uniqueValueProposition.trim() || undefined,
-        primaryAudience: primaryAudience.length > 0 ? primaryAudience : undefined,
-        secondaryAudience: secondaryAudience.length > 0 ? secondaryAudience : undefined
-      });
+    if (!name.trim() || !location.trim()) {
+      return;
     }
+
+    onComplete({
+      name,
+      company: company.trim() || undefined,
+      location: location.trim() || undefined,
+      lookingFor: lookingFor || undefined,
+      tagline: tagline.trim() || undefined,
+      visionStatement: visionStatement.trim() || undefined,
+      missionStatement: missionStatement.trim() || undefined,
+      coreValues: coreValues.length > 0 ? coreValues : undefined,
+      uniqueValueProposition: uniqueValueProposition.trim() || undefined,
+      primaryAudience: primaryAudience.length > 0 ? primaryAudience : undefined,
+      secondaryAudience: secondaryAudience.length > 0 ? secondaryAudience : undefined
+    });
   };
 
-  const isValid = name.trim();
+  const isValid = !!name.trim() && !!location.trim();
 
   return (
     <div
@@ -402,34 +406,44 @@ export default function OnboardingTier2Comprehensive({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center bg-black/20 -mx-8 -mb-8 sm:-mx-12 sm:-mb-12 p-8 border-t border-white/10 mt-12">
               <Button
                 onClick={onBack}
                 variant="ghost"
-                className="text-white/70 hover:text-white hover:bg-white/10"
+                className="text-white/70 hover:text-white rounded-full px-6"
                 data-testid="button-back"
               >
                 ← Back
               </Button>
 
-              <Button
-                onClick={handleContinue}
-                disabled={!isValid}
-                size="lg"
-                className={`px-8 py-6 text-lg font-semibold transition-all duration-300 ${
-                  isValid
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-xl hover:shadow-2xl transform hover:scale-105'
+              <div className="flex gap-4">
+                <Button
+                  onClick={onSkip}
+                  variant="ghost"
+                  className="text-white/50 hover:text-white rounded-full"
+                  data-testid="button-skip-tier2"
+                >
+                  Skip
+                </Button>
+
+                <Button
+                  onClick={handleContinue}
+                  disabled={!isValid}
+                  size="lg"
+                  className={`px-10 py-6 text-lg font-semibold rounded-full transition-all duration-500 ${isValid
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] transform hover:scale-105'
                     : 'bg-white/10 text-white/40 cursor-not-allowed'
-                }`}
-                data-testid="button-continue-tier2"
-              >
-                Continue →
-              </Button>
+                    }`}
+                  data-testid="button-continue-tier2"
+                >
+                  Continue →
+                </Button>
+              </div>
             </div>
 
             {/* Time Indicator */}
-            <div className="text-center mt-6 text-white/50 text-sm">
-              Step 3 of 5 · Building your professional identity
+            <div className="text-center mt-12 text-white/40 text-xs uppercase tracking-widest">
+              Step 3 of 7 · Defining your brand
             </div>
           </NeoGlassSection>
         </div>
@@ -437,3 +451,4 @@ export default function OnboardingTier2Comprehensive({
     </div>
   );
 }
+

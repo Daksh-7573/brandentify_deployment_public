@@ -373,21 +373,21 @@ ${priorityRecommendations.map((rec, i) => `${i + 1}. ${rec}`).join('\n')}
 ## Immediate Action Items
 ${immediateActions.length > 0 ? immediateActions.map((action, i) => `• ${action}`).join('\n') : '• Focus on adding missing profile sections mentioned above'}
 
-## Maximize Brandentifier's Profile Features
+## Maximize Brandentify's Profile Features
 - **Industry Pulse**: Share insights about your ${projectCount} projects to establish expertise
 - **Nowboard**: Create opportunities showcasing your project capabilities
 - **Career Capsule**: Document your professional journey and achievements
 - **Smart Connect**: Let our AI match you with relevant professionals based on your skills
 - **Mentorship Features**: Offer your project expertise or seek guidance from industry leaders
 
-## Leverage Your ${projectCount} Projects on Brandentifier
+## Leverage Your ${projectCount} Projects on Brandentify
 - Showcase each project with detailed case studies and outcomes
 - Use Industry Pulse to share project insights and lessons learned
 - Create Nowboard opportunities related to your project expertise
 - Highlight specific technologies and problems solved in your profile
 - Connect your projects to trending industry topics
 
-## Skills Strategy Using Brandentifier
+## Skills Strategy Using Brandentify
 ${hasSkills ? 
   `- Use your ${currentSkills.join(', ')} skills to engage in relevant Industry Pulse discussions
 - Create Nowboard opportunities that leverage your existing expertise
@@ -397,13 +397,13 @@ ${hasSkills ?
 - Use Career Quests to systematically build and validate new skills`
 }
 
-## Professional Branding on Brandentifier
+## Professional Branding on Brandentify
 - Create compelling content on Industry Pulse to establish thought leadership
-- Use consistent professional messaging across all Brandentifier features
+- Use consistent professional messaging across all Brandentify features
 - Engage authentically with the professional community
 - Showcase your unique perspective through project stories and insights
 
-## Next Steps to Stand Out on Brandentifier
+## Next Steps to Stand Out on Brandentify
 1. Complete all missing profile sections identified above
 2. Create your first Industry Pulse post about one of your projects
 3. Set up at least one Nowboard opportunity showcasing your expertise
@@ -467,23 +467,23 @@ function generateNetworkingAdvice(userName: string, userTitle: string, userIndus
 
 # Professional Networking Strategy
 
-## Leverage Brandentifier's Networking Features
+## Leverage Brandentify's Networking Features
 - **Industry Pulse**: Share insights and engage with trending topics in your field
 - **Smart Connect**: Use our intelligent matching system to find relevant professionals
 - **Nowboard**: Showcase your opportunities and connect with potential collaborators
 - **Mentorship Connect**: Find mentors or offer mentorship in your expertise areas
 - **Career Quests**: Complete networking challenges to expand your professional circle
 
-## Building Your Network on Brandentifier
+## Building Your Network on Brandentify
 ${hasExperiences ? 
   "- Import and showcase your professional experience to attract like-minded professionals\n- Use your work history to connect with colleagues from previous companies" :
-  "- Start building your professional presence on Brandentifier's platform\n- Join industry-specific discussions in Industry Pulse"
+  "- Start building your professional presence on Brandentify's platform\n- Join industry-specific discussions in Industry Pulse"
 }
 
 ## Advanced Networking Strategies
 - Create compelling content on Industry Pulse to establish thought leadership
 - Participate in trending discussions to increase your visibility
-- Use Brandentifier's Smart Connect to find professionals with complementary skills
+- Use Brandentify's Smart Connect to find professionals with complementary skills
 - Offer value through Nowboard opportunities before seeking connections
 - Engage authentically in the platform's professional community
 
@@ -519,7 +519,7 @@ ${hasSkills ?
   "Focus on building both technical skills and soft skills that are valued in your industry."
 }
 
-## Professional Development on Brandentifier
+## Professional Development on Brandentify
 - **Career Quests**: Complete structured learning paths to advance your skills
 - **Industry Pulse**: Follow thought leaders and trending topics in your field
 - **Mentorship Connect**: Find mentors who can guide your career progression
@@ -528,7 +528,7 @@ ${hasSkills ?
 ## Additional Development Resources
 - Pursue relevant certifications that align with Career Quest recommendations
 - Attend industry conferences and share insights on Industry Pulse
-- Connect with professional associations through Brandentifier's networking features
+- Connect with professional associations through Brandentify's networking features
 - Consider leadership development programs and document progress in Career Capsule
 
 ${formatResponseWithPersonalization("", context).includes("Quick Response Options") ? "" : 
@@ -555,7 +555,7 @@ ${hasSkills ?
 - **Digital Literacy**: Data analysis, digital marketing, or relevant tech skills
 - **Business Acumen**: Understanding of business operations and strategy
 
-## Learning Through Brandentifier
+## Learning Through Brandentify
 - **Career Quests**: Follow structured skill-building paths with measurable progress
 - **Industry Pulse**: Learn from expert insights and trending discussions in your field
 - **Mentorship Connect**: Get personalized guidance from industry professionals
@@ -566,9 +566,9 @@ ${hasSkills ?
 - Complete Career Quests aligned with your target skills
 - Share your learning journey on Industry Pulse to demonstrate growth
 - Use hands-on projects and document them in your profile
-- Engage with mentors through Brandentifier's mentorship features
+- Engage with mentors through Brandentify's mentorship features
 
-## Skill Validation on Brandentifier
+## Skill Validation on Brandentify
 - Showcase new capabilities through Nowboard opportunities
 - Share project outcomes and learnings on Industry Pulse
 - Get feedback from mentors and peers in the platform

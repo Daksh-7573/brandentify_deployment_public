@@ -7,6 +7,11 @@ import { and, eq, sql, isNull, not, lte, gte } from 'drizzle-orm';
  * Update a user's geolocation coordinates
  */
 export async function updateUserGeolocation(req: Request, res: Response) {
+  return res.status(403).json({
+    success: false,
+    message: 'Smart Radar feature coming soon'
+  });
+
   try {
     const userId = req.params.id;
     const { latitude, longitude, geoVisibleNearby = true } = req.body;
@@ -60,6 +65,11 @@ export async function updateUserGeolocation(req: Request, res: Response) {
  * Update a user's visibility in the radar feature
  */
 export async function updateUserRadarVisibility(req: Request, res: Response) {
+  return res.status(403).json({
+    success: false,
+    message: 'Smart Radar feature coming soon'
+  });
+
   try {
     const { userId, visible } = req.body;
     
@@ -96,6 +106,11 @@ export async function updateUserRadarVisibility(req: Request, res: Response) {
  * which accounts for the Earth's curvature
  */
 export async function getNearbyUsers(req: Request, res: Response) {
+  return res.status(403).json({
+    success: false,
+    message: 'Smart Radar feature coming soon'
+  });
+
   try {
     const { latitude, longitude, radius = 10, userId } = req.query;
     

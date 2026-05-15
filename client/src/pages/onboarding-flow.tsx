@@ -5,10 +5,20 @@ import OnboardingWelcome from "./onboarding-welcome";
 import OnboardingQuickSetup from "./onboarding-quick-setup";
 import OnboardingTier2Comprehensive from "./onboarding-tier2-comprehensive";
 import OnboardingTier3 from "./onboarding-tier3";
+import OnboardingShowcase from "./onboarding-showcase";
+import OnboardingExperience from "./onboarding-experience";
+import OnboardingEducation from "./onboarding-education";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
-type OnboardingStep = 'welcome' | 'quick-setup' | 'tier2-comprehensive' | 'tier3';
+type OnboardingStep =
+  | 'welcome'
+  | 'quick-setup'
+  | 'tier2-comprehensive'
+  | 'skills-services'
+  | 'showcase'
+  | 'experience'
+  | 'education';
 
 interface OnboardingData {
   goalId?: string;
@@ -28,16 +38,23 @@ interface OnboardingData {
   uniqueValueProposition?: string;
   primaryAudience?: string[];
   secondaryAudience?: string[];
-  // Tier 3: Skills + Services (Final Step)
+  // Tier 3: Skills + Services
   skills?: Array<{ name: string; level: string }>;
+  services?: Array<any>;
   whatIOffer?: string;
+  // Projects
+  projects?: Array<any>;
+  // Experience
+  experiences?: Array<any>;
+  // Education
+  educations?: Array<any>;
 }
 
 export default function OnboardingFlow() {
   const { user } = useContext(AuthContext);
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
-  
+
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome');
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,116 +67,105 @@ export default function OnboardingFlow() {
     setCurrentStep('quick-setup');
   };
 
-  const handleQuickSetupComplete = async (data: { title: string; industry: string; domain?: string }) => {
-    if (!userId) {
-      toast({
-        title: "Error",
-        description: "User not authenticated. Please try again.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const completeData = { ...onboardingData, ...data };
-
-      // 1. Save brand goal
-      if (completeData.goalId) {
-        await apiRequest('POST', '/api/brand-goals', {
-          userId,
-          selectedGoals: [completeData.goalId]
-        });
-      }
-
-      // 2. Update user profile (Tier 1: Role + Industry)
-      await apiRequest('PATCH', `/api/users/${userId}`, {
-        title: completeData.title,
-        industry: completeData.industry,
-        domain: completeData.domain,
-        profileCompleted: 40 // Tier 1 gives 40% completion
-      });
-
-      // 3. Invalidate all relevant queries
-      await queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
-      await queryClient.invalidateQueries({ queryKey: ['/api/brand-goals', userId] });
-
-      // 4. Save to local state and move to Tier 2 Comprehensive
-      setOnboardingData(prev => ({ ...prev, ...data }));
-      setCurrentStep('tier2-comprehensive');
-
-    } catch (error) {
-      console.error('[Onboarding] Error saving data:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save your profile. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleQuickSetupComplete = (data: { title: string; industry: string; domain?: string }) => {
+    setOnboardingData(prev => ({ ...prev, ...data }));
+    setCurrentStep('tier2-comprehensive');
   };
 
-  const handleTier2ComprehensiveComplete = async (data: {
-    name?: string;
-    company?: string;
-    location?: string;
-    lookingFor?: string;
-    tagline?: string;
-    visionStatement?: string;
-    missionStatement?: string;
-    coreValues?: string[];
-    uniqueValueProposition?: string;
-    primaryAudience?: string[];
-    secondaryAudience?: string[];
-  }) => {
-    if (!userId) {
-      toast({
-        title: "Error",
-        description: "User not authenticated. Please try again.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      // Update user profile with all Tier 2 comprehensive data
-      await apiRequest('PATCH', `/api/users/${userId}`, {
-        ...data,
-        profileCompleted: 60 // Tier 2 Comprehensive gives 60% completion
-      });
-
-      // Invalidate queries
-      await queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
-
-      // Save to local state and move to Tier 3
-      setOnboardingData(prev => ({ ...prev, ...data }));
-      setCurrentStep('tier3');
-
-    } catch (error) {
-      console.error('[Onboarding] Error saving Tier 2 Comprehensive data:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save your profile. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleTier2ComprehensiveComplete = (data: any) => {
+    setOnboardingData(prev => ({ ...prev, ...data }));
+    setCurrentStep('skills-services');
   };
 
-  const handleTier3Complete = async (data: { skills: Array<{ name: string; level: string }>, whatIOffer?: string }) => {
+  const handleSkillsServicesComplete = (data: any) => {
+    setOnboardingData(prev => ({ ...prev, ...data }));
+    setCurrentStep('showcase');
+  };
+
+  const handleShowcaseComplete = (data: { projects: any[] }) => {
+    setOnboardingData(prev => ({ ...prev, ...data }));
+    setCurrentStep('experience');
+  };
+
+  const handleExperienceComplete = (data: { experiences: any[] }) => {
+    setOnboardingData(prev => ({ ...prev, ...data }));
+    setCurrentStep('education');
+  };
+
+  const handleFinalSubmit = async (data: { educations: any[] }) => {
     if (!userId) return;
 
     setIsSubmitting(true);
+    const finalData = { ...onboardingData, ...data };
 
     try {
-      // 1. Save skills
-      if (data.skills && data.skills.length > 0) {
-        for (const skill of data.skills) {
+      if (!finalData.goalId) {
+        toast({
+          title: "Goal selection required",
+          description: "Please select at least one goal to continue.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (!finalData.name?.trim()) {
+        toast({
+          title: "Name is required",
+          description: "Please enter your name to continue.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (!finalData.title?.trim()) {
+        toast({
+          title: "Job title is required",
+          description: "Please enter your job title to continue.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (!finalData.location?.trim()) {
+        toast({
+          title: "Location is required",
+          description: "Please enter your location to continue.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (!finalData.industry?.trim()) {
+        toast({
+          title: "Industry is required",
+          description: "Please select your industry to continue.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (!finalData.domain?.trim()) {
+        toast({
+          title: "Domain is required",
+          description: "Please select your domain to continue.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      console.log('[Onboarding] Submitting all data...', finalData);
+
+      // 1. Save brand goal
+      if (finalData.goalId) {
+        await apiRequest('POST', '/api/brand-goals', {
+          userId,
+          selectedGoals: [finalData.goalId]
+        });
+      }
+
+      // 2. Save skills
+      if (finalData.skills && finalData.skills.length > 0) {
+        for (const skill of finalData.skills) {
           await apiRequest('POST', '/api/skills', {
             userId,
             name: skill.name,
@@ -169,44 +175,71 @@ export default function OnboardingFlow() {
         }
       }
 
-      // 2. Update user profile (Tier 3: Final Step - 95% completion)
-      const updateData: any = {
-        profileCompleted: 95 // Tier 3 is now the final step
-      };
-      if (data.whatIOffer) {
-        updateData.whatIOffer = data.whatIOffer;
-      }
-      await apiRequest('PATCH', `/api/users/${userId}`, updateData);
-
-      // 3. Invalidate queries
-      await queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
-      await queryClient.invalidateQueries({ queryKey: ['/api/skills', userId] });
-
-      // 4. Trigger instant quest assignment
-      console.log('[Onboarding] Triggering instant quest assignment for user', userId);
-      try {
-        const questResponse = await apiRequest('POST', `/api/assign-initial-quests/${userId}`, {});
-        console.log('[Onboarding] Quest assignment result:', questResponse);
-      } catch (questError) {
-        console.error('[Onboarding] Quest assignment failed (non-blocking):', questError);
+      // 3. Save projects
+      if (finalData.projects && finalData.projects.length > 0) {
+        for (const project of finalData.projects) {
+          await apiRequest('POST', '/api/projects', { ...project, userId });
+        }
       }
 
-      // 5. Success toast
-      toast({
-        title: "Profile setup complete!",
-        description: "✨ Your AI coach has created personalized quests for you!",
+      // 4. Save experiences
+      if (finalData.experiences && finalData.experiences.length > 0) {
+        for (const exp of finalData.experiences) {
+          await apiRequest('POST', '/api/experiences', { ...exp, userId });
+        }
+      }
+
+      // 5. Save educations
+      if (finalData.educations && finalData.educations.length > 0) {
+        for (const edu of finalData.educations) {
+          await apiRequest('POST', '/api/educations', { ...edu, userId });
+        }
+      }
+
+      // 6. Update user profile - Final completion
+      await apiRequest('PATCH', `/api/users/${userId}`, {
+        name: finalData.name,
+        title: finalData.title,
+        industry: finalData.industry,
+        domain: finalData.domain || "all",
+        company: finalData.company,
+        location: finalData.location,
+        lookingFor: finalData.lookingFor,
+        tagline: finalData.tagline,
+        visionStatement: finalData.visionStatement,
+        missionStatement: finalData.missionStatement,
+        coreValues: finalData.coreValues,
+        uniqueValueProposition: finalData.uniqueValueProposition,
+        primaryAudience: finalData.primaryAudience,
+        secondaryAudience: finalData.secondaryAudience,
+        whatIOffer: finalData.whatIOffer,
+        profileCompleted: 100
       });
 
-      // 6. Redirect to Brand Quest page
+      // 7. Trigger instant quest assignment
+      try {
+        await apiRequest('POST', `/api/assign-initial-quests/${userId}`, {});
+      } catch (e) {
+        console.error('Quest assignment failed:', e);
+      }
+
+      // 8. Invalidate queries
+      await queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
+
+      toast({
+        title: "Profile setup complete!",
+        description: "✨ Welcome to Brandentify. Your AI coach has created personalized quests for you!",
+      });
+
       setTimeout(() => {
-        setLocation('/brand-quests');
-      }, 500);
+        setLocation('/dashboard');
+      }, 1000);
 
     } catch (error) {
-      console.error('[Onboarding] Error saving Tier 3 data:', error);
+      console.error('[Onboarding] Error during final submit:', error);
       toast({
         title: "Error",
-        description: "Failed to save your skills. Please try again.",
+        description: "Failed to save your profile. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -214,51 +247,23 @@ export default function OnboardingFlow() {
     }
   };
 
-  const handleTier3Skip = async () => {
-    if (!userId) return;
-
-    setIsSubmitting(true);
-
-    try {
-      // Trigger instant quest assignment
-      console.log('[Onboarding] Triggering instant quest assignment (skip) for user', userId);
-      try {
-        const questResponse = await apiRequest('POST', `/api/assign-initial-quests/${userId}`, {});
-        console.log('[Onboarding] Quest assignment result:', questResponse);
-      } catch (questError) {
-        console.error('[Onboarding] Quest assignment failed (non-blocking):', questError);
-      }
-
-      toast({
-        title: "Profile setup complete!",
-        description: "✨ Your AI coach has created personalized quests for you!",
-      });
-
-      setTimeout(() => {
-        setLocation('/brand-quests');
-      }, 500);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-
   const handleBack = () => {
-    if (currentStep === 'quick-setup') {
-      setCurrentStep('welcome');
-    } else if (currentStep === 'tier2-comprehensive') {
-      setCurrentStep('quick-setup');
-    } else if (currentStep === 'tier3') {
-      setCurrentStep('tier2-comprehensive');
+    const steps: OnboardingStep[] = ['welcome', 'quick-setup', 'tier2-comprehensive', 'skills-services', 'showcase', 'experience', 'education'];
+    const currentIndex = steps.indexOf(currentStep);
+    if (currentIndex > 0) {
+      setCurrentStep(steps[currentIndex - 1]);
     }
   };
 
   if (isSubmitting) {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm flex items-center justify-center">
+      <div className="fixed inset-0 bg-[#050505] flex items-center justify-center z-50">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white mb-4"></div>
-          <div className="text-white text-lg">Creating your personalized quests...</div>
+          <div className="w-20 h-20 bg-blue-500/10 border border-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-8 animate-pulse">
+            <div className="w-12 h-12 bg-blue-500 rounded-full animate-ping opacity-20" />
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">Finalizing Your Profile</h2>
+          <p className="text-gray-400">Our AI is crafting your personalized career roadmap...</p>
         </div>
       </div>
     );
@@ -276,7 +281,6 @@ export default function OnboardingFlow() {
       {currentStep === 'quick-setup' && (
         <OnboardingQuickSetup
           userName={userName}
-          selectedGoal={onboardingData.goalId}
           onComplete={handleQuickSetupComplete}
           onBack={handleBack}
         />
@@ -286,16 +290,42 @@ export default function OnboardingFlow() {
         <OnboardingTier2Comprehensive
           onComplete={handleTier2ComprehensiveComplete}
           onBack={handleBack}
+          onSkip={() => setCurrentStep('skills-services')}
         />
       )}
 
-      {currentStep === 'tier3' && (
+      {currentStep === 'skills-services' && (
         <OnboardingTier3
-          onComplete={handleTier3Complete}
+          onComplete={handleSkillsServicesComplete}
           onBack={handleBack}
-          onSkip={handleTier3Skip}
+          onSkip={() => setCurrentStep('showcase')}
+        />
+      )}
+
+      {currentStep === 'showcase' && (
+        <OnboardingShowcase
+          onComplete={handleShowcaseComplete}
+          onBack={handleBack}
+          onSkip={() => setCurrentStep('experience')}
+        />
+      )}
+
+      {currentStep === 'experience' && (
+        <OnboardingExperience
+          onComplete={handleExperienceComplete}
+          onBack={handleBack}
+          onSkip={() => setCurrentStep('education')}
+        />
+      )}
+
+      {currentStep === 'education' && (
+        <OnboardingEducation
+          onComplete={handleFinalSubmit}
+          onBack={handleBack}
+          onSkip={() => handleFinalSubmit({ educations: [] })}
         />
       )}
     </>
   );
 }
+

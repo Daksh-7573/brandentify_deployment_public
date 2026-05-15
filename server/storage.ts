@@ -8097,6 +8097,15 @@ export class MemStorage implements IStorage {
     
     // Get all active quest definitions
     const allQuests = await this.getActiveQuestDefinitions();
+
+    const cutoffDate = new Date(now);
+    cutoffDate.setDate(cutoffDate.getDate() - 7);
+    const cutoffDateString = cutoffDate.toISOString().split('T')[0];
+    const recentQuestIds = new Set(
+      Array.from(this.userQuests.values())
+        .filter((quest) => quest.userId === userId && quest.assignedDate && quest.assignedDate >= cutoffDateString)
+        .map((quest) => quest.questDefinitionId)
+    );
     
     // Filter quests based on user's profile completion level
     const eligibleQuests = allQuests.filter(quest => {
@@ -8185,9 +8194,21 @@ export class MemStorage implements IStorage {
     
     // Get all active quest definitions
     const allQuests = await this.getActiveQuestDefinitions();
+
+    const cutoffDate = new Date(now);
+    cutoffDate.setDate(cutoffDate.getDate() - 7);
+    const cutoffDateString = cutoffDate.toISOString().split('T')[0];
+    const recentQuestIds = new Set(
+      Array.from(this.userQuests.values())
+        .filter((quest) => quest.userId === userId && quest.assignedDate && quest.assignedDate >= cutoffDateString)
+        .map((quest) => quest.questDefinitionId)
+    );
     
     // Filter quests based on user's profile completion level
     const eligibleQuests = allQuests.filter(quest => {
+      if (recentQuestIds.has(quest.id)) {
+        return false;
+      }
       // Basic eligibility (same as weekly logic for now)
       return true; // Keep it simple for daily quests
     });
@@ -10207,6 +10228,13 @@ export class DatabaseStorage implements IStorage {
       const FREE_VISITING_CARD_TEMPLATES = ['professional', 'professional-renewed', 'quantum-tech'];
       
       if (FREE_VISITING_CARD_TEMPLATES.includes(cardType)) {
+        return { hasAccess: true, subscriptionTier };
+      }
+      
+      // Check if user has this card unlocked in user_unlocks table
+      const hasUnlock = await this.checkUserHasUnlock(userId, 'quantum_card', cardType);
+      if (hasUnlock) {
+        console.log(`[checkVisitingCardAccess] User ${userId} has unlock for ${cardType} in user_unlocks table`);
         return { hasAccess: true, subscriptionTier };
       }
       
@@ -13623,9 +13651,26 @@ export class DatabaseStorage implements IStorage {
     
     // Get all active quest definitions
     const allQuests = await this.getActiveQuestDefinitions();
+
+    const cutoffDate = new Date(now);
+    cutoffDate.setDate(cutoffDate.getDate() - 7);
+    const cutoffDateString = cutoffDate.toISOString().split('T')[0];
+    const recentQuestIds = new Set(
+      Array.from(
+        await pool.query(
+          `SELECT DISTINCT quest_definition_id
+           FROM user_quests
+           WHERE user_id = $1 AND assigned_date >= $2`,
+          [userId, cutoffDateString]
+        )
+      ).rows.map((row) => row.quest_definition_id)
+    );
     
     // Filter quests based on user's profile completion level
     const eligibleQuests = allQuests.filter(quest => {
+      if (recentQuestIds.has(quest.id)) {
+        return false;
+      }
       // Basic eligibility (same as weekly logic for now)
       return true; // Keep it simple for daily quests
     });
@@ -14259,6 +14304,7 @@ export class DatabaseStorage implements IStorage {
 
   async getConnectionRequestsByReceiverId(receiverId: number): Promise<ConnectionRequest[]> {
     try {
+      console.log(`[db.getConnectionRequestsByReceiverId] 🔍 Querying for receiverId: ${receiverId}`);
       const result = await db
         .select({
           id: connectionRequests.id,
@@ -14276,9 +14322,35 @@ export class DatabaseStorage implements IStorage {
         .from(connectionRequests)
         .leftJoin(users, eq(connectionRequests.senderId, users.id))
         .where(eq(connectionRequests.receiverId, receiverId));
+      
+      console.log(`[db.getConnectionRequestsByReceiverId] ✅ Found ${result.length} total requests for receiverId: ${receiverId}`);
+      
+      // Log ALL requests with full details
+      if (result.length > 0) {
+        console.log(`[db.getConnectionRequestsByReceiverId] 📋 ALL REQUESTS:`, result.map(r => ({
+          id: r.id,
+          senderId: r.senderId,
+          receiverId: r.receiverId,
+          status: r.status,
+          statusType: typeof r.status,
+          statusValue: `"${r.status}"`,
+          senderName: r.senderName,
+          createdAt: r.createdAt
+        })));
+        
+        // Count by status
+        const statusCounts = result.reduce((acc, r) => {
+          acc[r.status] = (acc[r.status] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>);
+        console.log(`[db.getConnectionRequestsByReceiverId] 📊 Status breakdown:`, statusCounts);
+      } else {
+        console.log(`[db.getConnectionRequestsByReceiverId] ⚠️ No requests found for receiverId: ${receiverId}`);
+      }
+      
       return result as any;
     } catch (error) {
-      console.error('[db.getConnectionRequestsByReceiverId] Error:', error);
+      console.error('[db.getConnectionRequestsByReceiverId] ❌ Error:', error);
       return [];
     }
   }
@@ -14345,7 +14417,14 @@ export class DatabaseStorage implements IStorage {
 
   async createConnectionRequest(request: InsertConnectionRequest): Promise<ConnectionRequest> {
     try {
+      console.log(`[db.createConnectionRequest] Inserting connection request:`, {
+        senderId: request.senderId,
+        receiverId: request.receiverId,
+        status: request.status,
+        reason: request.reason?.substring(0, 30)
+      });
       const result = await db.insert(connectionRequests).values(request).returning();
+      console.log(`[db.createConnectionRequest] ✅ Successfully created request with ID: ${result[0].id}`);
       return result[0];
     } catch (error) {
       console.error('[db.createConnectionRequest] Error:', error);

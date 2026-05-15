@@ -130,7 +130,7 @@ export const setupMuskTestingRoutes = (apiRouter: express.Router): void => {
       
       // Build the system prompt
       const systemPrompt = `
-You're Musk, the AI Career Assistant for Brandentifier. Respond to the user's career question below with the following tone: ${tone}.
+You're Musk, the AI Career Assistant for Brandentify. Respond to the user's career question below with the following tone: ${tone}.
 
 Remember to:
 1. Keep your response relevant, specific, and personalized

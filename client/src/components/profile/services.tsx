@@ -297,7 +297,7 @@ export default function Services({ userFirebaseId, userNumericId }: { userFireba
                 <h3 className="font-medium text-base line-clamp-2 flex-1 text-white">{service.title}</h3>
                 <div className="flex items-center space-x-1 ml-2">
                   <button 
-                    className="text-gray-300 hover:text-white focus:outline-none rounded-full p-1 hover:bg-gray-800/50"
+                    className="text-gray-400 hover:text-white focus:outline-none rounded-full p-1 hover:bg-white/10"
                     onClick={() => {
                       setSelectedService(service);
                       setIsEditDialogOpen(true);
@@ -306,7 +306,7 @@ export default function Services({ userFirebaseId, userNumericId }: { userFireba
                     <Edit className="h-3.5 w-3.5" />
                   </button>
                   <button 
-                    className="text-gray-300 hover:text-red-400 focus:outline-none rounded-full p-1 hover:bg-gray-800/50"
+                    className="text-gray-400 hover:text-red-400 focus:outline-none rounded-full p-1 hover:bg-white/10"
                     onClick={() => {
                       setSelectedService(service);
                       setIsDeleteDialogOpen(true);

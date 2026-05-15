@@ -645,7 +645,7 @@ export default function MinimalistPro({
               />
             </div>
           )}
-          <p>© {new Date().getFullYear()} {userInfo.name} • Made with Brandentifier</p>
+          <p>© {new Date().getFullYear()} {userInfo.name} • Made with Brandentify</p>
         </footer>
       </div>
       

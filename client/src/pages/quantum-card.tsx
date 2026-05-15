@@ -6,7 +6,7 @@ import PersonalInfoSection from "@/components/profile/personal-info-section";
 import EditContactInfo from "@/components/profile/edit-contact-info";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, AlertCircle } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -18,6 +18,7 @@ import { UserData } from "@/types/user";
 import { useState } from "react";
 import { PortfolioPageSkeleton } from "@/components/ui/page-skeletons/portfolio-skeleton";
 import { PremiumBadge } from "@/components/ui/premium-badge";
+import { isProfileComplete, getProfileCompletionMessage } from "@/lib/profile-completion";
 
 export default function QuantumCardPage() {
   const { user } = useAuth();
@@ -56,6 +57,50 @@ export default function QuantumCardPage() {
           <Button asChild>
             <Link href="/profile">Complete Profile</Link>
           </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Check if profile is complete before allowing access
+  const profileIsComplete = isProfileComplete(userData);
+  if (!profileIsComplete) {
+    const message = getProfileCompletionMessage(userData);
+    return (
+      <div className="flex min-h-screen flex-col responsive-background">
+        <Header />
+        <div className="flex flex-1 flex-col items-center justify-center px-4">
+          <NeoGlassLayout className="w-full max-w-md">
+            <NeoGlassSection className="neo-glass-card border border-orange-500/30 bg-orange-500/10">
+              <div className="p-8 text-center">
+                <div className="flex justify-center mb-4">
+                  <div className="p-3 bg-orange-500/20 rounded-full">
+                    <AlertCircle className="h-8 w-8 text-orange-400" />
+                  </div>
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  Complete Your Profile
+                </h2>
+                <p className="text-white/70 mb-6">
+                  {message} Please fill in all required information to unlock your Quantum Card.
+                </p>
+                <div className="space-y-3">
+                  <Button asChild className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white">
+                    <Link href="/profile">
+                      Complete Profile
+                    </Link>
+                  </Button>
+                  <Button
+                    onClick={() => navigate("/")}
+                    variant="outline"
+                    className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20"
+                  >
+                    Back Home
+                  </Button>
+                </div>
+              </div>
+            </NeoGlassSection>
+          </NeoGlassLayout>
         </div>
       </div>
     );

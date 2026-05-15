@@ -52,7 +52,7 @@ export async function getJobTitleSuggestions(input: string): Promise<string[]> {
     );
 
     // Initialize FREE Local AI Service (uses VPS Ollama)
-    const localAI = new LocalAIService();
+    const localAI = LocalAIService.getInstance();
     
     // Build prompt for Ollama
     const prompt = `You are a job title suggestion engine. Provide the most relevant professional job titles that match the user's partial input. Return a JSON object with a "suggestions" array of strings. Be concise and accurate.

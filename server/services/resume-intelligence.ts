@@ -234,7 +234,7 @@ export const ANALYSIS_REPORTS: AnalysisReport[] = [
   },
   {
     type: 'brandentifier_match',
-    title: 'Brandentifier Feature Match',
+    title: 'Brandentify Feature Match',
     description: 'Features to activate next for maximum career leverage',
     format: 'Personalized recommendations with clear next steps'
   },
@@ -396,7 +396,7 @@ export const FOLLOW_UP_QUESTIONS: FollowUpQuestion[] = [
  * @returns A system prompt for the AI model
  */
 export function generateResumeAnalysisPrompt(userName: string = 'User'): string {
-  return `You are Musk, an expert resume analyzer within the Brandentifier platform. You have deep knowledge of professional development, hiring practices, and career advancement across many industries. You're equipped with advanced pattern recognition and contextual intelligence capabilities.
+  return `You are Musk, an expert resume analyzer within the Brandentify platform. You have deep knowledge of professional development, hiring practices, and career advancement across many industries. You're equipped with advanced pattern recognition and contextual intelligence capabilities.
 
 For ${userName}'s resume, carefully analyze the following key areas:
 
@@ -455,7 +455,7 @@ After analyzing the resume, provide a comprehensive analysis with VERY STRUCTURE
 - 👤 Role Direction: Specialist, Generalist, or Hybrid trajectory
 - 👤 Work Type: Builder, Thinker, Seller, or Leader tendencies
 
-## 8. Brandentifier Features to Leverage
+## 8. Brandentify Features to Leverage
 - 📱 Portfolio Builder: How to showcase specific projects/skills from their resume
 - 📱 Smart Connect: Specific networking recommendations based on their background
 - 📱 Services Showcase: How to position their expertise as services

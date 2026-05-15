@@ -21,7 +21,7 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
   isIndustryLeader = false
 }) => {
   // Use the branded domain as requested
-  const profileURL = `brandentifier.com/${userData.name?.replace(/\s+/g, '').toLowerCase() || 'myprofile'}`;
+  const profileURL = `brandentify.com/${userData.name?.replace(/\s+/g, '').toLowerCase() || 'myprofile'}`;
   
   return (
     <div className="professional-card bg-white dark:bg-slate-800 w-full h-full rounded-2xl overflow-visible shadow-xl border border-blue-200/50 dark:border-blue-800/30 flex flex-col backdrop-blur-sm bg-opacity-90 dark:bg-opacity-90 transition-all duration-300 hover:shadow-blue-200/30 dark:hover:shadow-blue-700/20">

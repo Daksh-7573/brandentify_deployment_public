@@ -270,7 +270,7 @@ Response Guidelines for this persona:
 
 ${basePrompt}
 
-Remember to maintain the ${persona.name} persona throughout your response while prioritizing Brandentifier platform recommendations.`;
+Remember to maintain the ${persona.name} persona throughout your response while prioritizing Brandentify platform recommendations.`;
 
   return personaEnhancement;
 }

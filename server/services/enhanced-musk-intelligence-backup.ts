@@ -145,7 +145,7 @@ User Context:
 - Looking for: ${lookingFor}
 
 Provide specific, actionable networking strategies that:
-1. Prioritize Brandentifier as the primary platform for comprehensive professional branding
+1. Prioritize Brandentify as the primary platform for comprehensive professional branding
 2. Include LinkedIn and other platforms as secondary options
 3. Give industry-specific networking advice for ${industry}
 4. Address the user's role as ${title}
@@ -170,7 +170,7 @@ User Context:
 Provide specific, actionable advice that:
 1. Addresses their specific question or concern
 2. Uses their industry (${industry}) and role (${title}) context
-3. Prioritizes Brandentifier platform recommendations first
+3. Prioritizes Brandentify platform recommendations first
 4. Includes concrete next steps they can take
 5. Maintains an encouraging, professional tone
 
@@ -199,7 +199,7 @@ async function generateIntelligentResponse(prompt: string, context: EnrichedCont
       messages: [
         {
           role: "system",
-          content: "You are Musk, an expert AI career coach on the Brandentifier platform. Provide comprehensive, personalized career advice that prioritizes Brandentifier features while including other platforms as secondary options."
+          content: "You are Musk, an expert AI career coach on the Brandentify platform. Provide comprehensive, personalized career advice that prioritizes Brandentify features while including other platforms as secondary options."
         },
         {
           role: "user",

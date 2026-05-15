@@ -4,11 +4,9 @@ import { Link } from 'wouter';
 import { UserData } from '@/types/user';
 import { apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/use-auth';
-import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
-import Header from "@/components/layout/header";
+// NeoGlass components removed - using direct design system styling
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
 import { User as UserIcon } from 'lucide-react';
-import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 // Define industry and looking for categories constants
 // Get list of main industries
@@ -542,24 +540,12 @@ const Radar = () => {
   };
   
   return (
-    <div 
-      className="fixed inset-0 w-full h-full responsive-background"
-      style={{ 
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
-      }}
-    >
-      {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
-      <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
-      
-      <div className="relative z-10 w-full h-full overflow-auto">
-        <Header />
-        <div className="container max-w-7xl mx-auto pb-10 px-4 relative">
-        <NeoGlassLayout className="mt-3">
-            <div className="p-4 md:p-6">
-              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6">Smart Radar</h1>
+    <div className="smart-radar-page w-full min-h-full text-white selection:bg-white/20 font-['Outfit'] relative px-4 sm:px-6 lg:px-8 py-8">
+      <div className="smart-radar-shell w-full max-w-6xl mx-auto">
+        {/* Main Card */}
+        <div className="smart-radar-main-card bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8">
+          <div className="smart-radar-content w-full max-w-5xl mx-auto space-y-6">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6">Smart Radar</h1>
               
               {/* Location error alert */}
               {locationError && (
@@ -571,8 +557,7 @@ const Radar = () => {
               )}
         
               {/* Settings card */}
-              <NeoGlassSection className="mb-6">
-                <div className="p-4">
+              <div className="w-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4">
                   <h2 className="text-xl font-semibold text-white flex items-center mb-2">
                     <MapPin className="mr-2 h-5 w-5" />
                     <span>Smart Radar Settings</span>
@@ -602,10 +587,10 @@ const Radar = () => {
                       <div className="space-y-2">
                         <Label htmlFor="radius" className="text-white">Search radius</Label>
                         <Select value={radius} onValueChange={handleRadiusChange}>
-                          <SelectTrigger id="radius" className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30">
+                          <SelectTrigger id="radius" className="bg-black/90 backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30">
                             <SelectValue placeholder="Select radius" />
                           </SelectTrigger>
-                          <SelectContent className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-lg shadow-black/10">
+                          <SelectContent className="bg-black/90 backdrop-blur-md text-white border-white/20 shadow-lg shadow-black/10">
                             <SelectItem value="1" className="hover:bg-white/10 focus:bg-white/10">1 km</SelectItem>
                             <SelectItem value="5" className="hover:bg-white/10 focus:bg-white/10">5 km</SelectItem>
                             <SelectItem value="10" className="hover:bg-white/10 focus:bg-white/10">10 km</SelectItem>
@@ -643,11 +628,10 @@ const Radar = () => {
                   <div className="relative">
                     <input
                       id="job-title"
-                      className="w-full h-10 sm:h-11 px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm sm:text-base focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/50 shadow-md transition-all hover:border-white/30 neo-glass-input"
+                      className="w-full h-10 sm:h-11 px-3 py-2 border border-white/20 bg-black/90 backdrop-blur-md rounded-md text-white text-sm sm:text-base focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/50 shadow-md transition-all hover:border-white/30 neo-glass-input"
                       placeholder="e.g. Software Engineer"
                       value={jobTitleFilter}
                       onChange={(e) => setJobTitleFilter(e.target.value)}
-                      style={{background: "rgba(18,18,18,0.95)"}}
                     />
                   </div>
                 </div>
@@ -658,10 +642,10 @@ const Radar = () => {
                     value={industryFilter}
                     onValueChange={setIndustryFilter}
                   >
-                    <SelectTrigger id="industry" className="w-full h-10 sm:h-11 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 text-sm sm:text-base">
+                    <SelectTrigger id="industry" className="w-full h-10 sm:h-11 bg-black/90 backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 text-sm sm:text-base">
                       <SelectValue placeholder="Select an industry" />
                     </SelectTrigger>
-                    <SelectContent className="max-h-80 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-lg shadow-black/10">
+                    <SelectContent className="max-h-80 bg-black/90 backdrop-blur-md text-white border-white/20 shadow-lg shadow-black/10">
                       <SelectItem value="all" className="focus:bg-white/10 focus:text-white hover:bg-white/10">All Industries</SelectItem>
                       {INDUSTRIES.map((industry) => (
                         <SelectItem key={industry} value={industry} className="focus:bg-white/10 focus:text-white hover:bg-white/10">
@@ -678,10 +662,10 @@ const Radar = () => {
                     value={lookingForFilter}
                     onValueChange={setLookingForFilter}
                   >
-                    <SelectTrigger id="looking-for" className="w-full h-10 sm:h-11 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 text-sm sm:text-base">
+                    <SelectTrigger id="looking-for" className="w-full h-10 sm:h-11 bg-black/90 backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 text-sm sm:text-base">
                       <SelectValue placeholder="Select what you're looking for" />
                     </SelectTrigger>
-                    <SelectContent className="max-h-80 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-lg shadow-black/10">
+                    <SelectContent className="max-h-80 bg-black/90 backdrop-blur-md text-white border-white/20 shadow-lg shadow-black/10">
                       <SelectItem value="all" className="focus:bg-white/10 focus:text-white hover:bg-white/10">All Categories</SelectItem>
                       {LOOKING_FOR_CATEGORIES.map((category) => (
                         <SelectItem key={category.value} value={category.value} className="focus:bg-white/10 focus:text-white hover:bg-white/10">
@@ -728,58 +712,56 @@ const Radar = () => {
               </div>
             </div>
           </div>
-        </NeoGlassSection>
-        
-        {/* Nearby users section */}
-        <NeoGlassSection className="mt-4 sm:mt-6">
-          <div className="p-3 sm:p-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4">
-              <h2 className="text-lg sm:text-xl font-semibold text-white">Nearby Professionals</h2>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => refetchNearby()}
-                disabled={isLoadingNearby}
-                className="bg-white/10 text-white hover:bg-white/20 border border-white/20 backdrop-blur-md shadow-md text-xs sm:text-sm w-full sm:w-auto"
-              >
-                {isLoadingNearby ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-1 sm:mr-0" />
-                ) : (
-                  <RefreshCw className="h-4 w-4 mr-1 sm:mr-0" />
-                )}
-                <span className="sm:hidden ml-1">Refresh</span>
-              </Button>
-            </div>
-          
-          {locationStatus === 'pending' && <LocationPending />}
-          
-          {locationStatus === 'granted' && (
-            <>
-              {isLoadingNearby ? (
-                <FeedSkeleton count={2} />
-              ) : filteredNearbyUsers && filteredNearbyUsers.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  <div className="col-span-1 sm:col-span-2 mb-2">
-                    <p className="text-xs sm:text-sm text-white/70">
-                      Showing {filteredNearbyUsers.length} of {nearbyUsersData.length} nearby professionals
-                      {(jobTitleFilter || industryFilter || lookingForFilter) && ' with your filters'}
-                    </p>
-                  </div>
-                  {filteredNearbyUsers.map((user: NearbyUser) => (
-                    <UserCard 
-                      key={user.id} 
-                      user={user} 
-                      onClick={() => handleUserCardClick(user)} 
-                    />
-                  ))}
-                </div>
-              ) : (
-                <NoNearbyUsers />
+            {/* Nearby users section */}
+            <div className="w-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-3 sm:p-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4">
+                <h2 className="text-lg sm:text-xl font-semibold text-white">Nearby Professionals</h2>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => refetchNearby()}
+                  disabled={isLoadingNearby}
+                  className="bg-white/10 text-white hover:bg-white/20 border border-white/20 backdrop-blur-md shadow-md text-xs sm:text-sm w-full sm:w-auto"
+                >
+                  {isLoadingNearby ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-1 sm:mr-0" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4 mr-1 sm:mr-0" />
+                  )}
+                  <span className="sm:hidden ml-1">Refresh</span>
+                </Button>
+              </div>
+
+              {locationStatus === 'pending' && <LocationPending />}
+
+              {locationStatus === 'granted' && (
+                <>
+                  {isLoadingNearby ? (
+                    <FeedSkeleton count={2} />
+                  ) : filteredNearbyUsers && filteredNearbyUsers.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                      <div className="col-span-1 sm:col-span-2 mb-2">
+                        <p className="text-xs sm:text-sm text-white/70">
+                          Showing {filteredNearbyUsers.length} of {nearbyUsersData.length} nearby professionals
+                          {(jobTitleFilter || industryFilter || lookingForFilter) && ' with your filters'}
+                        </p>
+                      </div>
+                      {filteredNearbyUsers.map((user: NearbyUser) => (
+                        <UserCard 
+                          key={user.id} 
+                          user={user} 
+                          onClick={() => handleUserCardClick(user)} 
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <NoNearbyUsers />
+                  )}
+                </>
               )}
-            </>
-          )}
+            </div>
           </div>
-        </NeoGlassSection>
+        </div>
         
         {/* User Quantum Card dialog */}
         <Dialog open={cardOpen} onOpenChange={setCardOpen}>
@@ -849,10 +831,7 @@ const Radar = () => {
           </DialogContent>
         </Dialog>
       </div>
-    </NeoGlassLayout>
-  </div>
-  </div>
-  </div>
+    </div>
   );
 };
 

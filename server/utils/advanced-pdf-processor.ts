@@ -3,7 +3,7 @@ import { LocalAIService } from '../services/local-ai-service';
 import path from 'path';
 import { extractTextFromPdf } from './pdf-extractor';
 
-const localAI = new LocalAIService();
+const localAI = LocalAIService.getInstance();
 
 /**
  * Advanced PDF processing system that implements Musk's multi-step approach

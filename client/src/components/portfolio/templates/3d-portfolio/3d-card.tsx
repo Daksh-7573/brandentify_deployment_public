@@ -26,7 +26,7 @@ const ThreeDCard: React.FC<ThreeDCardProps> = ({
   const rafRef = useRef<number>();
 
   const industryTags = profile.industryTags?.slice(0, 3) || [];
-  const profileLink = `brandentifier.com/@${(profile.name || 'user').toLowerCase().replace(/\s+/g, '-')}`;
+  const profileLink = `brandentify.com/@${(profile.name || 'user').toLowerCase().replace(/\s+/g, '-')}`;
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!enableTilt || !cardRef.current) return;
@@ -325,3 +325,4 @@ const ThreeDCard: React.FC<ThreeDCardProps> = ({
 };
 
 export default ThreeDCard;
+

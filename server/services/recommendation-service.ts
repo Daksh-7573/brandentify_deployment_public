@@ -150,7 +150,7 @@ class RecommendationService {
   }
 
   /**
-   * Get recommendation for career quest (Brandentifier platform)
+   * Get recommendation for career quest (Brandentify platform)
    */
   async getCareerQuestRecommendation(
     industry?: string,
@@ -172,3 +172,4 @@ class RecommendationService {
 }
 
 export const recommendationService = new RecommendationService();
+

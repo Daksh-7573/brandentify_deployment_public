@@ -25,7 +25,7 @@ export default function LoginPage() {
     >
       <Card className="w-full max-w-md border border-primary/10 bg-black/80 backdrop-blur-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Welcome to Brandentifier</CardTitle>
+          <CardTitle className="text-2xl font-bold">Welcome to Brandentify</CardTitle>
           <CardDescription>Sign in to access your professional network</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

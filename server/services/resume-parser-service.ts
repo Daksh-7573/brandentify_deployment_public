@@ -2,17 +2,12 @@ import fs from "fs";
 import { promisify } from "util";
 import path from "path";
 import { v4 as uuidv4 } from 'uuid';
-import { PDFExtract } from 'pdf.js-extract';
 import multer from 'multer';
 import { Express } from 'express';
 import { LocalAIService } from "./local-ai-service";
 
 // Initialize FREE Local AI Service (uses VPS Ollama)
-const localAI = new LocalAIService();
-
-// PDF extraction
-const pdfExtract = new PDFExtract();
-const extractPDF = promisify(pdfExtract.extract.bind(pdfExtract));
+const localAI = LocalAIService.getInstance();
 
 // Setup upload directory and multer
 const uploadDir = path.join(process.cwd(), '/public/uploads/resumes');

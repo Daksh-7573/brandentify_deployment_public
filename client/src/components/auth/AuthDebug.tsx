@@ -46,9 +46,9 @@ export function AuthDebug() {
         });
         
         if (storedUser) {
-          addLog('Found stored Brandentifier user');
+          addLog('Found stored Brandentify user');
         } else {
-          addLog('No stored Brandentifier user found');
+          addLog('No stored Brandentify user found');
         }
         
       } catch (error: any) {
@@ -88,7 +88,7 @@ export function AuthDebug() {
       
       if (result) {
         addLog(`Found redirect result: ${result.user.email}`);
-        // Try to create Brandentifier account
+        // Try to create Brandentify account
         const userData = {
           firebaseUid: result.user.uid,
           email: result.user.email!,
@@ -99,7 +99,7 @@ export function AuthDebug() {
           emailVerified: result.user.emailVerified
         };
         
-        addLog('Creating Brandentifier account...');
+        addLog('Creating Brandentify account...');
         const response = await fetch('/api/auth/google-signin', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -107,14 +107,14 @@ export function AuthDebug() {
         });
         
         const data = await response.json();
-        addLog(`Brandentifier API response: ${JSON.stringify(data)}`);
+        addLog(`Brandentify API response: ${JSON.stringify(data)}`);
         
         if (data.success) {
           addLog('✅ Authentication successful!');
           sessionStorage.setItem('brandentifier_user', JSON.stringify(data.user));
           window.location.href = '/industry-pulse';
         } else {
-          addLog(`❌ Brandentifier API error: ${data.message}`);
+          addLog(`❌ Brandentify API error: ${data.message}`);
         }
       } else {
         addLog('No redirect result found, starting new auth flow...');
@@ -146,7 +146,7 @@ export function AuthDebug() {
 
   const createTestUser = async () => {
     try {
-      addLog('Creating test Brandentifier user...');
+      addLog('Creating test Brandentify user...');
       const testUserData = {
         firebaseUid: 'test-firebase-uid-' + Date.now(),
         email: 'test@example.com',
@@ -168,7 +168,7 @@ export function AuthDebug() {
       
       if (data.success) {
         addLog('✅ Test user created successfully!');
-        addLog('🔄 This confirms the Brandentifier API is working');
+        addLog('🔄 This confirms the Brandentify API is working');
       } else {
         addLog(`❌ Test user creation failed: ${data.message}`);
       }
@@ -199,7 +199,7 @@ export function AuthDebug() {
           <div className="text-sm font-semibold text-green-200 mb-2">✅ Setup Complete</div>
           <div className="text-xs text-green-300 space-y-1">
             <div>✅ Firebase domain authorized</div>
-            <div>✅ Brandentifier API working</div>
+            <div>✅ Brandentify API working</div>
             <div>✅ User creation/update working</div>
             <div>🚀 Google authentication should now work properly!</div>
           </div>

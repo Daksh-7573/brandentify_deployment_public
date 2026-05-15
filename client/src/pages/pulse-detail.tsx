@@ -337,7 +337,7 @@ export default function PulseDetail() {
 
             {/* Internal Share */}
             <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-3">Share with Brandentifier user</h3>
+              <h3 className="text-sm font-medium text-gray-400 mb-3">Share with Brandentify user</h3>
               <SearchableUserSelect
                 currentUserId={pulse.userId}
                 selectedUserId={shareRecipientId}
@@ -350,3 +350,4 @@ export default function PulseDetail() {
     </div>
   );
 }
+

@@ -67,14 +67,14 @@ export class InstantQuestMatcher {
     // Calculate relevance scores for each user
     const userRelevanceScores = await this.calculateRelevanceScores(trend, relevantUsers);
 
-    // Create TWO instant quest records per user: one career (Brandentifier) and one social (external platforms)
+    // Create TWO instant quest records per user: one career (Brandentify) and one social (external platforms)
     const questRecords: InsertInstantQuest[] = [];
     
     for (const userId of relevantUsers) {
       const relevanceScore = userRelevanceScores.get(userId) || 50;
       const expiresAt = new Date(Date.now() + 6 * 60 * 60 * 1000); // 6 hours from now
       
-      // Career quest - for Brandentifier platform (e.g., "Post a Pulse about this trend")
+      // Career quest - for Brandentify platform (e.g., "Post a Pulse about this trend")
       if (careerQuestId) {
         questRecords.push({
           userId,
@@ -254,3 +254,4 @@ export class InstantQuestMatcher {
 
 // Export singleton instance
 export const instantQuestMatcher = new InstantQuestMatcher();
+

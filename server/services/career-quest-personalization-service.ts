@@ -218,7 +218,7 @@ export class CareerQuestPersonalizationService {
               brandGoals: profile?.goals?.map(g => g.title)
             },
             deliverableFormat: 'Project showcase',
-            platform: 'Brandentifier'
+            platform: 'Brandentify'
           },
           trendBundle
         );
@@ -276,7 +276,7 @@ export class CareerQuestPersonalizationService {
               brandGoals: profile?.goals?.map(g => g.title)
             },
             deliverableFormat: 'Professional post or article',
-            platform: 'Brandentifier or LinkedIn'
+            platform: 'Brandentify or LinkedIn'
           },
           trendBundle
         );

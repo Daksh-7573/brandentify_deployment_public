@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { MuskChatInput } from "@/components/musk/musk-chat-input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { apiRequest } from "@/lib/queryClient";
@@ -101,7 +101,7 @@ export default function EnhancedCareerGuidance({ userId }: { userId: number }) {
                   </TabsList>
                 </div>
                 <div>
-                  <Input
+                  <MuskChatInput
                     id="query"
                     placeholder="e.g., What skills should I learn to advance in my career?"
                     value={query}

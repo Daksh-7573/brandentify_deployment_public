@@ -2,7 +2,7 @@ import { storage } from '../storage';
 import { LocalAIService } from './local-ai-service';
 
 // Initialize FREE Local AI Service (uses VPS Ollama)
-const localAI = new LocalAIService();
+const localAI = LocalAIService.getInstance();
 
 interface HashtagSuggestionsOptions {
   industry?: string | null;

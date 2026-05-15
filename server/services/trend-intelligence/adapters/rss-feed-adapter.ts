@@ -6,7 +6,6 @@
  */
 
 import { BaseTrendAdapter, RawTrendData, AdapterConfig } from './base-adapter';
-import fetch from 'node-fetch';
 import { parseStringPromise } from 'xml2js';
 
 export class RSSFeedAdapter extends BaseTrendAdapter {
@@ -79,7 +78,7 @@ export class RSSFeedAdapter extends BaseTrendAdapter {
   private async parseFeed(url: string, industry: string, domain?: string): Promise<RawTrendData[]> {
     const response = await fetch(url, {
       headers: {
-        'User-Agent': 'Brandentifier-TrendBot/1.0'
+        'User-Agent': 'Brandentify-TrendBot/1.0'
       }
     });
 
@@ -161,3 +160,4 @@ export class RSSFeedAdapter extends BaseTrendAdapter {
       .slice(0, 10);
   }
 }
+

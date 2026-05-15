@@ -1,7 +1,7 @@
 /**
  * Comprehensive Quest Generator V2
  * 
- * Generates REAL, ACHIEVABLE Brandentifier quests that map to actual platform features.
+ * Generates REAL, ACHIEVABLE Brandentify quests that map to actual platform features.
  * 
  * KEY CHANGES:
  * - Uses platform-activity-mapper to ensure quests are completable
@@ -20,6 +20,7 @@ import {
   getRecommendedQuestType 
 } from './platform-activity-mapper';
 import { ProfileCompletenessChecker, ProfileCompletenessResult, FieldAlignmentStatus } from './profile-completeness-checker';
+import { enhancedQuestPromptGenerator } from './enhanced-quest-prompt-generator';
 
 export interface DetailedPersonalizedQuest {
   type: string;
@@ -35,11 +36,67 @@ export interface DetailedPersonalizedQuest {
   guidanceSnippet: string;
   estimatedTimeMinutes: number;
   muskTip: string;
-  category: string;
+  category: 'career' | 'profile' | 'portfolio' | 'social' | 'networking';
   difficultyLevel: string;
 }
 
 export class ComprehensiveQuestGeneratorV2 {
+  
+  /**
+   * Determine quest category based on type and target action
+   * Categories: career, profile, portfolio, social, networking
+   */
+  private static determineQuestCategory(questType: string, targetAction: string): 'career' | 'profile' | 'portfolio' | 'social' | 'networking' {
+    // Profile completion quests
+    const profileActions = [
+      'add_uvp', 'add_vision_statement', 'add_mission_statement', 
+      'add_core_values', 'add_tagline', 'add_title', 'add_about_me', 
+      'add_what_i_offer', 'update_profile_field'
+    ];
+    
+    // Portfolio quests
+    const portfolioActions = [
+      'add_portfolio_project', 'add_project', 'publish_portfolio_project',
+      'add_case_study', 'showcase_work'
+    ];
+    
+    // Social/content creation quests
+    const socialActions = [
+      'create_pulse', 'share_post', 'publish_content', 
+      'write_article', 'create_video', 'share_insight'
+    ];
+    
+    // Networking/engagement quests
+    const networkingActions = [
+      'connect_with_user', 'comment_on_pulse', 'react_to_post',
+      'engage_with_content', 'send_connection_request', 'participate_discussion'
+    ];
+    
+    // Categorize based on target action
+    if (profileActions.some(action => targetAction.includes(action))) {
+      return 'profile';
+    }
+    
+    if (portfolioActions.some(action => targetAction.includes(action))) {
+      return 'portfolio';
+    }
+    
+    if (socialActions.some(action => targetAction.includes(action))) {
+      return 'social';
+    }
+    
+    if (networkingActions.some(action => targetAction.includes(action))) {
+      return 'networking';
+    }
+    
+    // Default fallback based on quest type
+    if (questType === 'profile_update') return 'profile';
+    if (questType === 'portfolio') return 'portfolio';
+    if (questType === 'pulse_creation') return 'social';
+    if (questType === 'networking') return 'networking';
+    
+    return 'career'; // Default fallback
+  }
   
   /**
    * Main entry point: Generate personalized quest based on profile and goals
@@ -134,7 +191,7 @@ export class ComprehensiveQuestGeneratorV2 {
     
     // Build prompt that ENFORCES text field constraints
     const questAction = isRefinementQuest ? 'IMPROVE & REFINE' : (fieldAlignment?.status === 'misaligned' ? 'UPDATE' : 'fill');
-    const prompt = `You are Musk, a career strategist. Generate a quest for ${name} to ${isRefinementQuest ? 'refine their existing' : 'complete their'} Brandentifier profile.
+    const prompt = `You are Musk, a career strategist. Generate a quest for ${name} to ${isRefinementQuest ? 'refine their existing' : 'complete their'} Brandentify profile.
 
 PROFILE:
 - Name: ${name}
@@ -152,7 +209,7 @@ Generate a quest that asks them to ${questAction} this profile field. Return ONL
 
 {
   "personalizedTitle": "Craft Your ${activity.targetAction.replace('add_', '').replace('_', ' ').toUpperCase()}",
-  "personalizedDescription": "Write a ${activity.characterLimit}-character ${activity.targetAction.replace('add_', '')} for your Brandentifier profile that positions you as a ${domain} expert in ${location}. Target: ${primaryAudience}. Example: [provide specific example]. Keep it concise, impactful, and aligned with your goal: ${brandGoalLabel}.",
+  "personalizedDescription": "Write a ${activity.characterLimit}-character ${activity.targetAction.replace('add_', '')} for your Brandentify profile that positions you as a ${domain} expert in ${location}. Target: ${primaryAudience}. Example: [provide specific example]. Keep it concise, impactful, and aligned with your goal: ${brandGoalLabel}.",
   "personalizedMuskTip": "Listen, ${name}. ${activity.characterLimit} characters. That's it. Make every word count. Focus on what makes you different as a ${domain} professional in ${location}. ${primaryAudience} don't have time for fluff—give them a reason to care. Be bold.",
   "deliverableFormat": "${activity.deliverableFormat}",
   "guidanceSnippet": "1. Think about your unique value as a ${domain} professional\\n2. Consider what ${primaryAudience} need to know\\n3. Draft 2-3 versions\\n4. Keep under ${activity.characterLimit} characters\\n5. Save to your profile",
@@ -176,8 +233,8 @@ Generate a quest that asks them to ${questAction} this profile field. Return ONL
         estimatedTimeMinutes: parsed.estimatedTime || 15,
         targetAction: activity.targetAction,
         xpReward: 30,
-        platform: 'Brandentifier',
-        category: 'career',
+        platform: 'Brandentify',
+        category: ComprehensiveQuestGeneratorV2.determineQuestCategory(activity.questType, activity.targetAction),
         difficultyLevel: 'beginner'
       };
     } catch (error) {
@@ -187,7 +244,7 @@ Generate a quest that asks them to ${questAction} this profile field. Return ONL
   }
   
   /**
-   * Generate pulse creation quest (post on Brandentifier)
+   * Generate pulse creation quest (post on Brandentify)
    */
   private async generatePulseCreationQuest(
     activity: PlatformActivity,
@@ -205,7 +262,7 @@ Generate a quest that asks them to ${questAction} this profile field. Return ONL
       ? 'Position myself as an authority in my niche' 
       : 'Increase my professional visibility';
     
-    const prompt = `You are Musk, a content strategist. Generate a quest for ${name} to create a Brandentifier pulse (post).
+    const prompt = `You are Musk, a content strategist. Generate a quest for ${name} to create a Brandentify pulse (post).
 
 PROFILE:
 - Name: ${name}
@@ -217,16 +274,16 @@ PROFILE:
 
 QUEST TASK: ${activity.completionMethod}
 DELIVERABLE: ${activity.deliverableFormat}
-PLATFORM: ${activity.platformFeature} (Brandentifier Industry Pulse feed)
+PLATFORM: ${activity.platformFeature} (Brandentify Industry Pulse feed)
 
-Generate a quest that asks them to POST content on Brandentifier. Return ONLY valid JSON:
+Generate a quest that asks them to POST content on Brandentify. Return ONLY valid JSON:
 
 {
-  "personalizedTitle": "Share ${location} ${domain} Success Story on Brandentifier",
-  "personalizedDescription": "Create and publish a pulse post on Brandentifier's Industry Pulse feed. Share a recent ${domain} project or achievement from ${location}. Include: Problem you solved, your approach, measurable results, and lessons learned. Target: ${primaryAudience}. Format: 400-600 words + 2-3 professional images. This positions you as a ${domain} authority and supports your goal: ${brandGoalLabel}.",
-  "personalizedMuskTip": "Real talk, ${name}. ${primaryAudience} don't care about theory—they want results. Lead with your biggest metric from ${location}: '50% revenue increase' or '100K impressions in 30 days'. Show the receipts. Post it on Brandentifier where it matters.",
-  "deliverableFormat": "1 pulse post (400-600 words) + 2-3 images on Brandentifier Industry Pulse",
-  "guidanceSnippet": "1. Open Brandentifier Industry Pulse\\n2. Click 'Create Pulse'\\n3. Write your success story (400-600 words)\\n4. Add 2-3 professional images\\n5. Include metrics and results\\n6. Publish publicly",
+  "personalizedTitle": "Share ${location} ${domain} Success Story on Brandentify",
+  "personalizedDescription": "Create and publish a pulse post on Brandentify's Industry Pulse feed. Share a recent ${domain} project or achievement from ${location}. Include: Problem you solved, your approach, measurable results, and lessons learned. Target: ${primaryAudience}. Format: 400-600 words + 2-3 professional images. This positions you as a ${domain} authority and supports your goal: ${brandGoalLabel}.",
+  "personalizedMuskTip": "Real talk, ${name}. ${primaryAudience} don't care about theory—they want results. Lead with your biggest metric from ${location}: '50% revenue increase' or '100K impressions in 30 days'. Show the receipts. Post it on Brandentify where it matters.",
+  "deliverableFormat": "1 pulse post (400-600 words) + 2-3 images on Brandentify Industry Pulse",
+  "guidanceSnippet": "1. Open Brandentify Industry Pulse\\n2. Click 'Create Pulse'\\n3. Write your success story (400-600 words)\\n4. Add 2-3 professional images\\n5. Include metrics and results\\n6. Publish publicly",
   "estimatedTime": 30
 }`;
 
@@ -242,13 +299,13 @@ Generate a quest that asks them to POST content on Brandentifier. Return ONLY va
         deliverableFormat: parsed.deliverableFormat || activity.deliverableFormat,
         quantityValue: 1,
         quantityType: 'pulse_post',
-        platformConstraints: 'Must be published on Brandentifier Industry Pulse',
+        platformConstraints: 'Must be published on Brandentify Industry Pulse',
         guidanceSnippet: parsed.guidanceSnippet,
         estimatedTimeMinutes: parsed.estimatedTime || 30,
         targetAction: activity.targetAction,
         xpReward: 60,
-        platform: 'Brandentifier',
-        category: 'career',
+        platform: 'Brandentify',
+        category: ComprehensiveQuestGeneratorV2.determineQuestCategory(activity.questType, activity.targetAction),
         difficultyLevel: 'intermediate'
       };
     } catch (error) {
@@ -271,7 +328,7 @@ Generate a quest that asks them to POST content on Brandentifier. Return ONLY va
     const location = userProfile.location || 'your area';
     const primaryAudience = userProfile.primaryAudience?.[0] || 'industry professionals';
     
-    const prompt = `You are Musk, a portfolio strategist. Generate a quest for ${name} to add a project to their Brandentifier portfolio.
+    const prompt = `You are Musk, a portfolio strategist. Generate a quest for ${name} to add a project to their Brandentify portfolio.
 
 PROFILE:
 - Name: ${name}
@@ -283,14 +340,14 @@ QUEST TASK: ${activity.completionMethod}
 DELIVERABLE: ${activity.deliverableFormat}
 PLATFORM: ${activity.platformFeature}
 
-Generate a quest that asks them to add a portfolio project on Brandentifier. Return ONLY valid JSON:
+Generate a quest that asks them to add a portfolio project on Brandentify. Return ONLY valid JSON:
 
 {
   "personalizedTitle": "Showcase ${location} ${domain} Project in Portfolio",
-  "personalizedDescription": "Add a ${domain} project to your Brandentifier portfolio. Choose a recent project from ${location} that demonstrates your expertise to ${primaryAudience}. Include: Project title, description (300-500 words), challenge faced, your solution, measurable results, technologies/methods used, and 3-5 high-quality images.",
-  "personalizedMuskTip": "${name}, portfolios separate talkers from doers. Show a real ${domain} project from ${location} with actual results. ${primaryAudience} want proof you can execute. Add it to Brandentifier where they'll see it.",
+  "personalizedDescription": "Add a ${domain} project to your Brandentify portfolio. Choose a recent project from ${location} that demonstrates your expertise to ${primaryAudience}. Include: Project title, description (300-500 words), challenge faced, your solution, measurable results, technologies/methods used, and 3-5 high-quality images.",
+  "personalizedMuskTip": "${name}, portfolios separate talkers from doers. Show a real ${domain} project from ${location} with actual results. ${primaryAudience} want proof you can execute. Add it to Brandentify where they'll see it.",
   "deliverableFormat": "1 portfolio project entry: title + 300-500 word description + 3-5 images + tech stack",
-  "guidanceSnippet": "1. Go to Brandentifier Portfolio section\\n2. Click 'Add Project'\\n3. Enter project title and description\\n4. Upload 3-5 project images\\n5. List technologies/methods used\\n6. Include measurable outcomes\\n7. Publish project",
+  "guidanceSnippet": "1. Go to Brandentify Portfolio section\\n2. Click 'Add Project'\\n3. Enter project title and description\\n4. Upload 3-5 project images\\n5. List technologies/methods used\\n6. Include measurable outcomes\\n7. Publish project",
   "estimatedTime": 40
 }`;
 
@@ -306,13 +363,13 @@ Generate a quest that asks them to add a portfolio project on Brandentifier. Ret
         deliverableFormat: parsed.deliverableFormat || activity.deliverableFormat,
         quantityValue: 1,
         quantityType: 'portfolio_project',
-        platformConstraints: 'Must be added to Brandentifier Portfolio section',
+        platformConstraints: 'Must be added to Brandentify Portfolio section',
         guidanceSnippet: parsed.guidanceSnippet,
         estimatedTimeMinutes: parsed.estimatedTime || 40,
         targetAction: activity.targetAction,
         xpReward: 70,
-        platform: 'Brandentifier',
-        category: 'career',
+        platform: 'Brandentify',
+        category: ComprehensiveQuestGeneratorV2.determineQuestCategory(activity.questType, activity.targetAction),
         difficultyLevel: 'intermediate'
       };
     } catch (error) {
@@ -343,12 +400,12 @@ Generate a quest that asks them to add a portfolio project on Brandentifier. Ret
       quantityValue: activity.targetAction.includes('comment') ? 1 : 5,
       quantityType: activity.targetAction.includes('comment') ? 'comment' : 'reactions',
       platformConstraints: activity.constraints,
-      guidanceSnippet: `1. Browse Brandentifier Industry Pulse\\n2. Find ${industry} posts\\n3. ${activity.completionMethod}\\n4. Add thoughtful value`,
+      guidanceSnippet: `1. Browse Brandentify Industry Pulse\\n2. Find ${industry} posts\\n3. ${activity.completionMethod}\\n4. Add thoughtful value`,
       estimatedTimeMinutes: 10,
       targetAction: activity.targetAction,
       xpReward: 20,
-      platform: 'Brandentifier',
-      category: 'career',
+      platform: 'Brandentify',
+      category: ComprehensiveQuestGeneratorV2.determineQuestCategory(activity.questType, activity.targetAction),
       difficultyLevel: 'beginner'
     };
   }
@@ -366,7 +423,7 @@ Generate a quest that asks them to add a portfolio project on Brandentifier. Ret
       type: activity.questType,
       title: activity.platformFeature,
       description: activity.completionMethod,
-      muskTip: `Complete this task on Brandentifier to level up your professional brand.`,
+      muskTip: `Complete this task on Brandentify to level up your professional brand.`,
       deliverableFormat: activity.deliverableFormat,
       quantityValue: 1,
       quantityType: 'task',
@@ -375,8 +432,8 @@ Generate a quest that asks them to add a portfolio project on Brandentifier. Ret
       estimatedTimeMinutes: 20,
       targetAction: activity.targetAction,
       xpReward: 40,
-      platform: 'Brandentifier',
-      category: 'career',
+      platform: 'Brandentify',
+      category: ComprehensiveQuestGeneratorV2.determineQuestCategory(activity.questType, activity.targetAction),
       difficultyLevel: 'intermediate'
     };
   }
@@ -385,14 +442,25 @@ Generate a quest that asks them to add a portfolio project on Brandentifier. Ret
    * Parse AI response (handles JSON extraction)
    */
   private parseAIResponse(response: string): any {
+    const safeParse = (json: string): any | null => {
+      try {
+        return JSON.parse(json);
+      } catch {
+        return null;
+      }
+    };
+
     try {
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
+        const parsed = safeParse(jsonMatch[0]);
+        if (parsed) {
+          return parsed;
+        }
       }
       throw new Error('No valid JSON found');
     } catch (error) {
-      console.error('[QuestGenV2] Failed to parse AI response:', error);
+      console.warn('[QuestGenV2] Invalid JSON from AI, using deterministic fallback object');
       return {
         personalizedTitle: 'Complete Your Profile',
         personalizedDescription: 'Fill in your profile details',
@@ -421,7 +489,7 @@ Generate a quest that asks them to add a portfolio project on Brandentifier. Ret
       estimatedTimeMinutes: 15,
       targetAction: activity.targetAction,
       xpReward: 30,
-      platform: 'Brandentifier',
+      platform: 'Brandentify',
       category: 'career',
       difficultyLevel: 'beginner'
     };
@@ -432,17 +500,17 @@ Generate a quest that asks them to add a portfolio project on Brandentifier. Ret
     return {
       type: activity.questType,
       title: `Share Your ${domain} Success Story`,
-      description: `Post a pulse on Brandentifier sharing a recent ${domain} achievement. Include metrics and lessons learned.`,
-      muskTip: `Show results, not claims. Post it on Brandentifier where your network can see it.`,
+      description: `Post a pulse on Brandentify sharing a recent ${domain} achievement. Include metrics and lessons learned.`,
+      muskTip: `Show results, not claims. Post it on Brandentify where your network can see it.`,
       deliverableFormat: '1 pulse post (400-600 words) + 2-3 images',
       quantityValue: 1,
       quantityType: 'pulse_post',
-      platformConstraints: 'Published on Brandentifier Industry Pulse',
+      platformConstraints: 'Published on Brandentify Industry Pulse',
       guidanceSnippet: '1. Open Industry Pulse\\n2. Click Create Pulse\\n3. Write 400-600 words\\n4. Add images\\n5. Publish',
       estimatedTimeMinutes: 30,
       targetAction: activity.targetAction,
       xpReward: 60,
-      platform: 'Brandentifier',
+      platform: 'Brandentify',
       category: 'career',
       difficultyLevel: 'intermediate'
     };
@@ -452,17 +520,17 @@ Generate a quest that asks them to add a portfolio project on Brandentifier. Ret
     return {
       type: activity.questType,
       title: 'Add Project to Portfolio',
-      description: 'Add a professional project to your Brandentifier portfolio with description, images, and tech stack.',
+      description: 'Add a professional project to your Brandentify portfolio with description, images, and tech stack.',
       muskTip: 'Portfolios prove competence. Add a real project with measurable results.',
       deliverableFormat: '1 portfolio project: title + description + 3-5 images',
       quantityValue: 1,
       quantityType: 'portfolio_project',
-      platformConstraints: 'Added to Brandentifier Portfolio',
+      platformConstraints: 'Added to Brandentify Portfolio',
       guidanceSnippet: '1. Go to Portfolio\\n2. Add Project\\n3. Fill details\\n4. Upload images\\n5. Publish',
       estimatedTimeMinutes: 40,
       targetAction: activity.targetAction,
       xpReward: 70,
-      platform: 'Brandentifier',
+      platform: 'Brandentify',
       category: 'career',
       difficultyLevel: 'intermediate'
     };
@@ -477,12 +545,12 @@ Generate a quest that asks them to add a portfolio project on Brandentifier. Ret
       deliverableFormat: 'Complete the task',
       quantityValue: 1,
       quantityType: 'task',
-      platformConstraints: 'On Brandentifier platform',
+      platformConstraints: 'On Brandentify platform',
       guidanceSnippet: 'Follow the quest instructions',
       estimatedTimeMinutes: 20,
       targetAction: questDef.targetAction || 'complete_task',
       xpReward: questDef.xpReward || 40,
-      platform: 'Brandentifier',
+      platform: 'Brandentify',
       category: 'career',
       difficultyLevel: 'intermediate'
     };
@@ -509,3 +577,4 @@ Generate a quest that asks them to add a portfolio project on Brandentifier. Ret
 
 // Export singleton instance
 export const comprehensiveQuestGeneratorV2 = new ComprehensiveQuestGeneratorV2();
+

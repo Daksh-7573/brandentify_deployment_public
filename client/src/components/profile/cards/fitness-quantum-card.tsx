@@ -30,8 +30,8 @@ const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoa
   };
 
   const profileLink = userData.randomProfileLink 
-    ? `brandentifier.com/r/${userData.randomProfileLink}` 
-    : `brandentifier.com/@${userData.brandName || userData.username}`;
+    ? `brandentify.com/r/${userData.randomProfileLink}` 
+    : `brandentify.com/@${userData.brandName || userData.username}`;
 
   return (
     <article 
@@ -373,3 +373,4 @@ const FitnessQuantumCard: React.FC<FitnessQuantumCardProps> = ({ userData, isLoa
 };
 
 export default FitnessQuantumCard;
+

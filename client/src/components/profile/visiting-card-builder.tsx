@@ -2,14 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { BadgeCheck, Info, Download, Share2, Check, Loader2, Lock, Gift, Crown } from "lucide-react";
+import { BadgeCheck, Info, Download, Share2, Check, Loader2 } from "lucide-react";
 import { UserData } from "@/types/user";
 import VisitingCardPreview from "./visiting-card-preview";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { useReferralStatus } from "@/hooks/use-referral";
-import { ShareModal } from "@/components/referral/share-modal";
-import { FREE_VISITING_CARD_TEMPLATES } from "@/lib/feature-access";
 
 // Card type options
 const CARD_TYPES = [
@@ -52,9 +49,11 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [isFinalized, setIsFinalized] = useState(defaultCardType === userData.visitingCardType);
   const [isLoading, setIsLoading] = useState(false);
-  const [showShareModal, setShowShareModal] = useState(false);
   const { toast } = useToast();
-  const { data: referralStatus, isLoading: isLoadingReferral } = useReferralStatus();
+
+  const hasQuantum = Boolean(userData.visitingCardType) || isFinalized;
+  const hasPortfolio = Boolean(userData.selectedPortfolioLayout);
+  const isUnlocked = hasQuantum && hasPortfolio;
   
   // Sync activeTab when selectedCardType changes (e.g., when userData loads)
   useEffect(() => {
@@ -63,32 +62,8 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
     setIsFinalized(newCardType === userData.visitingCardType);
   }, [selectedCardType, userData.visitingCardType]);
   
-  // Check if card is locked based on referral unlock status
-  // SECURITY: Default to locked if referral data is loading/unavailable to prevent bypass
-  const isCardLocked = (cardId: string): boolean => {
-    if (isLoadingReferral || !referralStatus?.quantumCards) return true; // Block access while loading
-    const card = referralStatus.quantumCards.find(c => c.id === cardId);
-    // If not found in referral list, allow access (for legacy cards)
-    if (!card) return false;
-    return card.locked;
-  };
-
-  // Check if card is free (unlocked via referrals)
-  const isCardFree = (cardId: string): boolean => {
-    return !isCardLocked(cardId);
-  };
-
-  // Handle tab change - check if card is unlocked
+  // Handle tab change
   const handleTabChange = (value: string) => {
-    if (isCardLocked(value)) {
-      setShowShareModal(true);
-      toast({
-        title: "Card Locked",
-        description: "Share with friends to unlock more card designs!",
-        variant: "default",
-      });
-      return;
-    }
     setActiveTab(value);
     setIsFinalized(value === userData.visitingCardType);
     onCardTypeSelect(value);
@@ -107,11 +82,15 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
         description: "Your Quantum Card style has been set and will be visible to your connections.",
         variant: "default",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving card type:", error);
+      
+      // Show specific error message from backend if available
+      const errorMessage = error?.message || "Unable to save your Quantum Card style. Please try again.";
+      
       toast({
         title: "Error saving Quantum Card style",
-        description: "Unable to save your Quantum Card style. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -158,8 +137,8 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
       }
       
       // Generate sharable link - use the native ID format detected above
-      const shareUrl = `${window.location.origin}/profile/card/${userId}`;
-      console.log("Sharable link:", shareUrl);
+      const shareUrl = `${window.location.origin}/profile/card/${userId}?ref=${encodeURIComponent(String(userId))}`;
+      console.log("Generated share link:", shareUrl);
       
       // Display alert with the URL
       const alertUser = (success: boolean) => {
@@ -290,17 +269,12 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
           <div className="flex-1">
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-sm font-medium">Select Card Style</h4>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowShareModal(true)}
-                className="text-purple-300 hover:text-purple-200 hover:bg-purple-500/10"
-                data-testid="button-share-to-unlock"
-              >
-                <Gift className="h-4 w-4 mr-1" />
-                Share to Unlock
-              </Button>
             </div>
+            {!isUnlocked && (
+              <div className="mb-4 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-gray-400">
+                Create 1 Quantum Card and 1 Portfolio to unlock.
+              </div>
+            )}
             <Tabs
               value={activeTab}
               onValueChange={handleTabChange}
@@ -309,119 +283,95 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
               <TabsList className="grid grid-cols-3 mb-6 dark-tabs-list">
                 <TabsTrigger 
                   value="professional" 
-                  className={`dark-tabs-trigger relative ${isCardLocked("professional") ? "opacity-60" : ""}`}
+                  className="dark-tabs-trigger relative"
                   data-testid="tab-professional"
                 >
-                  {isCardLocked("professional") && <Lock className="h-3 w-3 mr-1 inline" />}
                   Professional
-                  {!isCardFree("professional") && !isCardLocked("professional") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="3d-animated" 
-                  className={`dark-tabs-trigger relative ${isCardLocked("3d-animated") ? "opacity-60" : ""}`}
+                  className="dark-tabs-trigger relative"
                   data-testid="tab-3d-animated"
                 >
-                  {isCardLocked("3d-animated") && <Lock className="h-3 w-3 mr-1 inline" />}
                   3D
-                  {!isCardFree("3d-animated") && !isCardLocked("3d-animated") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="holographic" 
-                  className={`dark-tabs-trigger relative ${isCardLocked("holographic") ? "opacity-60" : ""}`}
+                  className="dark-tabs-trigger relative"
                   data-testid="tab-holographic"
                 >
-                  {isCardLocked("holographic") && <Lock className="h-3 w-3 mr-1 inline" />}
                   Holographic
-                  {!isCardFree("holographic") && !isCardLocked("holographic") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
               </TabsList>
               <TabsList className="grid grid-cols-3 mb-6 dark-tabs-list">
                 <TabsTrigger 
                   value="neoglow" 
-                  className={`dark-tabs-trigger relative ${isCardLocked("neoglow") ? "opacity-60" : ""}`}
+                  className="dark-tabs-trigger relative"
                   data-testid="tab-neoglow"
                 >
-                  {isCardLocked("neoglow") && <Lock className="h-3 w-3 mr-1 inline" />}
                   NeoGlow
-                  {!isCardFree("neoglow") && !isCardLocked("neoglow") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="creative" 
-                  className={`dark-tabs-trigger relative ${isCardLocked("creative") ? "opacity-60" : ""}`}
+                  className="dark-tabs-trigger relative"
                   data-testid="tab-creative"
                 >
-                  {isCardLocked("creative") && <Lock className="h-3 w-3 mr-1 inline" />}
                   Creative
-                  {!isCardFree("creative") && !isCardLocked("creative") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="artistic" 
-                  className={`dark-tabs-trigger relative ${isCardLocked("artistic") ? "opacity-60" : ""}`}
+                  className="dark-tabs-trigger relative"
                   data-testid="tab-artistic"
                 >
-                  {isCardLocked("artistic") && <Lock className="h-3 w-3 mr-1 inline" />}
                   Artistic
-                  {!isCardFree("artistic") && !isCardLocked("artistic") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
               </TabsList>
               <TabsList className="grid grid-cols-1 sm:grid-cols-3 mb-6 dark-tabs-list gap-2">
                 <TabsTrigger 
                   value="quantum" 
-                  className={`dark-tabs-trigger relative ${isCardLocked("quantum") ? "opacity-60" : ""}`}
+                  className="dark-tabs-trigger relative"
                   data-testid="tab-quantum"
                 >
-                  {isCardLocked("quantum") && <Lock className="h-3 w-3 mr-1 inline" />}
                   Quantum Tech
-                  {!isCardFree("quantum") && !isCardLocked("quantum") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="fashion-quantum" 
-                  className={`dark-tabs-trigger relative ${isCardLocked("fashion-quantum") ? "opacity-60" : ""}`}
+                  className="dark-tabs-trigger relative"
                   data-testid="tab-fashion-quantum"
                 >
-                  {isCardLocked("fashion-quantum") && <Lock className="h-3 w-3 mr-1 inline" />}
                   Fashion Editorial
-                  {!isCardFree("fashion-quantum") && !isCardLocked("fashion-quantum") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="graphic-quantum" 
-                  className={`dark-tabs-trigger relative ${isCardLocked("graphic-quantum") ? "opacity-60" : ""}`}
+                  className="dark-tabs-trigger relative"
                   data-testid="tab-graphic-quantum"
                 >
-                  {isCardLocked("graphic-quantum") && <Lock className="h-3 w-3 mr-1 inline" />}
                   Graphic Quantum
-                  {!isCardFree("graphic-quantum") && !isCardLocked("graphic-quantum") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
               </TabsList>
               <TabsList className="grid grid-cols-1 sm:grid-cols-2 mb-6 dark-tabs-list gap-2">
                 <TabsTrigger 
                   value="photography" 
-                  className={`dark-tabs-trigger relative ${isCardLocked("photography") ? "opacity-60" : ""}`}
+                  className="dark-tabs-trigger relative"
                   data-testid="tab-photography"
                 >
-                  {isCardLocked("photography") && <Lock className="h-3 w-3 mr-1 inline" />}
                   Photography Cinematic
-                  {!isCardFree("photography") && !isCardLocked("photography") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
                 <TabsTrigger 
                   value="fitness-quantum" 
-                  className={`dark-tabs-trigger relative ${isCardLocked("fitness-quantum") ? "opacity-60" : ""}`}
+                  className="dark-tabs-trigger relative"
                   data-testid="tab-fitness-quantum"
                 >
-                  {isCardLocked("fitness-quantum") && <Lock className="h-3 w-3 mr-1 inline" />}
                   Fitness Quantum
-                  {!isCardFree("fitness-quantum") && !isCardLocked("fitness-quantum") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
               </TabsList>
               <TabsList className="grid grid-cols-1 mb-6 dark-tabs-list">
                 <TabsTrigger 
                   value="ceo-quantum" 
-                  className={`dark-tabs-trigger relative ${isCardLocked("ceo-quantum") ? "opacity-60" : ""}`}
+                  className="dark-tabs-trigger relative"
                   data-testid="tab-ceo-quantum"
                 >
-                  {isCardLocked("ceo-quantum") && <Lock className="h-3 w-3 mr-1 inline" />}
                   CEO Executive
-                  {!isCardFree("ceo-quantum") && !isCardLocked("ceo-quantum") && <Crown className="h-3 w-3 ml-1 inline text-yellow-400" />}
                 </TabsTrigger>
               </TabsList>
               
@@ -472,8 +422,6 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
         </div>
       </div>
 
-      {/* Share Modal for Referral System */}
-      <ShareModal open={showShareModal} onClose={() => setShowShareModal(false)} />
     </div>
   );
 };

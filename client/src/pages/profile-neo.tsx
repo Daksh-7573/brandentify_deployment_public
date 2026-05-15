@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import Header from "@/components/layout/header";
-import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
+// Background image removed - using design system dark translucent background
 import { Button } from "@/components/ui/button";
 import WorkExperience from "@/components/profile/work-experience";
 import Education from "@/components/profile/education";
@@ -44,11 +44,11 @@ import {
 } from "@/components/ui/select";
 import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 
-import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
-import AppShell from "@/components/layout/app-shell";
+// NeoGlass components removed - using direct design system styling
 import { SkillsListSkeleton, EducationItemSkeleton, ExperienceItemSkeleton, ProfileCardSkeleton } from "@/components/ui/skeleton-components";
 import { PremiumBadge } from "@/components/ui/premium-badge";
 import { ProfileDataProvider } from "@/contexts/profile-data-context";
+import { Helmet } from "react-helmet";
 
 // Define "I am looking for" categories - matching the form constants with icons
 const LOOKING_FOR_CATEGORIES = [
@@ -167,11 +167,11 @@ export default function ProfileNeo() {
   // NOW we can have early returns after all hooks are declared
   if (isLoading || isUserDataLoading || !userData) {
     return (
-      <AppShell>
-        <div className="container mx-auto px-4 py-6">
+      <div className="w-full min-h-full flex justify-center px-4 sm:px-6 lg:px-8 py-8">
+        <div className="w-full max-w-7xl">
           <ProfileCardSkeleton />
         </div>
-      </AppShell>
+      </div>
     );
   }
 
@@ -193,27 +193,52 @@ export default function ProfileNeo() {
   const handleSubmitIndustryPreferences = () => {
     updateIndustryMutation.mutate();
   };
+
+  const structuredData = userData ? {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": userData.name || "Brandentify User",
+    "jobTitle": userData.title || "Professional",
+    "worksFor": {
+      "@type": "Organization",
+      "name": userData.company || "Brandentify",
+      "sameAs": "https://brandentify.com"
+    },
+    "knowsAbout": userData.skills?.map((s: any) => s.name || s) || [
+      userData.industry || "Professional Industry",
+      userData.domain || "Professional Domain"
+    ].filter(Boolean)
+  } : null;
   
   return (
     <ProfileDataProvider userId={userIdentifier}>
-    <div 
-      className="flex h-screen flex-col responsive-background"
-      style={{ 
-        backgroundImage: `url(${backgroundImage})`
-      }}
-    >
-      {/* Glass UI overlay to maintain design consistency */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
-      
-      <div className="relative z-10 w-full h-full overflow-auto">
-        <Header />
-        <NeoGlassLayout className="mt-3 mx-3 sm:mx-6">
+    <div className="w-full min-h-full text-white selection:bg-white/20 font-['Outfit'] relative flex justify-center px-4 sm:px-6 lg:px-8 py-8">
+      {userData && (
+        <Helmet>
+          <title>{userData.name ? `${userData.name} - Professional Profile | Brandentify` : 'Professional Profile | Brandentify'}</title>
+          <meta name="description" content={`View ${userData.name || 'this professional'}'s profile on Brandentify. ${userData.title ? userData.title : ''} ${userData.industry ? `in ${userData.industry}` : ''}`} />
+          <meta name="keywords" content={`professional profile, ${userData.title || ''}, ${userData.industry || ''}, ${userData.domain || ''}, career development, networking`} />
+          <meta property="og:title" content={`${userData.name || 'User'} - Professional Profile`} />
+          <meta property="og:description" content={`${userData.title || 'Professional'} ${userData.industry ? `specializing in ${userData.industry}` : ''}`} />
+          <meta property="og:type" content="profile" />
+          <meta property="og:image" content={userData.photoURL || "https://brandentify.com/default-profile-og.jpg"} />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={`${userData.name || 'User'} - Professional Profile`} />
+          <link rel="canonical" href={`https://brandentify.com/profile/${userIdentifier}`} />
+          {structuredData && (
+            <script type="application/ld+json">
+              {JSON.stringify(structuredData)}
+            </script>
+          )}
+        </Helmet>
+      )}
+      <div className="w-full max-w-7xl">
             {/* Profile Header */}
             <div className="mb-6 sm:mb-8">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
                 <div>
                   <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Profile</h1>
-                  <p className="text-white/80 mt-1 text-sm sm:text-base">
+                  <p className="text-gray-400 mt-1 text-sm sm:text-base">
                     Manage your professional information and career details
                   </p>
                 </div>
@@ -235,15 +260,23 @@ export default function ProfileNeo() {
                           'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
-                          userId: userData?.id,
-                          layout: 'professional',
-                          isPublished: false,
-                          publicUrl: null
+                          title: `${userData?.name || 'My'} Portfolio`,
+                          description: 'My professional portfolio',
+                          template: 'modern'
                         })
-                      }).catch(err => console.log("Portfolio creation attempted - ignoring error if already exists"));
-                      
-                      // Redirect to portfolio builder page
-                      setLocation('/portfolio-builder');
+                      })
+                      .then(response => {
+                        if (!response.ok) throw new Error('Failed to create portfolio');
+                        return response.json();
+                      })
+                      .then(() => {
+                        setLocation('/portfolio-builder');
+                      })
+                      .catch(err => {
+                        console.error('Error creating portfolio:', err);
+                        // Still navigate even if creation fails - the builder will handle it
+                        setLocation('/portfolio-builder');
+                      });
                     }}
                     id="portfolio-btn"
                     className="neo-glass-button flex items-center gap-1 py-2 px-3 text-xs sm:text-sm whitespace-nowrap min-h-[40px] flex-1 sm:flex-none justify-center"
@@ -271,8 +304,10 @@ export default function ProfileNeo() {
               </div>
             </div>
             
-            {/* Personal Info Section */}
-            <NeoGlassSection className="mb-6">
+            {/* Main Backdrop Card - Translucent */}
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8">
+              {/* Personal Info Section */}
+            <div className="mb-6">
               <div className="p-3 sm:p-4 md:p-6">
                 <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
                   {/* Profile Image */}
@@ -360,7 +395,7 @@ export default function ProfileNeo() {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <h4 className="font-medium mb-2 text-white">Job Title</h4>
-                          <p className="text-sm text-white/80">
+                          <p className="text-sm text-gray-400">
                             {userData?.title && userData?.company 
                               ? `${userData.title} at ${userData.company}`
                               : userData?.title || 'Not specified'}
@@ -368,7 +403,7 @@ export default function ProfileNeo() {
                         </div>
                         <div>
                           <h4 className="font-medium mb-2 text-white">Location</h4>
-                          <p className="text-sm text-white/80">{userData?.location || 'Not specified'}</p>
+                          <p className="text-sm text-gray-400">{userData?.location || 'Not specified'}</p>
                         </div>
                       </div>
                       
@@ -391,7 +426,7 @@ export default function ProfileNeo() {
                           ) : null}
                           
                           {!userData?.industry && !userData?.domain && (
-                            <span className="text-white/60 text-sm">
+                            <span className="text-gray-400 text-sm">
                               Add your industry and specialization to improve connections.
                             </span>
                           )}
@@ -410,7 +445,7 @@ export default function ProfileNeo() {
                               {lookingForLabel}
                             </span>
                           ) : (
-                            <span className="text-white/60 text-sm">
+                            <span className="text-gray-400 text-sm">
                               Specify what you're looking for to help others connect with you.
                             </span>
                           )}
@@ -422,7 +457,7 @@ export default function ProfileNeo() {
                         <div className="mb-2">
                           <h3 className="font-medium text-white">Tagline / Personal Motto</h3>
                         </div>
-                        <p className="text-white/80 text-sm break-all italic">
+                        <p className="text-gray-400 text-sm break-all italic">
                           {userData?.tagline ? `"${userData.tagline}"` : 'Not specified'}
                         </p>
                       </div>
@@ -432,7 +467,7 @@ export default function ProfileNeo() {
                         <div className="mb-2">
                           <h3 className="font-medium text-white">Vision Statement</h3>
                         </div>
-                        <p className="text-white/80 text-sm break-all">{userData?.visionStatement || 'Not specified'}</p>
+                        <p className="text-gray-400 text-sm break-all">{userData?.visionStatement || 'Not specified'}</p>
                       </div>
 
                       {/* Mission Statement */}
@@ -440,7 +475,7 @@ export default function ProfileNeo() {
                         <div className="mb-2">
                           <h3 className="font-medium text-white">Mission Statement</h3>
                         </div>
-                        <p className="text-white/80 text-sm break-all">{userData?.missionStatement || 'Not specified'}</p>
+                        <p className="text-gray-400 text-sm break-all">{userData?.missionStatement || 'Not specified'}</p>
                       </div>
 
                       {/* Core Values */}
@@ -456,7 +491,7 @@ export default function ProfileNeo() {
                               </span>
                             ))
                           ) : (
-                            <p className="text-white/80 text-sm">Not specified</p>
+                            <p className="text-gray-400 text-sm">Not specified</p>
                           )}
                         </div>
                       </div>
@@ -466,7 +501,7 @@ export default function ProfileNeo() {
                         <div className="mb-2">
                           <h3 className="font-medium text-white">Unique Value Proposition</h3>
                         </div>
-                        <p className="text-white/80 text-sm break-all">{userData?.uniqueValueProposition || 'Not specified'}</p>
+                        <p className="text-gray-400 text-sm break-all">{userData?.uniqueValueProposition || 'Not specified'}</p>
                       </div>
 
                       {/* Primary Audience */}
@@ -482,7 +517,7 @@ export default function ProfileNeo() {
                               </span>
                             ))
                           ) : (
-                            <p className="text-white/80 text-sm">Not specified</p>
+                            <p className="text-gray-400 text-sm">Not specified</p>
                           )}
                         </div>
                       </div>
@@ -500,7 +535,7 @@ export default function ProfileNeo() {
                               </span>
                             ))
                           ) : (
-                            <p className="text-white/80 text-sm">Not specified</p>
+                            <p className="text-gray-400 text-sm">Not specified</p>
                           )}
                         </div>
                       </div>
@@ -508,39 +543,56 @@ export default function ProfileNeo() {
                   </div>
                 </div>
               </div>
-            </NeoGlassSection>
-            
-
+            </div>
             
             {/* Specific Services as a separate section */}
             <Services />
             
             {/* 3. What I'm Good At (Skills) */}
-            <NeoGlassSection className="mb-6">
+            <div className="mb-6">
               <Skills />
-            </NeoGlassSection>
+            </div>
             
             {/* 4. Specific Services are included in the Services component */}
             
             {/* 5. Project Showcase */}
-            <NeoGlassSection className="mb-6">
+            <div className="mb-6">
               <ProjectsFixed />
-            </NeoGlassSection>
+            </div>
             
             {/* 6. Career Path (Work Experience) */}
-            <NeoGlassSection className="mb-6">
+            <div className="mb-6">
               <WorkExperience />
-            </NeoGlassSection>
+            </div>
             
             {/* 7. Academic Background (Education) */}
-            <NeoGlassSection className="mb-6">
+            <div className="mb-6">
               <Education />
-            </NeoGlassSection>
+            </div>
             
-
+            {/* Profile FAQ Section for SEO */}
+            <div className="mb-6">
+              <div className="p-4 sm:p-6 bg-white/5 border border-white/10 rounded-xl">
+                <h3 className="text-lg font-medium text-white mb-4">Profile Management FAQ</h3>
+                <div className="space-y-4" itemScope itemType="https://schema.org/FAQPage">
+                  <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+                    <h4 itemProp="name" className="text-base font-medium text-white mb-2">How do I edit my profile information?</h4>
+                    <div itemProp="acceptedAnswer" itemScope itemType="https://schema.org/Answer">
+                      <p itemProp="text" className="text-sm text-gray-400">Click the "Edit Profile Information" button on your profile page to update your personal details, work experience, education, and skills.</p>
+                    </div>
+                  </div>
+                  <div itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
+                    <h4 itemProp="name" className="text-base font-medium text-white mb-2">How do I add a profile picture?</h4>
+                    <div itemProp="acceptedAnswer" itemScope itemType="https://schema.org/Answer">
+                      <p itemProp="text" className="text-sm text-gray-400">Click the camera icon on your profile picture to upload a new photo. You can use JPG, PNG, or WebP formats for best quality.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             
             {/* Account Actions */}
-            <NeoGlassSection className="mb-6">
+            <div className="mb-6">
               <div className="p-4">
                 <h3 className="text-lg font-medium text-white mb-4">Account Actions</h3>
                 <div className="flex flex-wrap gap-4">
@@ -553,9 +605,9 @@ export default function ProfileNeo() {
                   </button>
                 </div>
               </div>
-            </NeoGlassSection>
-        </NeoGlassLayout>
-      </div>
+            </div>
+            </div>{/* End Main Backdrop Card */}
+        </div>
       
       {/* Looking For Dialog */}
       <Dialog open={showLookingForDialog} onOpenChange={setShowLookingForDialog}>
@@ -575,7 +627,7 @@ export default function ProfileNeo() {
                 </SelectTrigger>
                 <SelectContent className="bg-black/90 border-white/20 text-white max-h-80">
                   <SelectGroup>
-                    <SelectLabel className="text-white/60">Career & Job Seeking</SelectLabel>
+                    <SelectLabel className="text-gray-400">Career & Job Seeking</SelectLabel>
                     {LOOKING_FOR_CATEGORIES.slice(0, 6).map(category => (
                       <SelectItem key={category.value} value={category.value} className="text-white hover:bg-white/10">
                         {category.label}
@@ -586,7 +638,7 @@ export default function ProfileNeo() {
                   <SelectSeparator className="bg-white/10" />
                   
                   <SelectGroup>
-                    <SelectLabel className="text-white/60">Business & Investment</SelectLabel>
+                    <SelectLabel className="text-gray-400">Business & Investment</SelectLabel>
                     {LOOKING_FOR_CATEGORIES.slice(6, 12).map(category => (
                       <SelectItem key={category.value} value={category.value} className="text-white hover:bg-white/10">
                         {category.label}
@@ -597,7 +649,7 @@ export default function ProfileNeo() {
                   <SelectSeparator className="bg-white/10" />
                   
                   <SelectGroup>
-                    <SelectLabel className="text-white/60">Learning & Networking</SelectLabel>
+                    <SelectLabel className="text-gray-400">Learning & Networking</SelectLabel>
                     {LOOKING_FOR_CATEGORIES.slice(12, 17).map(category => (
                       <SelectItem key={category.value} value={category.value} className="text-white hover:bg-white/10">
                         {category.label}
@@ -608,7 +660,7 @@ export default function ProfileNeo() {
                   <SelectSeparator className="bg-white/10" />
                   
                   <SelectGroup>
-                    <SelectLabel className="text-white/60">Freelance & Side Hustle</SelectLabel>
+                    <SelectLabel className="text-gray-400">Freelance & Side Hustle</SelectLabel>
                     {LOOKING_FOR_CATEGORIES.slice(17).map(category => (
                       <SelectItem key={category.value} value={category.value} className="text-white hover:bg-white/10">
                         {category.label}
@@ -617,7 +669,7 @@ export default function ProfileNeo() {
                   </SelectGroup>
                 </SelectContent>
               </Select>
-              <p className="text-xs text-white/60">
+              <p className="text-xs text-gray-400">
                 This helps others understand what you're seeking and improves matching for networking opportunities.
               </p>
             </div>
@@ -691,7 +743,7 @@ export default function ProfileNeo() {
                     ))}
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-white/60">
+                <p className="text-xs text-gray-400">
                   Specify your area of specialization within your industry.
                 </p>
               </div>

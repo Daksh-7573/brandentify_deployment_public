@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Pulse } from "@shared/schema";
 import { useLocation } from "wouter";
-import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
+// NeoGlass components removed - using direct design system styling
 // Nowboard panel import
 // Removed Nowboard panel import as it's now integrated into quests
 // Removed Sidebar import, using top navigation only
@@ -61,6 +61,7 @@ import { CreatePulsePageSkeleton } from "@/components/ui/page-skeletons/create-p
 import { SearchableUserSelect } from "@/components/share/searchable-user-select";
 import { SocialShareButtons } from "@/components/share/social-share-buttons";
 import { PremiumBadge } from "@/components/ui/premium-badge";
+import { Helmet } from "react-helmet";
 
 // Extended Pulse type with user info for display purposes
 interface PulseWithUser {
@@ -304,7 +305,7 @@ function PulseReactions({ pulse, onCommentClick, userId }: PulseReactionsProps) 
           <TooltipTrigger asChild>
             <button 
               disabled={isLoading}
-              className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50"
+              className="text-gray-400 hover:text-white hover:bg-white/10 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50"
               onClick={() => handleReaction("insightful")}
             >
               <Flame className={`h-4 w-4 transition-all duration-200 ${hasInsightfulReaction ? "text-white fill-white scale-110" : ""}`} strokeWidth={2} />
@@ -324,7 +325,7 @@ function PulseReactions({ pulse, onCommentClick, userId }: PulseReactionsProps) 
           <TooltipTrigger asChild>
             <button 
               disabled={isLoading}
-              className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50"
+              className="text-gray-400 hover:text-white hover:bg-white/10 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50"
               onClick={() => handleReaction("misinformed")}
             >
               <AlertTriangle className={`h-4 w-4 transition-all duration-200 ${hasMisinformedReaction ? "text-white fill-white/30 scale-110" : ""}`} strokeWidth={2} />
@@ -342,22 +343,22 @@ function PulseReactions({ pulse, onCommentClick, userId }: PulseReactionsProps) 
       {false && (
         <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
           <DialogTrigger asChild>
-            <button className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200">
+            <button className="text-gray-400 hover:text-white hover:bg-white/10 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200">
               <Share className={`h-4 w-4 transition-all duration-200 ${isShareDialogOpen ? "text-white scale-110" : ""}`} strokeWidth={2} />
               {formatCount(pulse.shareCount || 0)}
             </button>
           </DialogTrigger>
-        <DialogContent className="max-w-md bg-gray-900/80 backdrop-blur-sm border-gray-700/50">
+        <DialogContent className="max-w-md bg-black/90 backdrop-blur-sm border-white/20">
           <DialogHeader>
             <DialogTitle className="text-white">Share this pulse</DialogTitle>
-            <DialogDescription className="text-gray-300">
+            <DialogDescription className="text-gray-400">
               Share with someone in your network or on social media
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-6 py-4">
             {/* Internal Share Section */}
             <div className="space-y-3">
-              <Label className="text-gray-300">Share with user</Label>
+              <Label className="text-gray-400">Share with user</Label>
               <SearchableUserSelect
                 currentUserId={userId}
                 selectedUserId={shareRecipientId}
@@ -496,7 +497,7 @@ function PollVoting({ pulse }: PollVotingProps) {
         <span>Poll Options</span>
       </div>
       
-      <div className="rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10">
+      <div className="rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 bg-white/5 backdrop-blur-sm border border-white/10">
         {pulse.pollOptions.map((option, index) => (
           <div key={index} className="space-y-1 mb-3 last:mb-0">
             <div className="flex items-center justify-between">
@@ -506,7 +507,7 @@ function PollVoting({ pulse }: PollVotingProps) {
                   className={`h-8 px-3 py-1 rounded-md transition-all duration-300 text-sm font-medium backdrop-blur-sm border flex items-center ${
                     userVote === index 
                       ? 'bg-white/20 border-white/40 text-white shadow-md' 
-                      : 'bg-white/10 border-white/20 text-white/90 hover:bg-white/15 hover:border-white/30'
+                      : 'bg-white/10 border-white/20 text-gray-400 hover:bg-white/15 hover:border-white/30'
                   } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                   onClick={() => handleVote(index)}
                   disabled={isLoading}
@@ -516,7 +517,7 @@ function PollVoting({ pulse }: PollVotingProps) {
                 </button>
                 
                 {userVote !== null && (
-                  <span className="text-xs text-white/70">
+                  <span className="text-xs text-gray-400">
                     {voteCounts[index] || 0} vote{voteCounts[index] !== 1 ? 's' : ''}
                   </span>
                 )}
@@ -544,12 +545,12 @@ function PollVoting({ pulse }: PollVotingProps) {
         
         {isLoading && (
           <div className="flex justify-center py-2">
-            <Loader2 className="h-4 w-4 animate-spin text-white/70" />
+            <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
           </div>
         )}
         
         {userVote !== null && (
-          <div className="text-xs text-right text-white/60 pt-2 border-t border-white/20 mt-2">
+          <div className="text-xs text-right text-gray-400 pt-2 border-t border-white/20 mt-2">
             Total votes: {totalVotes}
           </div>
         )}
@@ -703,7 +704,7 @@ function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
                         className="overflow-hidden rounded-lg relative cursor-pointer shadow-sm hover:shadow-md transition-all duration-300"
                         onClick={() => openLightbox(index)}
                       >
-                        <div className="w-full h-72 md:h-60 flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100">
+                        <div className="w-full h-72 md:h-60 flex items-center justify-center bg-white/5">
                           <img 
                             src={url} 
                             alt={`Media ${index + 1}`} 
@@ -763,7 +764,7 @@ function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
           >
             {/* Close button */}
             <button 
-              className="absolute top-4 right-4 z-10 text-white p-2 rounded-full hover:bg-gray-800/70 hover:scale-110 transition-all duration-200"
+              className="absolute top-4 right-4 z-10 text-white p-2 rounded-full hover:bg-white/10 hover:scale-110 transition-all duration-200"
               onClick={closeLightbox}
             >
               <X className="w-6 h-6" />
@@ -869,7 +870,7 @@ function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
       </div>
       <div className="rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
         {isLoading ? (
-          <div className="h-60 bg-gradient-to-b from-gray-50 to-gray-100 animate-pulse">
+          <div className="h-60 bg-white/5 animate-pulse">
             <div className="h-full w-full flex flex-col items-center justify-center">
               <div className="rounded-full bg-muted w-16 h-16 mb-4"></div>
               <div className="h-4 w-32 bg-muted rounded"></div>
@@ -890,8 +891,8 @@ function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
             }}
           />
         ) : (
-          <div className="h-60 flex flex-col items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100">
-            <Video className="h-12 w-12 text-gray-300 mb-2" />
+          <div className="h-60 flex flex-col items-center justify-center bg-white/5">
+            <Video className="h-12 w-12 text-gray-400 mb-2" />
             <span className="text-sm text-muted-foreground">Video not available</span>
           </div>
         )}
@@ -1035,7 +1036,7 @@ function ProjectDetails({ pulse, onViewProject }: { pulse: PulseWithUser; onView
           <span>Project Update</span>
         </div>
         
-        <div className="rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 bg-gradient-to-b from-gray-800/30 to-gray-900/20 backdrop-blur-sm border border-white/10">
+        <div className="rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 bg-white/5 backdrop-blur-sm border border-white/10">
           {isLoading ? (
             <div className="h-24 space-y-3 animate-pulse">
               <div className="h-5 w-2/3 bg-muted rounded"></div>
@@ -1067,7 +1068,7 @@ function ProjectDetails({ pulse, onViewProject }: { pulse: PulseWithUser; onView
                               className="overflow-hidden rounded-lg relative cursor-pointer shadow-sm hover:shadow-md transition-all duration-300"
                               onClick={() => openLightbox(index)}
                             >
-                              <div className="w-full h-48 flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100">
+                              <div className="w-full h-48 flex items-center justify-center bg-white/5">
                                 <img 
                                   src={url} 
                                   alt={`Project media ${index + 1}`} 
@@ -1127,7 +1128,7 @@ function ProjectDetails({ pulse, onViewProject }: { pulse: PulseWithUser; onView
             </div>
           ) : (
             <div className="h-24 flex flex-col items-center justify-center">
-              <FileCode className="h-8 w-8 text-gray-300 mb-2" />
+              <FileCode className="h-8 w-8 text-gray-400 mb-2" />
               <span className="text-sm text-muted-foreground">Project not found</span>
             </div>
           )}
@@ -1145,7 +1146,7 @@ function ProjectDetails({ pulse, onViewProject }: { pulse: PulseWithUser; onView
             onClick={(e) => e.stopPropagation()}
           >
             <button 
-              className="absolute top-4 right-4 z-10 text-white p-2 rounded-full hover:bg-gray-800/70 hover:scale-110 transition-all duration-200"
+              className="absolute top-4 right-4 z-10 text-white p-2 rounded-full hover:bg-white/10 hover:scale-110 transition-all duration-200"
               onClick={closeLightbox}
             >
               <X className="w-6 h-6" />
@@ -1170,14 +1171,14 @@ function ProjectDetails({ pulse, onViewProject }: { pulse: PulseWithUser; onView
             {projectImages.length > 1 && (
               <>
                 <button 
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white p-3 rounded-full hover:bg-gray-800/70 hover:scale-110 transition-all duration-200"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-white p-3 rounded-full hover:bg-white/10 hover:scale-110 transition-all duration-200"
                   onClick={() => prevImage(projectImages)}
                 >
                   <ChevronLeft className="w-8 h-8" />
                 </button>
                 
                 <button 
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white p-3 rounded-full hover:bg-gray-800/70 hover:scale-110 transition-all duration-200"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white p-3 rounded-full hover:bg-white/10 hover:scale-110 transition-all duration-200"
                   onClick={() => nextImage(projectImages)}
                 >
                   <ChevronRight className="w-8 h-8" />
@@ -1203,8 +1204,8 @@ function SmartRefreshBanner({ hasNewContent, onRefresh, isPremiumContent = false
   
   // Using Neo-Glass UI styling for both types
   const bannerClasses = isPremiumContent
-    ? "bg-gray-900/40 border-gray-700/30 text-white" // Premium content (Musk)
-    : "bg-gray-900/40 border-gray-700/30 text-white"; // Regular content
+    ? "bg-white/5 border-white/10 text-white" // Premium content (Musk)
+    : "bg-white/5 border-white/10 text-white"; // Regular content
     
   const iconClasses = isPremiumContent
     ? "text-white" // Premium content (Musk)
@@ -1212,7 +1213,7 @@ function SmartRefreshBanner({ hasNewContent, onRefresh, isPremiumContent = false
   
   return (
     <button 
-      className={`w-full py-3 px-4 rounded-lg border backdrop-blur-sm flex items-center justify-center gap-2 mb-4 hover:bg-gray-800/50 hover:scale-[1.02] hover:shadow-lg transition-all duration-200 ${bannerClasses}`}
+      className={`w-full py-3 px-4 rounded-lg border backdrop-blur-sm flex items-center justify-center gap-2 mb-4 hover:bg-white/10 hover:scale-[1.02] hover:shadow-lg transition-all duration-200 ${bannerClasses}`}
       onClick={onRefresh}
     >
       <RefreshCw className={`h-4 w-4 ${iconClasses} animate-pulse`} />
@@ -1306,21 +1307,47 @@ export default function IndustryPulsePage() {
     }
   };
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "NewsMediaOrganization",
+    "name": "Brandentify Industry Pulse",
+    "description": "Professional industry news and trends platform",
+    "url": "https://brandentify.com/industry-pulse",
+    "publishingPrinciples": "https://brandentify.com/editorial-guidelines",
+    "coverageBilingualCoverage": "en",
+    "actionableFeedbackPolicy": "https://brandentify.com/feedback-policy"
+  };
+
   return (
-    <NeoGlassLayout className="mt-3 mx-3 sm:mx-6 w-full pt-16">
-            <div className="flex gap-6">
+    <div className="w-full min-h-full text-white selection:bg-white/20 font-['Outfit'] relative flex justify-center px-4 sm:px-6 lg:px-8 pb-8 overflow-x-hidden">
+      <Helmet>
+        <title>Industry Pulse - Professional News & Trends | Brandentify</title>
+        <meta name="description" content="Stay updated with industry news, trends, and professional insights. Engage with polls, share content, and connect with industry professionals." />
+        <meta name="keywords" content="industry news, professional trends, industry pulse, career insights, professional networking, industry updates" />
+        <meta property="og:title" content="Industry Pulse - Professional News & Trends" />
+        <meta property="og:description" content="Real-time industry news and professional insights from the Brandentify community" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://brandentify.com/industry-pulse-og-image.jpg" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Industry Pulse - Professional News" />
+        <link rel="canonical" href="https://brandentify.com/industry-pulse" />
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      </Helmet>
+      <div className="w-full max-w-6xl xl:max-w-7xl flex gap-6">
               {/* Main content */}
-              <div className="flex-1 max-w-4xl">
-                <div className="mb-8 flex justify-between items-center">
-                <div>
-                  <h1 className="text-3xl font-bold tracking-tight text-white">Industry Pulse</h1>
-                  <p className="text-white/80 mt-1">
+              <div className="w-full flex-1 max-w-4xl mx-auto">
+                <div className="mb-4 md:mb-6 lg:mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div className="w-full sm:w-auto">
+                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Industry Pulse</h1>
+                  <p className="text-gray-400 mt-1 text-sm sm:text-base">
                     Discover insights, polls, and media from your professional network
                   </p>
                 </div>
                 <button 
                   onClick={() => setLocation("/create-pulse")} 
-                  className="neo-glass-button flex items-center gap-2 py-2 px-4"
+                  className="neo-glass-button flex items-center justify-center gap-2 py-2 px-4 w-full sm:w-auto"
                 >
                   <MessageSquare className="h-4 w-4 mr-2" />
                   <span>Create Pulse</span>
@@ -1346,11 +1373,11 @@ export default function IndustryPulsePage() {
                   {isLoading ? (
                     <CreatePulsePageSkeleton />
                   ) : filteredPulses.length === 0 ? (
-                    <NeoGlassSection>
+                    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8">
                       <div className="flex flex-col items-center justify-center py-10">
-                        <Users className="h-16 w-16 text-white/80 mb-4" />
+                        <Users className="h-16 w-16 text-gray-400 mb-4" />
                         <h3 className="text-xl font-semibold mb-2 text-white">No pulses yet</h3>
-                        <p className="text-center text-white/70 max-w-md mb-6">
+                        <p className="text-center text-gray-400 max-w-md mb-6">
                           {activeTab === "all" 
                             ? "Be the first to create a pulse in your professional network!" 
                             : `No ${activeTab} pulses available yet. Create one to get started!`}
@@ -1363,11 +1390,11 @@ export default function IndustryPulsePage() {
                           Create Your First Pulse
                         </button>
                       </div>
-                    </NeoGlassSection>
+                    </div>
                   ) : (
                     <div className="space-y-6">
                       {filteredPulses.map((pulse: PulseWithUser) => (
-                        <NeoGlassSection key={pulse.id} className="overflow-hidden mb-6">
+                        <div key={pulse.id} className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 overflow-hidden mb-6">
                           <div className="pb-3">
                             <div className="flex justify-between">
                               <div className="flex items-start gap-3">
@@ -1423,7 +1450,7 @@ export default function IndustryPulsePage() {
                               
                               if (readMoreIndex === -1) {
                                 // No reference links, render as normal text
-                                return <p className="text-white/70">{pulse.content}</p>;
+                                return <p className="text-gray-400">{pulse.content}</p>;
                               }
                               
                               // Split content into main content and reference links
@@ -1452,7 +1479,7 @@ export default function IndustryPulsePage() {
                               
                               return (
                                 <div className="space-y-3">
-                                  <p className="text-white/70">{mainContent}</p>
+                                  <p className="text-gray-400">{mainContent}</p>
                                   
                                   {references.length > 0 && (
                                     <div className="mt-4 p-4 bg-white/5 rounded-lg border border-white/10">
@@ -1518,12 +1545,35 @@ export default function IndustryPulsePage() {
                               <CommentSection pulseId={pulse.id} initialCommentCount={pulse.comments || 0} isExpanded={true} />
                             </div>
                           )}
-                        </NeoGlassSection>
+                        </div>
                       ))}
                     </div>
                   )}
                 </TabsContent>
               </Tabs>
+
+              {/* Industry Pulse FAQ Section for SEO */}
+              <div className="mt-12 mb-8">
+                <Card id="pulse-faq" className="bg-white/5 backdrop-blur-xl border border-white/10 p-6">
+                  <CardHeader className="px-0 pt-0">
+                    <CardTitle className="text-2xl font-bold text-white">Industry Pulse FAQ</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6 px-0 pb-0">
+                    <div itemScope itemType="https://schema.org/Question">
+                      <h3 itemProp="name" className="text-lg font-semibold text-white mb-2">How do I create an industry pulse?</h3>
+                      <div itemProp="acceptedAnswer" itemScope itemType="https://schema.org/Answer">
+                        <p itemProp="text" className="text-gray-400">Click "Create Pulse" to share industry news, create polls, or showcase projects. Add media, content, and engage with the professional community.</p>
+                      </div>
+                    </div>
+                    <div itemScope itemType="https://schema.org/Question">
+                      <h3 itemProp="name" className="text-lg font-semibold text-white mb-2">What are pulse reactions?</h3>
+                      <div itemProp="acceptedAnswer" itemScope itemType="https://schema.org/Answer">
+                        <p itemProp="text" className="text-gray-400">Reactions allow you to mark content as "Insightful" or "Misinformed" to help maintain content quality and surface valuable industry insights.</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
               </div>
               
               {/* Nowboard Panel Sidebar */}
@@ -1541,7 +1591,7 @@ export default function IndustryPulsePage() {
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-white">{selectedProject?.title}</DialogTitle>
             {selectedProject?.category && (
-              <p className="text-sm text-white/60">{selectedProject.category}</p>
+              <p className="text-sm text-gray-400">{selectedProject.category}</p>
             )}
           </DialogHeader>
           
@@ -1550,14 +1600,14 @@ export default function IndustryPulsePage() {
               {selectedProject.description && (
                 <div>
                   <h3 className="font-semibold text-white mb-2">Description</h3>
-                  <p className="text-white/80 whitespace-pre-wrap">{selectedProject.description}</p>
+                  <p className="text-gray-400 whitespace-pre-wrap">{selectedProject.description}</p>
                 </div>
               )}
               
               {selectedProject.startDate && (
                 <div>
                   <h3 className="font-semibold text-white mb-2">Start Date</h3>
-                  <p className="text-white/80">{selectedProject.startDate}</p>
+                  <p className="text-gray-400">{selectedProject.startDate}</p>
                 </div>
               )}
               
@@ -1597,9 +1647,9 @@ export default function IndustryPulsePage() {
                   <div className="space-y-2">
                     {selectedProject.collaborators.map((collab: any) => (
                       <div key={collab.id} className="flex items-center gap-2">
-                        <span className="text-white/80">{collab.name}</span>
+                        <span className="text-gray-400">{collab.name}</span>
                         {collab.role && (
-                          <span className="text-xs text-white/60">({collab.role})</span>
+                          <span className="text-xs text-gray-400">({collab.role})</span>
                         )}
                       </div>
                     ))}
@@ -1619,6 +1669,6 @@ export default function IndustryPulsePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </NeoGlassLayout>
+    </div>
   );
 }

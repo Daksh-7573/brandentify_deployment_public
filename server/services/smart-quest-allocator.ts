@@ -16,7 +16,7 @@ import { ProfileCompletenessChecker } from './profile-completeness-checker';
 import { BrandGoalQuestMapper } from './brand-goal-quest-mapper';
 import { db } from '../db';
 import { users, questDefinitions, userQuests, brandGoals } from '@shared/schema';
-import { eq, and, inArray, ne, notInArray } from 'drizzle-orm';
+import { eq, and, inArray, ne, notInArray, gte } from 'drizzle-orm';
 
 // Map pre-defined goal IDs to their text labels
 const GOAL_ID_TO_TEXT: Record<string, string> = {
@@ -57,6 +57,10 @@ export interface SelectedQuest {
   description: string;
 }
 
+export interface QuestAllocationOptions {
+  force?: boolean;
+}
+
 export class SmartQuestAllocator {
   
   /**
@@ -77,9 +81,12 @@ export class SmartQuestAllocator {
   /**
    * Main allocation function - determines optimal quest quantity
    */
-  async allocateDailyQuests(userId: number): Promise<QuestAllocationResult> {
+  async allocateDailyQuests(userId: number, options: QuestAllocationOptions = {}): Promise<QuestAllocationResult> {
     try {
       console.log(`[SmartQuestAllocator] 🎯 Starting allocation for user ${userId}`);
+      if (options.force) {
+        console.log(`[SmartQuestAllocator] Force allocation enabled for user ${userId}`);
+      }
       
       // Get user profile and brand goals
       const userProfile = await this.getUserProfile(userId);
@@ -123,7 +130,7 @@ export class SmartQuestAllocator {
       const allocation = this.determineOptimalAllocation(
         scoredCareerQuests,
         scoredSocialQuests,
-        userGoals
+        profileStatus.completionPercentage
       );
 
       console.log(`[SmartQuestAllocator] ✅ Allocated ${allocation.totalQuests} quests (${allocation.careerQuests} career, ${allocation.socialQuests} social) - Strategy: ${allocation.allocationStrategy}`);
@@ -138,127 +145,223 @@ export class SmartQuestAllocator {
 
   /**
    * Determine optimal number and mix of quests based on impact scores
+   * FOR DAILY QUESTS: ENFORCES MINIMUM 2 CAREER + 1 SOCIAL
+   * 
+   * BALANCE RULES:
+   * - 1 quest: highest impact (any category)
+   * - 2 quests: 1 career + 1 social
+   * - 3 quests: 2 career + 1 social (DEFAULT FOR DAILY)
+   * - 4 quests: 2 career + 2 social
    */
   private determineOptimalAllocation(
     careerQuests: SelectedQuest[],
     socialQuests: SelectedQuest[],
-    userGoals: string[]
+    completionPercentage: number
   ): QuestAllocationResult {
-    
-    const selectedQuests: SelectedQuest[] = [];
-    let totalImpact = 0;
-    let totalMinutes = 0;
+    const normalQuests = [...careerQuests].sort((a, b) => b.impactScore - a.impactScore);
+    const pureSocialQuests = [...socialQuests].sort((a, b) => b.impactScore - a.impactScore);
 
-    // Strategy 1: Single High-Impact Quest (if one quest has exceptional value)
-    const topCareer = careerQuests[0];
-    const topSocial = socialQuests[0];
+    if (normalQuests.length === 0 && pureSocialQuests.length === 0) {
+      return this.getEmptyAllocation();
+    }
 
-    if (topCareer && topCareer.impactScore >= this.IMPACT_THRESHOLDS.SINGLE_HIGH_IMPACT) {
-      selectedQuests.push(topCareer);
-      totalImpact = topCareer.impactScore;
-      totalMinutes = topCareer.estimatedMinutes;
-      
+    // CRITICAL FIX: For daily quests, ALWAYS try to allocate 2 career + 1 social
+    // This ensures consistent, quality quest generation
+    const dailyMixAllocation = this.tryDailyMixAllocation(normalQuests, pureSocialQuests);
+    if (dailyMixAllocation && dailyMixAllocation.selectedQuests.length >= 3) {
+      console.log(`[SmartQuestAllocator] ✅ Daily mix allocation: 2 career + 1 social`);
+      return dailyMixAllocation;
+    }
+
+    // Fallback: Try standard allocation based on profile completion
+    const range = this.getQuestCountRangeByCompletion(completionPercentage);
+    const preferredCounts = this.getPreferredCountsForRange(range.min, range.max);
+
+    for (const count of preferredCounts) {
+      const candidate = this.buildBalancedAllocation(count, normalQuests, pureSocialQuests);
+      if (candidate && candidate.selectedQuests.length > 0) {
+        return candidate;
+      }
+    }
+
+    // Final safety fallback: always return at least one meaningful quest if available
+    const topQuest = normalQuests[0] || pureSocialQuests[0];
+    if (topQuest) {
       return {
         totalQuests: 1,
-        careerQuests: 1,
-        socialQuests: 0,
-        totalImpactScore: totalImpact,
-        allocationStrategy: 'Single High-Impact Career Quest',
-        selectedQuests
+        careerQuests: this.countNormalQuests([topQuest]),
+        socialQuests: this.countSocialQuests([topQuest]),
+        totalImpactScore: topQuest.impactScore,
+        allocationStrategy: `Profile Completion Fallback (${completionPercentage}% -> 1 quest)`,
+        selectedQuests: [topQuest]
       };
     }
 
-    if (topSocial && topSocial.impactScore >= this.IMPACT_THRESHOLDS.SINGLE_HIGH_IMPACT) {
-      selectedQuests.push(topSocial);
-      totalImpact = topSocial.impactScore;
-      totalMinutes = topSocial.estimatedMinutes;
-      
-      return {
-        totalQuests: 1,
-        careerQuests: 0,
-        socialQuests: 1,
-        totalImpactScore: totalImpact,
-        allocationStrategy: 'Single High-Impact Social Quest',
-        selectedQuests
-      };
+    return this.getEmptyAllocation();
+  }
+
+  /**
+   * TRY to allocate the ideal daily mix: 2 career + 1 social
+   * This ensures users get both types every day for maximum engagement
+   */
+  private tryDailyMixAllocation(
+    careerQuests: SelectedQuest[],
+    socialQuests: SelectedQuest[]
+  ): QuestAllocationResult | null {
+    const selected: SelectedQuest[] = [];
+
+    // Need at least 2 career quests
+    if (careerQuests.length >= 2) {
+      selected.push(careerQuests[0], careerQuests[1]);
+    } else if (careerQuests.length === 1) {
+      selected.push(careerQuests[0]);
     }
 
-    // Strategy 2: Balanced Mix (1-4 quests based on combined impact)
-    // Start with 1 career + 1 social (baseline)
-    if (topCareer) {
-      selectedQuests.push(topCareer);
-      totalImpact += topCareer.impactScore;
-      totalMinutes += topCareer.estimatedMinutes;
+    // Need at least 1 social quest
+    if (socialQuests.length >= 1) {
+      selected.push(socialQuests[0]);
     }
 
-    if (topSocial) {
-      selectedQuests.push(topSocial);
-      totalImpact += topSocial.impactScore;
-      totalMinutes += topSocial.estimatedMinutes;
+    // Verify total time doesn't exceed daily limit
+    const totalMinutes = selected.reduce((sum, q) => sum + q.estimatedMinutes, 0);
+    if (totalMinutes > this.MAX_DAILY_MINUTES) {
+      console.log(`[SmartQuestAllocator] ⚠️ Daily mix exceeds time limit (${totalMinutes} min > ${this.MAX_DAILY_MINUTES} min)`);
+      return null;
     }
 
-    // Check if we should add more quests based on impact thresholds and time
-    if (totalImpact >= this.IMPACT_THRESHOLDS.FOUR_QUEST_MIN && totalMinutes < this.MAX_DAILY_MINUTES) {
-      // Try to add 2 more quests (4 total)
-      const additionalQuests = this.selectAdditionalQuests(
-        [...careerQuests.slice(1), ...socialQuests.slice(1)],
-        2,
-        this.MAX_DAILY_MINUTES - totalMinutes
-      );
-      
-      selectedQuests.push(...additionalQuests);
-      totalImpact += additionalQuests.reduce((sum, q) => sum + q.impactScore, 0);
-      totalMinutes += additionalQuests.reduce((sum, q) => sum + q.estimatedMinutes, 0);
-
-      const careerCount = selectedQuests.filter(q => q.category === 'career').length;
-      const socialCount = selectedQuests.filter(q => q.category === 'social').length;
-
-      return {
-        totalQuests: selectedQuests.length,
-        careerQuests: careerCount,
-        socialQuests: socialCount,
-        totalImpactScore: totalImpact,
-        allocationStrategy: 'High-Impact Mix (4 Quests)',
-        selectedQuests
-      };
+    if (selected.length === 0) {
+      return null;
     }
-
-    if (totalImpact >= this.IMPACT_THRESHOLDS.THREE_QUEST_MIN && totalMinutes < this.MAX_DAILY_MINUTES) {
-      // Try to add 1 more quest (3 total)
-      const additionalQuests = this.selectAdditionalQuests(
-        [...careerQuests.slice(1), ...socialQuests.slice(1)],
-        1,
-        this.MAX_DAILY_MINUTES - totalMinutes
-      );
-      
-      selectedQuests.push(...additionalQuests);
-      totalImpact += additionalQuests.reduce((sum, q) => sum + q.impactScore, 0);
-      totalMinutes += additionalQuests.reduce((sum, q) => sum + q.estimatedMinutes, 0);
-
-      const careerCount = selectedQuests.filter(q => q.category === 'career').length;
-      const socialCount = selectedQuests.filter(q => q.category === 'social').length;
-
-      return {
-        totalQuests: selectedQuests.length,
-        careerQuests: careerCount,
-        socialQuests: socialCount,
-        totalImpactScore: totalImpact,
-        allocationStrategy: 'Medium-Impact Mix (3 Quests)',
-        selectedQuests
-      };
-    }
-
-    // Default: 2 quests (1 career + 1 social or best 2)
-    const careerCount = selectedQuests.filter(q => q.category === 'career').length;
-    const socialCount = selectedQuests.filter(q => q.category === 'social').length;
 
     return {
-      totalQuests: selectedQuests.length,
-      careerQuests: careerCount,
-      socialQuests: socialCount,
-      totalImpactScore: totalImpact,
-      allocationStrategy: 'Balanced Mix (1-2 Quests)',
-      selectedQuests
+      totalQuests: selected.length,
+      careerQuests: this.countNormalQuests(selected),
+      socialQuests: this.countSocialQuests(selected),
+      totalImpactScore: selected.reduce((sum, q) => sum + q.impactScore, 0),
+      allocationStrategy: `Daily Mix: ${this.countNormalQuests(selected)} career + ${this.countSocialQuests(selected)} social`,
+      selectedQuests: selected
+    };
+  }
+
+  private getQuestCountRangeByCompletion(completionPercentage: number): { min: number; max: number } {
+    if (completionPercentage < 20) {
+      return { min: 1, max: 1 };
+    }
+
+    if (completionPercentage <= 80) {
+      return { min: 2, max: 3 };
+    }
+
+    return { min: 3, max: 4 };
+  }
+
+  private getPreferredCountsForRange(min: number, max: number): number[] {
+    if (min === 1 && max === 1) {
+      return [1];
+    }
+
+    if (min === 2 && max === 3) {
+      return [3, 2, 1];
+    }
+
+    return [4, 3, 2, 1];
+  }
+
+  private buildBalancedAllocation(
+    targetCount: number,
+    normalQuests: SelectedQuest[],
+    socialQuests: SelectedQuest[]
+  ): QuestAllocationResult | null {
+    const selected: SelectedQuest[] = [];
+
+    if (targetCount === 1) {
+      const topQuest = normalQuests[0] || socialQuests[0];
+      if (!topQuest) return null;
+      selected.push(topQuest);
+    } else if (targetCount === 2) {
+      if (normalQuests[0] && socialQuests[0]) {
+        selected.push(normalQuests[0], socialQuests[0]);
+      } else {
+        selected.push(...[...normalQuests, ...socialQuests].slice(0, 2));
+      }
+    } else if (targetCount === 3) {
+      if (normalQuests.length >= 2 && socialQuests.length >= 1) {
+        selected.push(normalQuests[0], normalQuests[1], socialQuests[0]);
+      } else {
+        selected.push(...[...normalQuests, ...socialQuests].slice(0, 3));
+      }
+    } else if (targetCount === 4) {
+      if (normalQuests.length >= 2 && socialQuests.length >= 2) {
+        selected.push(normalQuests[0], normalQuests[1], socialQuests[0], socialQuests[1]);
+      } else {
+        selected.push(...[...normalQuests, ...socialQuests].slice(0, 4));
+      }
+    }
+
+    if (selected.length === 0) {
+      return null;
+    }
+
+    // If assigning more than one quest, enforce mixed quest types:
+    // at least 1 normal(career/profile/portfolio) + at least 1 social/networking.
+    // If balance cannot be met, caller will try a lower target count.
+    if (selected.length > 1) {
+      const normalCount = this.countNormalQuests(selected);
+      const socialCount = this.countSocialQuests(selected);
+      if (normalCount < 1 || socialCount < 1) {
+        return null;
+      }
+    }
+
+    const totalMinutes = selected.reduce((sum, q) => sum + q.estimatedMinutes, 0);
+    if (totalMinutes > this.MAX_DAILY_MINUTES) {
+      return null;
+    }
+
+    return {
+      totalQuests: selected.length,
+      careerQuests: this.countNormalQuests(selected),
+      socialQuests: this.countSocialQuests(selected),
+      totalImpactScore: selected.reduce((sum, q) => sum + q.impactScore, 0),
+      allocationStrategy: `Profile Completion Rules (${targetCount} quests)` ,
+      selectedQuests: selected
+    };
+  }
+
+  /**
+   * Select highest impact quest from array
+   */
+  private selectHighestImpact(quests: SelectedQuest[]): SelectedQuest {
+    return quests.reduce((highest, current) => 
+      current.impactScore > highest.impactScore ? current : highest
+    );
+  }
+
+  /**
+   * Count normal quests (career/profile/portfolio)
+   */
+  private countNormalQuests(quests: SelectedQuest[]): number {
+    return quests.filter(q => ['career', 'profile', 'portfolio'].includes(q.category)).length;
+  }
+
+  /**
+   * Count social quests (social/networking)
+   */
+  private countSocialQuests(quests: SelectedQuest[]): number {
+    return quests.filter(q => ['social', 'networking'].includes(q.category)).length;
+  }
+
+  /**
+   * Get empty allocation result
+   */
+  private getEmptyAllocation(): QuestAllocationResult {
+    return {
+      totalQuests: 0,
+      careerQuests: 0,
+      socialQuests: 0,
+      totalImpactScore: 0,
+      allocationStrategy: 'No Quests Available',
+      selectedQuests: []
     };
   }
 
@@ -361,6 +464,25 @@ export class SmartQuestAllocator {
   }
 
   /**
+   * Get quest IDs assigned in the recent N-day window for deduplication.
+   */
+  private async getRecentQuestIds(userId: number, days = 7): Promise<number[]> {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+    const cutoffDate = cutoff.toISOString().split('T')[0];
+
+    const recent = await db
+      .select({ questDefId: userQuests.questDefinitionId })
+      .from(userQuests)
+      .where(and(
+        eq(userQuests.userId, userId),
+        gte(userQuests.assignedDate, cutoffDate)
+      ));
+
+    return recent.map(r => r.questDefId).filter((id): id is number => id !== null);
+  }
+
+  /**
    * Get available career quests (not yet assigned today)
    * FIXED: Use Brand Goals as PRIMARY filter, profile focus as PREFERENCE (not strict filter)
    * This ensures career quests are always allocated regardless of profile completion status
@@ -370,18 +492,7 @@ export class SmartQuestAllocator {
     focusArea: 'profile' | 'pulse' = 'profile',
     userGoals: string[] = []
   ): Promise<any[]> {
-    const todayDateString = new Date().toISOString().split('T')[0];
-    
-    // Get today's assigned quest IDs
-    const todayAssigned = await db
-      .select({ questDefId: userQuests.questDefinitionId })
-      .from(userQuests)
-      .where(and(
-        eq(userQuests.userId, userId),
-        eq(userQuests.assignedDate, todayDateString)
-      ));
-    
-    const assignedIds = todayAssigned.map(q => q.questDefId);
+    const recentIds = await this.getRecentQuestIds(userId, 7);
     
     // Step 1: ALL possible career quest types (comprehensive list)
     const allCareerQuestTypes = [
@@ -415,27 +526,18 @@ export class SmartQuestAllocator {
     
     console.log(`[SmartQuestAllocator] ✅ Final career quest types: [${finalAllowedTypes.join(', ')}]`);
     
-    // Get career quests not assigned today, filtered by final allowed types (ACTIVE ONLY)
-    const careerQuestsQuery = assignedIds.length > 0
-      ? db.select()
-          .from(questDefinitions)
-          .where(and(
-            eq(questDefinitions.isActive, true), // Only active quests
-            ne(questDefinitions.type, 'social_post'),
-            ne(questDefinitions.type, 'social_quest'),
-            notInArray(questDefinitions.id, assignedIds),
-            inArray(questDefinitions.type, finalAllowedTypes as any)
-          ))
-      : db.select()
-          .from(questDefinitions)
-          .where(and(
-            eq(questDefinitions.isActive, true), // Only active quests
-            ne(questDefinitions.type, 'social_post'),
-            ne(questDefinitions.type, 'social_quest'),
-            inArray(questDefinitions.type, finalAllowedTypes as any)
-          ));
-    
-    return await careerQuestsQuery;
+    const whereClauses: any[] = [
+      eq(questDefinitions.isActive, true),
+      ne(questDefinitions.type, 'social_post'),
+      ne(questDefinitions.type, 'social_quest'),
+      inArray(questDefinitions.type, finalAllowedTypes as any)
+    ];
+
+    if (recentIds.length > 0) {
+      whereClauses.push(notInArray(questDefinitions.id, recentIds));
+    }
+
+    return await db.select().from(questDefinitions).where(and(...whereClauses));
   }
 
   /**
@@ -443,18 +545,7 @@ export class SmartQuestAllocator {
    * STRICTLY filtered by Brand Goals - only shows social quests aligned with user's goals
    */
   private async getAvailableSocialQuests(userId: number, userGoals: string[] = []): Promise<any[]> {
-    const todayDateString = new Date().toISOString().split('T')[0];
-    
-    // Get today's assigned quest IDs
-    const todayAssigned = await db
-      .select({ questDefId: userQuests.questDefinitionId })
-      .from(userQuests)
-      .where(and(
-        eq(userQuests.userId, userId),
-        eq(userQuests.assignedDate, todayDateString)
-      ));
-    
-    const assignedIds = todayAssigned.map(q => q.questDefId);
+    const recentIds = await this.getRecentQuestIds(userId, 7);
     
     // Get quest types allowed by Brand Goals (STRICT FILTERING)
     const brandGoalAllowedTypes = BrandGoalQuestMapper.getAllowedQuestTypes(userGoals);
@@ -480,23 +571,16 @@ export class SmartQuestAllocator {
       }
     }
     
-    // Get social quests not assigned today (ACTIVE ONLY, filtered by allowed types)
-    const socialQuestsQuery = assignedIds.length > 0
-      ? db.select()
-          .from(questDefinitions)
-          .where(and(
-            eq(questDefinitions.isActive, true), // Only active quests
-            inArray(questDefinitions.type, allowedSocialTypes as any),
-            notInArray(questDefinitions.id, assignedIds)
-          ))
-      : db.select()
-          .from(questDefinitions)
-          .where(and(
-            eq(questDefinitions.isActive, true), // Only active quests
-            inArray(questDefinitions.type, allowedSocialTypes as any)
-          ));
-    
-    return await socialQuestsQuery;
+    const whereClauses: any[] = [
+      eq(questDefinitions.isActive, true),
+      inArray(questDefinitions.type, allowedSocialTypes as any)
+    ];
+
+    if (recentIds.length > 0) {
+      whereClauses.push(notInArray(questDefinitions.id, recentIds));
+    }
+
+    return await db.select().from(questDefinitions).where(and(...whereClauses));
   }
 
   /**
@@ -507,41 +591,22 @@ export class SmartQuestAllocator {
     console.log('[SmartQuestAllocator] Using fallback allocation: 1 Career + 1 Social');
     
     try {
-      const todayDateString = new Date().toISOString().split('T')[0];
       const selectedQuests: SelectedQuest[] = [];
-      
-      // Get today's assigned quest IDs if userId provided
-      let assignedIds: number[] = [];
-      if (userId) {
-        const todayAssigned = await db
-          .select({ questDefId: userQuests.questDefinitionId })
-          .from(userQuests)
-          .where(and(
-            eq(userQuests.userId, userId),
-            eq(userQuests.assignedDate, todayDateString)
-          ));
-        assignedIds = todayAssigned.map(q => q.questDefId);
+      const recentIds = userId ? await this.getRecentQuestIds(userId, 7) : [];
+
+      const careerWhere: any[] = [
+        eq(questDefinitions.isActive, true),
+        inArray(questDefinitions.type, ['profile_update', 'pulse_creation'] as any)
+      ];
+      if (recentIds.length > 0) {
+        careerWhere.push(notInArray(questDefinitions.id, recentIds));
       }
-      
-      // Fetch a simple career quest (profile update or pulse creation)
-      const careerQuestsQuery = assignedIds.length > 0
-        ? db.select()
-            .from(questDefinitions)
-            .where(and(
-              eq(questDefinitions.isActive, true),
-              inArray(questDefinitions.type, ['profile_update', 'pulse_creation'] as any),
-              notInArray(questDefinitions.id, assignedIds)
-            ))
-            .limit(1)
-        : db.select()
-            .from(questDefinitions)
-            .where(and(
-              eq(questDefinitions.isActive, true),
-              inArray(questDefinitions.type, ['profile_update', 'pulse_creation'] as any)
-            ))
-            .limit(1);
-      
-      const careerQuests = await careerQuestsQuery;
+
+      const careerQuests = await db
+        .select()
+        .from(questDefinitions)
+        .where(and(...careerWhere))
+        .limit(1);
       
       if (careerQuests.length > 0) {
         const quest = careerQuests[0];
@@ -556,25 +621,19 @@ export class SmartQuestAllocator {
         });
       }
       
-      // Fetch a simple social quest
-      const socialQuestsQuery = assignedIds.length > 0
-        ? db.select()
-            .from(questDefinitions)
-            .where(and(
-              eq(questDefinitions.isActive, true),
-              inArray(questDefinitions.type, ['social_quest', 'social_post'] as any),
-              notInArray(questDefinitions.id, assignedIds)
-            ))
-            .limit(1)
-        : db.select()
-            .from(questDefinitions)
-            .where(and(
-              eq(questDefinitions.isActive, true),
-              inArray(questDefinitions.type, ['social_quest', 'social_post'] as any)
-            ))
-            .limit(1);
-      
-      const socialQuests = await socialQuestsQuery;
+      const socialWhere: any[] = [
+        eq(questDefinitions.isActive, true),
+        inArray(questDefinitions.type, ['social_quest', 'social_post'] as any)
+      ];
+      if (recentIds.length > 0) {
+        socialWhere.push(notInArray(questDefinitions.id, recentIds));
+      }
+
+      const socialQuests = await db
+        .select()
+        .from(questDefinitions)
+        .where(and(...socialWhere))
+        .limit(1);
       
       if (socialQuests.length > 0) {
         const quest = socialQuests[0];

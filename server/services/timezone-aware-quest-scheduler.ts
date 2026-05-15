@@ -130,7 +130,6 @@ class TimezoneAwareQuestScheduler {
         let alreadyHasQuests = false;
         
         try {
-          // Check if user already has quests assigned today
           const todayDateString = this.getTodayDateString();
           const existingTodayQuests = await db
             .select()
@@ -139,27 +138,40 @@ class TimezoneAwareQuestScheduler {
               eq(userQuests.userId, user.id),
               eq(userQuests.assignedDate, todayDateString)
             ));
-          
-          if (existingTodayQuests.length > 0) {
-            console.log(`[TimezoneQuestScheduler] ⏭️ Skipping user ${user.id} (${user.name}) - already has ${existingTodayQuests.length} quests today`);
-            skippedCount++;
-            alreadyHasQuests = true;
-            questAssignmentSuccess = true; // No action needed, consider success
-            continue;
-          }
-          
-          console.log(`[TimezoneQuestScheduler] 🎯 Assigning quests for user ${user.id} (${user.name}) in ${user.timezone}`);
+
+          console.log(`[TimezoneQuestScheduler] 🎯 Ensuring daily quest mix for user ${user.id} (${user.name}) in ${user.timezone}. Existing today: ${existingTodayQuests.length}`);
           
           // CRITICAL: Delegate to daily quest scheduler for actual quest assignment
           // This ensures consistent quest generation logic and avoids code duplication
           const assignedQuests = await dailyQuestScheduler.triggerDailyAssignmentForUser(user.id);
           
-          console.log(`[TimezoneQuestScheduler] ✅ Assigned ${assignedQuests.length} quests for user ${user.id} (${user.name})`);
+          if (assignedQuests.length === 0 && existingTodayQuests.length > 0) {
+            skippedCount++;
+            alreadyHasQuests = true;
+            console.log(`[TimezoneQuestScheduler] ⏭️ User ${user.id} already had complete daily mix`);
+          } else {
+            console.log(`[TimezoneQuestScheduler] ✅ Assigned ${assignedQuests.length} quests for user ${user.id} (${user.name})`);
+          }
           
           questAssignmentSuccess = true;
           successCount++;
           
-        } catch (error) {
+        } catch (error: any) {
+          const isNeonPaused = 
+            error.message?.includes("endpoint has been disabled") ||
+            error.message?.includes("Database temporarily unavailable") ||
+            error.message?.includes("endpoint is paused") ||
+            error.message?.includes("compute endpoint is suspended") ||
+            error.code === "57P03" ||
+            error.code === "XX000";
+          
+          if (isNeonPaused) {
+            console.warn(`[TimezoneQuestScheduler] ⏸️  Database paused for user ${user.id} (${user.name}) - skipping (will retry on next scheduled run)`);
+            skippedCount++;
+            questAssignmentSuccess = false;
+            continue;
+          }
+          
           console.error(`[TimezoneQuestScheduler] ❌ Error assigning quests for user ${user.id} (${user.name}):`, error);
           errorCount++;
           questAssignmentSuccess = false;
@@ -208,8 +220,21 @@ class TimezoneAwareQuestScheduler {
 
       console.log(`[TimezoneQuestScheduler] 📊 Batch complete: ${successCount} success, ${errorCount} errors, ${skippedCount} skipped`);
       
-    } catch (error) {
-      console.error('[TimezoneQuestScheduler] Error in checkAndAssignQuests:', error);
+    } catch (error: any) {
+      const isNeonPaused = 
+        error.message?.includes("endpoint has been disabled") ||
+        error.message?.includes("Database temporarily unavailable") ||
+        error.message?.includes("endpoint is paused") ||
+        error.message?.includes("compute endpoint is suspended") ||
+        error.code === "57P03" ||
+        error.code === "XX000";
+      
+      if (isNeonPaused) {
+        console.warn('[TimezoneQuestScheduler] ⏸️  Database paused during quest check - will retry on next scheduled run');
+        return;
+      }
+      
+      console.error('[TimezoneQuestScheduler] ❌ Error in checkAndAssignQuests:', error);
     }
   }
 
@@ -356,8 +381,21 @@ class TimezoneAwareQuestScheduler {
 
       console.log('[TimezoneQuestScheduler] 🎉 Initialization complete - all users ready for daily quest generation');
       
-    } catch (error) {
-      console.error('[TimezoneQuestScheduler] Error initializing users:', error);
+    } catch (error: any) {
+      const isNeonPaused = 
+        error.message?.includes("endpoint has been disabled") ||
+        error.message?.includes("Database temporarily unavailable") ||
+        error.message?.includes("endpoint is paused") ||
+        error.message?.includes("compute endpoint is suspended") ||
+        error.code === "57P03" ||
+        error.code === "XX000";
+      
+      if (isNeonPaused) {
+        console.warn('[TimezoneQuestScheduler] ⏸️  Database paused during initialization - will retry on next scheduled run');
+        return;
+      }
+      
+      console.error('[TimezoneQuestScheduler] ❌ Error initializing users:', error);
     }
   }
 
@@ -446,7 +484,20 @@ class TimezoneAwareQuestScheduler {
       
       return healedCount;
       
-    } catch (error) {
+    } catch (error: any) {
+      const isNeonPaused = 
+        error.message?.includes("endpoint has been disabled") ||
+        error.message?.includes("Database temporarily unavailable") ||
+        error.message?.includes("endpoint is paused") ||
+        error.message?.includes("compute endpoint is suspended") ||
+        error.code === "57P03" ||
+        error.code === "XX000";
+      
+      if (isNeonPaused) {
+        console.warn('[TimezoneQuestScheduler] ⏸️  Database paused during auto-heal - will retry on next scheduled run');
+        return 0;
+      }
+      
       console.error('[TimezoneQuestScheduler] ❌ Error in auto-heal check:', error);
       return 0;
     }

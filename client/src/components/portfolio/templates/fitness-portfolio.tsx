@@ -1041,7 +1041,7 @@ export default function FitnessPortfolio({
           </div>
           
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">
-            © {new Date().getFullYear()} {userInfo.name}. Built with Brandentifier.
+            © {new Date().getFullYear()} {userInfo.name}. Built with Brandentify.
           </div>
         </div>
       </footer>
@@ -1132,3 +1132,4 @@ export default function FitnessPortfolio({
     </div>
   );
 }
+

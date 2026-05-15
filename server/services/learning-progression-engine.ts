@@ -15,9 +15,6 @@
 
 import { localAIService } from "./local-ai-service";
 
-const AI_BASE_URL = process.env.AI_BASE_URL || 'http://65.20.73.122:11434';
-const AI_MODEL = process.env.AI_MODEL || 'llama3.2:1b';
-
 export type SkillDepthLevel = 'intro' | 'applied' | 'advanced' | 'strategic';
 
 export interface LearningContext {
@@ -420,26 +417,7 @@ Respond with ONLY one word: intro, applied, advanced, or strategic`;
 
   private async callOllama(prompt: string): Promise<string> {
     try {
-      const response = await fetch(`${AI_BASE_URL}/api/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: AI_MODEL,
-          prompt,
-          stream: false,
-          options: {
-            temperature: 0.2,
-            num_predict: 50,
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Ollama error: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      return data.response || '';
+      return await localAIService.generateCompletion(prompt, 0.2, 50);
     } catch (error) {
       console.error('[LPE] Ollama call failed:', error);
       return 'intro';

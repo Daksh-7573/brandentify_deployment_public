@@ -55,7 +55,7 @@ export function ShareModal({ open, onClose }: ShareModalProps) {
     if (!referralLink?.link) return;
 
     const text = encodeURIComponent(
-      "Join me on Brandentifier - the AI-powered career platform! Use my referral link to unlock exclusive features."
+      "Join me on Brandentify - the AI-powered career platform! Use my referral link to unlock exclusive features."
     );
     const url = encodeURIComponent(referralLink.link);
 
@@ -245,3 +245,4 @@ export function ShareModal({ open, onClose }: ShareModalProps) {
     </Dialog>
   );
 }
+

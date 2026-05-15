@@ -13,9 +13,7 @@
 import { UserContext, UserContextBuilder } from './user-context-builder.js';
 import { Pulse } from '../../shared/schema.js';
 import { learningProgressionEngine, LPEFeedAdjustment, PulseWithLPE } from './learning-progression-engine.js';
-
-const AI_BASE_URL = process.env.AI_BASE_URL || 'http://65.20.73.122:11434';
-const AI_MODEL = process.env.AI_MODEL || 'llama3.2:1b';
+import { localAIService } from './local-ai-service';
 
 export interface RankedPulse {
   pulseId: number;
@@ -198,26 +196,11 @@ Your ranking:`;
    */
   private async callOllamaForRanking(prompt: string, pulses: Pulse[]): Promise<RankedPulse[]> {
     try {
-      const response = await fetch(`${AI_BASE_URL}/api/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: AI_MODEL,
-          prompt,
-          stream: false,
-          options: {
-            temperature: 0.3, // Lower temperature for more consistent ranking
-            num_predict: 200, // Enough tokens for ranking output
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Ollama API error: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      const aiResponse = data.response || '';
+      const aiResponse = await localAIService.generateCompletion(
+        prompt,
+        0.3,
+        200
+      );
 
       console.log('[AIFeedRanker] AI Response:', aiResponse);
 

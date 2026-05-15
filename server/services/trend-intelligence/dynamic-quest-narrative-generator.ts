@@ -18,7 +18,7 @@ export interface QuestContext {
     brandGoals?: string[];
   };
   deliverableFormat?: string; // e.g., '60-second video', 'LinkedIn post'
-  platform?: string; // e.g., 'LinkedIn', 'TikTok', 'Brandentifier'
+  platform?: string; // e.g., 'LinkedIn', 'TikTok', 'Brandentify'
 }
 
 export interface DynamicQuestNarrative {
@@ -272,3 +272,4 @@ Be specific. Be trend-aware. Give clear content examples. Be Musk.`;
 
 // Export singleton instance
 export const dynamicQuestNarrativeGenerator = new DynamicQuestNarrativeGenerator();
+

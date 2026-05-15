@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ################################################################################
-# BRANDENTIFIER AUTOMATED TEST SUITE
+# BRANDENTIFY AUTOMATED TEST SUITE
 # Tests all critical endpoints and features before/after deployment
 # Usage: ./scripts/test-suite.sh [--url http://localhost:5000] [--verbose]
 ################################################################################
@@ -125,7 +125,7 @@ verify_json_field() {
 
 echo ""
 echo "╔════════════════════════════════════════════════════════════════════════╗"
-echo "║          BRANDENTIFIER AUTOMATED TEST SUITE                            ║"
+echo "║          BRANDENTIFY AUTOMATED TEST SUITE                            ║"
 echo "║          Target: $BASE_URL"
 echo "╚════════════════════════════════════════════════════════════════════════╝"
 echo ""
@@ -297,3 +297,4 @@ else
   echo ""
   exit 0
 fi
+

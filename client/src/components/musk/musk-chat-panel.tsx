@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { MuskChatInput } from '@/components/musk/musk-chat-input';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -15,9 +15,9 @@ import { apiRequest } from '@/lib/queryClient';
 import { X, Send, MessageSquare, Loader2, FileUp, Paperclip, FileText, PresentationIcon, LightbulbIcon, Copy, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/hooks/use-auth';
 import { getSuggestedQuestions, type SuggestedQuestion } from './suggested-questions';
 import { UserData } from '@/types/user';
+import { FEATURES } from '@/config/features';
 
 interface MuskChatPanelProps {
   context?: {
@@ -45,6 +45,8 @@ type Message = {
 };
 
 export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) {
+  const ENABLE_RESUME_UPLOAD = FEATURES.ENABLE_RESUME_UPLOAD;
+  const ENABLE_PITCH_DECK = FEATURES.ENABLE_PITCH_DECK;
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -61,7 +63,6 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   const [suggestedQuestions, setSuggestedQuestions] = useState<SuggestedQuestion[]>([]);
   const [engagementHistory, setEngagementHistory] = useState<Record<string, number>>({});
   const [suggestedTemplateIds, setSuggestedTemplateIds] = useState<number[]>([]);
-  const { user } = useAuth(); // Get current user data from auth context
   
   // Helper function: Format timestamp
   const formatTime = (date: Date) => {
@@ -76,12 +77,24 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     return date.toLocaleDateString();
   };
 
-  // Helper function: Loading Skeleton
+  // Helper function: Loading Skeleton - Improved typing indicator
   const LoadingSkeleton = () => (
-    <div className="space-y-2">
-      <div className="h-4 bg-[rgba(255,255,255,0.1)] rounded w-3/4 animate-pulse"></div>
-      <div className="h-4 bg-[rgba(255,255,255,0.1)] rounded w-5/6 animate-pulse"></div>
-      <div className="h-4 bg-[rgba(255,255,255,0.1)] rounded w-2/3 animate-pulse"></div>
+    <div className="flex items-center gap-2 py-2">
+      <div className="flex items-center gap-1.5">
+        <div 
+          className="h-2.5 w-2.5 rounded-full bg-white/40 animate-bounce"
+          style={{ animationDelay: '0ms', animationDuration: '1.4s' }}
+        ></div>
+        <div 
+          className="h-2.5 w-2.5 rounded-full bg-white/40 animate-bounce"
+          style={{ animationDelay: '200ms', animationDuration: '1.4s' }}
+        ></div>
+        <div 
+          className="h-2.5 w-2.5 rounded-full bg-white/40 animate-bounce"
+          style={{ animationDelay: '400ms', animationDuration: '1.4s' }}
+        ></div>
+      </div>
+      <span className="text-xs text-white/60 ml-2">Musk is thinking...</span>
     </div>
   );
   
@@ -114,6 +127,33 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
     
     fetchUserData();
   }, [context?.userId]);
+
+  useEffect(() => {
+    const loadHistory = async () => {
+      if (!context?.userId) return;
+
+      try {
+        const response = await apiRequest("GET", `/api/musk-chat/history/${context.userId}`);
+        const data = await response.json();
+        const historyMessages = Array.isArray(data?.messages)
+          ? data.messages.map((entry: any, index: number) => ({
+              id: `${entry.role || 'history'}-${index}`,
+              content: entry.message || '',
+              sender: entry.role === 'musk' ? 'musk' : 'user',
+              timestamp: entry.timestamp ? new Date(entry.timestamp) : new Date(),
+            }))
+          : [];
+
+        if (historyMessages.length > 0) {
+          setMessages(historyMessages);
+        }
+      } catch (error) {
+        console.error('[Musk Chat] Failed to load history:', error);
+      }
+    };
+
+    loadHistory();
+  }, [context?.userId]);
   
   // Generate suggested questions when user data is available
   useEffect(() => {
@@ -135,57 +175,11 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   
   // Generate AI-powered contextual suggestions
   const generateContextualSuggestions = async () => {
-    if (!user?.id) return;
-    
     try {
-      const response = await fetch('/api/musk/contextual-suggestions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: user.id,
-          conversationHistory: messages,
-          suggestedTemplateIds, // Pass previously suggested template IDs to avoid repeats
-          profileData: userData ? {
-            title: userData.title,
-            industry: userData.industry,
-            lookingFor: userData.lookingFor,
-            domain: userData.domain,
-            location: userData.location
-          } : null
-        })
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        const aiQuestions: SuggestedQuestion[] = data.suggestions.map((suggestion: any, idx: number) => ({
-          id: `ai-${suggestion.template_id || Date.now()}-${idx}`,
-          text: suggestion.text || suggestion,
-          category: 'career',
-          relevanceScore: 1.0,
-          isNew: true
-        }));
-        
-        setSuggestedQuestions(aiQuestions);
-        
-        // Track the template IDs that were just suggested
-        const newTemplateIds = data.suggestions
-          .map((suggestion: any) => suggestion.template_id)
-          .filter((id: any) => id !== undefined);
-        
-        if (newTemplateIds.length > 0) {
-          setSuggestedTemplateIds(prev => [...prev, ...newTemplateIds]);
-          console.log('[Musk Chat] Tracking suggested template IDs:', newTemplateIds);
-        }
-        
-        console.log('[Musk Chat] Generated AI suggestions from:', data.source);
-      } else {
-        // Fallback to static questions if API fails
-        const questions = getSuggestedQuestions(userData, engagementHistory);
-        setSuggestedQuestions(questions);
-      }
+      const questions = getSuggestedQuestions(userData, engagementHistory);
+      setSuggestedQuestions(questions);
     } catch (error) {
       console.error('[Musk Chat] Error generating suggestions:', error);
-      // Fallback to static questions
       const questions = getSuggestedQuestions(userData, engagementHistory);
       setSuggestedQuestions(questions);
     }
@@ -205,161 +199,190 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!inputValue.trim()) return;
-    
-    // Get user ID from context, but prefer Firebase UID if available
-    // This will allow our backend to properly resolve the numeric user ID
-    
-    // Prefer the Firebase UID when available, as it's what the server expects for lookup
-    let userId;
-    if (user?.uid) {
-      userId = user.uid; // This is the Firebase UID (string)
-      console.log("Musk chat: Using Firebase UID from auth:", userId);
-    } else if (context?.userId) {
-      userId = context.userId;
-      console.log("Musk chat: Using userId from context:", userId, "type:", typeof userId);
-    } else {
-      console.log("Musk chat: No userId available in context or auth");
+
+    if (!context?.userId) {
+      toast({
+        title: 'Missing user context',
+        description: 'Open Musk from a profile to enable backend chat.',
+      });
+      return;
     }
-    
-    // Add user message to the chat
+
+    const messageText = inputValue.trim();
     const userMessage: Message = {
       id: Date.now().toString(),
-      content: inputValue,
+      content: messageText,
       sender: 'user',
       timestamp: new Date(),
     };
-    
-    // Add a "thinking" message placeholder
+
     const thinkingMessage: Message = {
-      id: 'thinking-' + Date.now().toString(),
-      content: '',
+      id: `thinking-${Date.now()}`,
+      content: 'Musk is thinking...',
       sender: 'musk',
       timestamp: new Date(),
-      thinking: true
+      thinking: true,
     };
-    
+
     setMessages(prev => [...prev, userMessage, thinkingMessage]);
     setInputValue('');
     setIsTyping(true);
-    
+
+    const finalQuickResponses = suggestedQuestions.length > 0
+      ? suggestedQuestions.slice(0, 6).map(question => question.text)
+      : ['Tell me more about this', 'What are the next steps?', 'How can I apply this?'];
+
+    const pendingReplyId = thinkingMessage.id;
+
+    const applyMuskReply = (content: string, options?: { messageId?: string; quickResponses?: string[] }) => {
+      const trimmed = content.trim();
+      if (!trimmed) return;
+
+      setMessages(prev => prev.map(msg =>
+        msg.id === pendingReplyId
+          ? {
+              ...msg,
+              id: options?.messageId || msg.id,
+              content: trimmed,
+              sender: 'musk',
+              thinking: false,
+              timestamp: new Date(),
+              quickResponses: options?.quickResponses || finalQuickResponses,
+            }
+          : msg
+      ));
+    };
+
     try {
-      // Make API request to get Musk's response
-      const response = await fetch('/api/musk/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId,
-          message: inputValue,
-          context
-        })
+      const response = await apiRequest('POST', '/api/musk-chat/message', {
+        userId: context.userId,
+        message: messageText,
+        page: context.page,
+        section: context.section,
+        data: context.data,
+        stream: true,
       });
-      
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      
-      const data = await response.json() as {id: string; message: string; timestamp: Date};
-      
-      // Parse quick responses from the AI message if available
-      let quickResponses: string[] | undefined = undefined;
-      const content = data.message;
-      
-      // Check for "Quick Response Options:" format in the message
-      if (content && content.includes('Quick Response Options:')) {
-        const parts = content.split('Quick Response Options:');
-        const optionsText = parts[1];
-        
-        // Extract options using regex to find list items
-        const optionsMatch = optionsText.match(/(?:"([^"]+)"|'([^']+)'|([^,"'\n]+))/g);
-        if (optionsMatch) {
-          quickResponses = optionsMatch.map((option: string) => 
-            option.replace(/^["'\s-]*(.*?)["'\s]*$/, '$1').trim()
-          ).filter(Boolean);
-        }
-      }
-      
-      // Replace the thinking message with the actual response
-      // Use suggested questions, or fall back to extracted quick responses, or generate default follow-ups
-      let finalQuickResponses = suggestedQuestions && suggestedQuestions.length > 0 
-        ? suggestedQuestions.slice(0, 6).map(q => q.text) 
-        : [];
-      
-      // If no suggested questions, use extracted responses from AI
-      if (finalQuickResponses.length === 0 && quickResponses && quickResponses.length > 0) {
-        finalQuickResponses = quickResponses.slice(0, 6);
-      }
-      
-      // If still no follow-ups, generate some default contextual ones
-      if (finalQuickResponses.length === 0) {
-        finalQuickResponses = [
-          'Tell me more about this',
-          'What are the next steps?',
-          'How can I apply this?',
-          'Give me more details',
-          'Explain in detail',
-          'What should I do next?'
-        ];
-      }
-      
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === thinkingMessage.id 
-            ? {
-                id: data.id || 'response-' + Date.now(),
-                content: content,
-                sender: 'musk',
-                timestamp: new Date(),
-                quickResponses: finalQuickResponses
+
+      const contentType = response.headers.get('content-type') || '';
+
+      if (contentType.includes('text/event-stream') && response.body) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let streamedContent = '';
+        let doneQuickResponses = finalQuickResponses;
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const blocks = buffer.split('\n\n');
+          buffer = blocks.pop() || '';
+
+          for (const block of blocks) {
+            const lines = block.split('\n');
+            let eventName = 'message';
+            let payloadText = '';
+
+            for (const line of lines) {
+              if (line.startsWith('event:')) {
+                eventName = line.slice(6).trim();
+              } else if (line.startsWith('data:')) {
+                payloadText += line.slice(5).trim();
               }
-            : msg
-        )
-      );
-      
-      // Update engagement history for the suggested questions that were used
+            }
+
+            if (!payloadText) continue;
+
+            try {
+              const payload = JSON.parse(payloadText);
+              if (eventName === 'token' && typeof payload.token === 'string') {
+                streamedContent += payload.token;
+                applyMuskReply(streamedContent);
+              } else if (eventName === 'done') {
+                streamedContent = payload?.response || streamedContent;
+                if (Array.isArray(payload?.quickResponses) && payload.quickResponses.length > 0) {
+                  doneQuickResponses = payload.quickResponses;
+                }
+                applyMuskReply(streamedContent, {
+                  messageId: payload?.assistantMessage?.id
+                    ? String(payload.assistantMessage.id)
+                    : undefined,
+                  quickResponses: doneQuickResponses,
+                });
+              }
+            } catch {
+              // Ignore malformed stream chunks and keep rendering what we already have.
+            }
+          }
+        }
+
+        if (!streamedContent.trim()) {
+          throw new Error('Musk returned an empty streamed response');
+        }
+        applyMuskReply(streamedContent, { quickResponses: doneQuickResponses });
+      } else {
+        const data = await response.json();
+        if (data?.success === false) {
+          throw new Error(data?.error || 'Musk Chat request failed');
+        }
+        const content = data?.response || data?.message || '';
+        if (!content.trim()) {
+          throw new Error(data?.error || 'Musk returned an empty response');
+        }
+
+        applyMuskReply(content, {
+          messageId: data?.id || `response-${Date.now()}`,
+          quickResponses: data?.quickResponses || finalQuickResponses,
+        });
+      }
+
       if (suggestedQuestions.length > 0) {
-        // Find the categories of the questions we just used
         const usedQuestions = suggestedQuestions.slice(0, 4);
         const newHistory = { ...engagementHistory };
-        
-        // Increment usage count for each category
+
         usedQuestions.forEach(question => {
           newHistory[question.category] = (newHistory[question.category] || 0) + 1;
         });
-        
-        // Save updated history
+
         setEngagementHistory(newHistory);
         try {
           localStorage.setItem('musk-question-engagement', JSON.stringify(newHistory));
         } catch (error) {
-          console.error("Failed to save question engagement history:", error);
+          console.error('Failed to save question engagement history:', error);
         }
-        
-        // Generate new AI-powered contextual questions based on the conversation
+
         generateContextualSuggestions();
       }
+
+      toast({
+        title: 'Message sent',
+        description: 'Musk processed your message.',
+      });
     } catch (error) {
       console.error('Error getting Musk response:', error);
-      
-      // Replace the thinking message with an error message
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === thinkingMessage.id 
-            ? {
-                id: 'error-' + Date.now(),
-                content: "I'm sorry, I'm having trouble connecting to my intelligence center. Please try again in a moment.",
-                sender: 'musk',
-                timestamp: new Date()
-              }
-            : msg
-        )
-      );
-      
+      const errorDetail = error instanceof Error ? error.message : 'Unknown error';
+
+      setMessages(prev => prev.map(msg => 
+        msg.id === pendingReplyId
+          ? {
+              id: `error-${Date.now()}`,
+              content: `I could not complete that request (${errorDetail}). Please try again in a moment.`,
+              sender: 'musk',
+              thinking: false,
+              timestamp: new Date(),
+            }
+          : msg
+      ));
+
       toast({
-        title: 'Connection Error',
-        description: 'Could not connect to Musk AI. Please try again later.',
+        title: 'Musk Chat error',
+        description: errorDetail.includes('503') || errorDetail.includes('502')
+          ? 'The server could not process your message. Please try again.'
+          : errorDetail.slice(0, 120),
         variant: 'destructive',
       });
     } finally {
@@ -374,304 +397,142 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
-    
-    const file = e.target.files[0];
+
     const isResume = e.target === fileInputRef.current;
     const isPitchDeck = e.target === pitchDeckFileInputRef.current;
-    
-    // Set the upload type based on which input triggered the event
-    setUploadType(isResume ? 'resume' : 'pitchdeck');
-    
-    // Different validation for resume vs pitch deck
+    const uploadedFile = e.target.files[0];
+
     if (isResume) {
-      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-      
-      // Validate file type for resume
-      if (!allowedTypes.includes(file.type)) {
+      const name = uploadedFile.name.toLowerCase();
+      const isPdf = name.endsWith('.pdf') || uploadedFile.type === 'application/pdf';
+      if (!isPdf) {
         toast({
-          title: 'Invalid file type',
-          description: 'Please upload a PDF or Word document (.pdf, .doc, .docx)',
+          title: 'PDF only',
+          description: 'Please upload your resume as a PDF file.',
           variant: 'destructive',
         });
-        return;
-      }
-    } else if (isPitchDeck) {
-      // For pitch deck, only allow PDF
-      if (file.type !== 'application/pdf') {
-        toast({
-          title: 'Invalid file type',
-          description: 'Please upload a PDF file for your pitch deck',
-          variant: 'destructive',
-        });
+        e.target.value = '';
         return;
       }
     }
-    
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    if (file.size > maxSize) {
+
+    if (!context?.userId) {
       toast({
-        title: 'File too large',
-        description: 'Please upload a file smaller than 5MB',
-        variant: 'destructive',
+        title: 'Missing user context',
+        description: 'Open Musk from a profile to upload a file.',
       });
       return;
     }
-    
-    // Get user ID from context, but prefer Firebase UID if available 
-    // This will allow our backend to properly resolve the numeric user ID
-    
-    // Prefer the Firebase UID when available, as it's what the server expects for lookup
-    let userId;
-    if (user?.uid) {
-      userId = user.uid; // This is the Firebase UID (string)
-      console.log("Musk file upload: Using Firebase UID from auth:", userId);
-    } else if (user?.id) {
-      userId = user.id; // Simple auth numeric ID
-      console.log("Musk file upload: Using user.id from auth:", userId);
-    } else if (context?.userId) {
-      userId = context.userId;
-      console.log("Musk file upload: Using userId from context:", userId, "type:", typeof userId);
-    } else {
-      console.log("Musk file upload: No userId available in context or auth");
+
+    if (!isResume && !isPitchDeck) {
+      toast({
+        title: 'Unsupported upload',
+        description: 'Please use the resume or pitch deck upload buttons.',
+      });
+      return;
     }
-    
-    // Add user message about uploading file
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      content: isResume 
-        ? `I'm uploading my resume (${file.name}) for analysis`
-        : `I'm uploading my pitch deck (${file.name}) for analysis`,
-      sender: 'user',
-      timestamp: new Date(),
-    };
-    
-    // Add a "processing" message placeholder
-    const thinkingMessage: Message = {
-      id: 'thinking-' + Date.now().toString(),
-      content: '',
-      sender: 'musk',
-      timestamp: new Date(),
-      thinking: true
-    };
-    
-    setMessages(prev => [...prev, userMessage, thinkingMessage]);
+
     setIsUploading(true);
-    setUploadProgress(0);
-    
+    setUploadType(isResume ? 'resume' : 'pitchdeck');
+    setUploadProgress(20);
+
+    setMessages(prev => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        content: isResume
+          ? `I'm uploading my resume (${uploadedFile.name}) for analysis`
+          : `I'm uploading my pitch deck (${uploadedFile.name}) for analysis`,
+        sender: 'user',
+        timestamp: new Date(),
+      },
+      {
+        id: 'upload-stub-' + Date.now().toString(),
+        content: isResume ? 'Analyzing resume...' : 'Analyzing pitch deck...',
+        sender: 'musk',
+        timestamp: new Date(),
+        thinking: true,
+      },
+    ]);
+
     try {
-      // Create form data for file upload
       const formData = new FormData();
-      formData.append('file', file);
-      // Only append userId if it exists
-      if (userId !== null && userId !== undefined) {
-        formData.append('userId', userId.toString());
+      formData.append('userId', String(context.userId));
+      formData.append(isResume ? 'resume' : 'deck', uploadedFile);
+      formData.append(isResume ? 'fileName' : 'deckName', uploadedFile.name);
+
+      const endpoint = isResume ? '/api/musk-chat/upload-resume' : '/api/musk/pitchdeck-upload';
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || data?.success === false) {
+        throw new Error(
+          data?.error ||
+            data?.message ||
+            `Upload failed (${response.status})`
+        );
       }
-      
-      // Use XMLHttpRequest to track upload progress
-      const xhr = new XMLHttpRequest();
-      
-      const uploadPromise = new Promise<any>((resolve, reject) => {
-        // Determine the endpoint based on the file type
-        const endpoint = isResume ? '/api/musk/resume-upload' : '/api/musk/pitchdeck-upload';
-        xhr.open('POST', endpoint);
-        
-        xhr.upload.onprogress = (event) => {
-          if (event.lengthComputable) {
-            const percentComplete = Math.round((event.loaded / event.total) * 100);
-            setUploadProgress(percentComplete);
-          }
-        };
-        
-        xhr.onload = () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            try {
-              const response = JSON.parse(xhr.responseText);
-              resolve(response);
-            } catch (e) {
-              reject(new Error('Invalid JSON response'));
+      const analysis = data?.analysis;
+      const content =
+        (typeof analysis === 'string' ? analysis : analysis?.summary) ||
+        data?.response ||
+        data?.message ||
+        (isResume ? 'Resume analysis complete.' : 'Pitch deck analysis complete.');
+
+      setMessages(prev => prev.map(msg =>
+        msg.id.startsWith('upload-stub-')
+          ? {
+              id: data?.id || `${isResume ? 'resume' : 'pitchdeck'}-response-${Date.now()}`,
+              content,
+              sender: 'musk',
+              thinking: false,
+              timestamp: new Date(),
+              quickResponses: isResume
+                ? ['What should I fix first?', 'Tailor this for a role', 'Show me stronger bullets']
+                : ['What is the biggest risk?', 'How do I sharpen the story?', 'What should I improve first?'],
             }
-          } else {
-            reject(new Error(`HTTP error ${xhr.status}: ${xhr.statusText}`));
-          }
-        };
-        
-        xhr.onerror = () => {
-          reject(new Error('Network error occurred'));
-        };
-        
-        xhr.send(formData);
-      });
-      
-      // Wait for upload to complete
-      const uploadResult = await uploadPromise;
-      
-      if (!uploadResult) {
-        throw new Error(`Failed to upload ${isResume ? 'resume' : 'pitch deck'}`);
-      }
-      
-      // Check if response contains an error
-      if (uploadResult.error) {
-        throw new Error(JSON.stringify({
-          error: uploadResult.error,
-          message: uploadResult.message,
-          suggestion: uploadResult.suggestion,
-          details: uploadResult.details
-        }));
-      }
-      
-      // The result includes the analysis message directly
-      const analyzeResult = {
-        analysis: uploadResult.analysis || uploadResult.message || 'Analysis completed successfully'
-      };
-      
-      // Use personalized questions or fallback to file-type specific responses
-      const personalizedQuestions = suggestedQuestions.slice(0, 4).map(q => q.text);
-      
-      // If we have personalized questions, use them
-      // Otherwise fall back to default file-type specific responses
-      const quickResponses = personalizedQuestions.length > 0 
-        ? personalizedQuestions
-        : (isResume 
-            ? [
-                'How can I improve my skills section?',
-                'What about my work experiences?',
-                'Can you help me tailor it for a specific role?'
-              ]
-            : [
-                'How can I improve my problem statement?',
-                'Is my business model compelling enough?',
-                'What should I focus on for investor readiness?'
-              ]);
-      
-      // Replace the thinking message with the analysis result
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === thinkingMessage.id 
-            ? {
-                id: 'analysis-' + Date.now(),
-                content: analyzeResult.analysis,
-                sender: 'musk',
-                timestamp: new Date(),
-                quickResponses
-              }
-            : msg
-        )
-      );
-      
-      // Update engagement history if we used personalized questions
-      if (personalizedQuestions.length > 0) {
-        // Find the categories of the questions we just used
-        const usedQuestions = suggestedQuestions.slice(0, 4);
-        const newHistory = { ...engagementHistory };
-        
-        // Increment usage count for each category
-        usedQuestions.forEach(question => {
-          newHistory[question.category] = (newHistory[question.category] || 0) + 1;
-        });
-        
-        // Save updated history
-        setEngagementHistory(newHistory);
-        try {
-          localStorage.setItem('musk-question-engagement', JSON.stringify(newHistory));
-        } catch (error) {
-          console.error("Failed to save question engagement history:", error);
-        }
-        
-        // Generate new AI-powered contextual questions based on the conversation
-        generateContextualSuggestions();
-      }
-      
+          : msg
+      ));
+
       toast({
-        title: 'Analysis complete',
-        description: `Your ${isResume ? 'resume' : 'pitch deck'} has been analyzed successfully`,
+        title: isResume ? 'Resume analyzed' : 'Pitch deck analyzed',
+        description: isResume ? 'Musk processed the uploaded resume.' : 'Musk processed the uploaded pitch deck.',
       });
-      
     } catch (error) {
-      console.error(`Error processing ${isResume ? 'resume' : 'pitch deck'}:`, error);
-      
-      // Try to extract detailed error information from the response
-      let errorTitle = `Failed to analyze your ${isResume ? 'resume' : 'pitch deck'}`;
-      let errorDescription = isResume
-        ? "I'm sorry, I had trouble processing your resume. Please try again or upload a different file format."
-        : "I'm sorry, I had trouble analyzing your pitch deck. Please make sure it's a valid PDF and try again.";
-      
-      let chatMessage = errorDescription;
-      
-      // Try to parse structured error response if available
-      if (error instanceof Error && error.message) {
-        try {
-          // Try to parse as JSON (for structured errors from backend)
-          const errorData = JSON.parse(error.message) as { error?: string; message?: string; suggestion?: string; details?: string };
-          if (errorData.message) {
-            errorDescription = errorData.message;
-            if (errorData.suggestion) {
-              chatMessage = `${errorData.message}\n\n💡 **Suggestion:** ${errorData.suggestion}`;
-            } else {
-              chatMessage = errorData.message;
-            }
-            
-            // Customize title based on error type
-            if (errorData.error === 'INVALID_FILE_TYPE') {
-              errorTitle = 'Unsupported File Type';
-            } else if (errorData.error === 'FILE_TOO_LARGE') {
-              errorTitle = 'File Size Exceeded';
-            } else if (errorData.error === 'TEXT_EXTRACTION_ERROR') {
-              errorTitle = 'Unable to Read File';
-            } else if (errorData.error === 'AI_SERVICE_ERROR') {
-              errorTitle = 'Service Temporarily Unavailable';
-            } else if (errorData.error === 'SERVICE_TIMEOUT') {
-              errorTitle = 'Processing Timeout';
-            }
-          }
-        } catch (parseError) {
-          // If JSON parsing fails, try extracting from plain error message
-          const msg = error.message.toLowerCase();
-          if (msg.includes('invalid file') || msg.includes('file type') || msg.includes('not allowed')) {
-            errorTitle = 'Unsupported File Type';
-            errorDescription = 'The file type you uploaded is not supported. Please upload: PDF, Word (.doc/.docx), Text (.txt), or RTF.';
-            chatMessage = errorDescription;
-          } else if (msg.includes('too large') || msg.includes('exceeds')) {
-            errorTitle = 'File Size Exceeded';
-            errorDescription = 'Your file is too large. Please upload a file smaller than 10MB.';
-            chatMessage = errorDescription;
-          } else if (msg.includes('text') || msg.includes('extract') || msg.includes('corrupted') || msg.includes('empty')) {
-            errorTitle = 'Unable to Read File';
-            errorDescription = 'Could not read the content of your file. Make sure it is a valid, readable document. Try converting it to PDF format.';
-            chatMessage = errorDescription;
-          }
-        }
-      }
-      
-      // Replace the thinking message with the detailed error message
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === thinkingMessage.id 
-            ? {
-                id: 'error-' + Date.now(),
-                content: chatMessage,
-                sender: 'musk',
-                timestamp: new Date()
-              }
-            : msg
-        )
-      );
-      
+      console.error('Error analyzing resume:', error);
       toast({
-        title: errorTitle,
-        description: errorDescription,
+        title: 'Upload failed',
+        description: isResume ? 'Unable to analyze the resume right now.' : 'Unable to analyze the pitch deck right now.',
         variant: 'destructive',
       });
+
+      const failMessage =
+        error instanceof Error
+          ? error.message
+          : isResume
+            ? 'Resume analysis failed. Please try again.'
+            : 'Pitch deck analysis failed. Please try again.';
+
+      setMessages(prev => prev.map(msg =>
+        msg.id.startsWith('upload-stub-')
+          ? {
+              id: `${isResume ? 'resume' : 'pitchdeck'}-error-${Date.now()}`,
+              content: failMessage,
+              sender: 'musk',
+              thinking: false,
+              timestamp: new Date(),
+            }
+          : msg
+      ));
     } finally {
+      setUploadProgress(100);
       setIsUploading(false);
-      setUploadProgress(0);
-      
-      // Reset file input
-      if (isResume && fileInputRef.current) {
-        fileInputRef.current.value = '';
-      } else if (isPitchDeck && pitchDeckFileInputRef.current) {
-        pitchDeckFileInputRef.current.value = '';
-      }
     }
+
+    e.target.value = '';
   };
   
   const triggerResumeUpload = () => {
@@ -701,39 +562,43 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   return (
     <>
       {/* Completely hidden file inputs outside main component */}
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileUpload}
-        accept=".pdf,.doc,.docx"
-        style={{ 
-          position: 'fixed',
-          left: '-9999px',
-          top: '-9999px',
-          width: '1px',
-          height: '1px',
-          opacity: 0,
-          visibility: 'hidden',
-          pointerEvents: 'none'
-        }}
-      />
+      {ENABLE_RESUME_UPLOAD && (
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileUpload}
+          accept=".pdf,application/pdf"
+          style={{ 
+            position: 'fixed',
+            left: '-9999px',
+            top: '-9999px',
+            width: '1px',
+            height: '1px',
+            opacity: 0,
+            visibility: 'hidden',
+            pointerEvents: 'none'
+          }}
+        />
+      )}
       
-      <input
-        type="file"
-        ref={pitchDeckFileInputRef}
-        onChange={handleFileUpload}
-        accept=".pdf"
-        style={{ 
-          position: 'fixed',
-          left: '-9999px',
-          top: '-9999px',
-          width: '1px',
-          height: '1px',
-          opacity: 0,
-          visibility: 'hidden',
-          pointerEvents: 'none'
-        }}
-      />
+      {ENABLE_PITCH_DECK && (
+        <input
+          type="file"
+          ref={pitchDeckFileInputRef}
+          onChange={handleFileUpload}
+          accept=".pdf"
+          style={{ 
+            position: 'fixed',
+            left: '-9999px',
+            top: '-9999px',
+            width: '1px',
+            height: '1px',
+            opacity: 0,
+            visibility: 'hidden',
+            pointerEvents: 'none'
+          }}
+        />
+      )}
 
       <motion.div
         className={`${context?.page === 'messages' ? 'w-full h-full relative' : 'fixed bottom-4 right-4 w-96 h-[80vh] max-h-[700px] z-50 rounded-xl'} flex flex-col overflow-hidden`}
@@ -766,7 +631,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                 }}
               >
                 <img 
-                  src="/Contact Candour_1761062906599.gif"
+                  src="/Contact Candour_1753488336182.gif"
                   alt="Musk AI" 
                   className="h-full w-full object-cover rounded-full"
                   loading="lazy"
@@ -885,7 +750,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                   )}
 
                   {/* Follow-up Questions - Inside message bubble */}
-                  {message.sender === 'musk' && message.quickResponses && message.quickResponses.length > 0 && (
+                  {message.sender === 'musk' && !message.thinking && message.quickResponses && message.quickResponses.length > 0 && (
                     <div className="mt-4 pt-3 border-t border-[rgba(255,255,255,0.15)] space-y-2 w-full">
                       <div className="text-xs text-[rgba(255,255,255,0.8)] font-medium">💬 Continue:</div>
                       <div className="flex flex-col gap-2 w-full">
@@ -982,121 +847,78 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         {/* We're removing the separate Suggested Questions section 
             and will instead show suggested questions directly in the chat */}
         
-        {/* File upload buttons */}
-        <div 
-          className="flex items-center justify-center gap-2 px-4 py-2"
-          style={{
-            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-            background: 'rgba(255, 255, 255, 0.02)'
-          }}
-        >
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="flex-1 flex items-center justify-center gap-2 text-white border-0"
-            disabled={isTyping || isUploading}
-            title="Upload Resume"
-            onClick={triggerResumeUpload}
-            style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              backdropFilter: 'blur(4px)',
-              border: '1px solid rgba(255, 255, 255, 0.1)'
-            }}
-            onMouseEnter={(e) => {
-              if (!isTyping && !isUploading) {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
-            }}
-          >
-            <FileText className="h-4 w-4" />
-            <span>Upload Resume</span>
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="flex-1 flex items-center justify-center gap-2 text-white border-0"
-            disabled={isTyping || isUploading}
-            title="Upload Pitch Deck"
-            onClick={triggerPitchDeckUpload}
-            style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              backdropFilter: 'blur(4px)',
-              border: '1px solid rgba(255, 255, 255, 0.1)'
-            }}
-            onMouseEnter={(e) => {
-              if (!isTyping && !isUploading) {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
-            }}
-          >
-            <PresentationIcon className="h-4 w-4" />
-            <span>Upload Pitch Deck</span>
-          </Button>
-        </div>
-        
-        {/* Input form */}
-        <form onSubmit={handleSubmit} className="p-4 pt-2 flex gap-2">
-          <div className="flex-1 flex gap-2 relative">
-            <Input
-              ref={inputRef}
-              placeholder="Type your message..."
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-12 text-sm sm:text-base"
-              disabled={isTyping || isUploading}
-            />
+        {/* Input form with integrated file upload */}
+        <form onSubmit={handleSubmit} className="p-3 border-t border-white/10">
+          {/* File upload buttons row */}
+          <div className="flex items-center gap-2 mb-3">
+            {ENABLE_RESUME_UPLOAD && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="flex-1 flex items-center justify-center gap-2 text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200 h-9 rounded-lg border border-white/10"
+                disabled={isTyping || isUploading}
+                title="Upload Resume"
+                onClick={triggerResumeUpload}
+              >
+                <FileText className="h-4 w-4" />
+                <span className="text-xs">Resume</span>
+              </Button>
+            )}
+            {ENABLE_PITCH_DECK && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="flex-1 flex items-center justify-center gap-2 text-white/80 hover:text-white hover:bg-white/10 transition-all duration-200 h-9 rounded-lg border border-white/10"
+                disabled={isTyping || isUploading}
+                title="Upload Pitch Deck"
+                onClick={triggerPitchDeckUpload}
+              >
+                <PresentationIcon className="h-4 w-4" />
+                <span className="text-xs">Pitch Deck</span>
+              </Button>
+            )}
           </div>
-          <Button 
-            type="submit" 
-            variant="default" 
-            className="px-3 gap-2 text-white border-0"
-            disabled={!inputValue.trim() || isTyping || isUploading}
-            title="Send message"
-            style={{
-              background: 'rgba(255, 255, 255, 0.15)',
-              backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
-            }}
-          >
-            <Send className="h-4 w-4" />
-            <span>Send</span>
-          </Button>
+          
+          {/* Message input row */}
+          <div className="flex items-center gap-2">
+            <div className="flex-1 relative">
+              <MuskChatInput
+                ref={inputRef}
+                placeholder="Type your message..."
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                className="transition-all"
+                disabled={isTyping || isUploading}
+              />
+            </div>
+            <Button 
+              type="submit" 
+              size="icon"
+              className="h-11 w-11 rounded-lg bg-blue-600 hover:bg-blue-700 text-white border-0 transition-all duration-200 shadow-lg hover:shadow-blue-500/50"
+              disabled={!inputValue.trim() || isTyping || isUploading}
+              title="Send message"
+            >
+              <Send className="h-5 w-5" />
+            </Button>
+          </div>
         </form>
         
         {/* Upload progress indicator */}
         {isUploading && (
-          <div 
-            className="px-4 py-2"
-            style={{
-              background: 'rgba(59, 130, 246, 0.1)',
-              borderTop: '1px solid rgba(255, 255, 255, 0.1)'
-            }}
-          >
-            <div className="text-xs mb-1 flex justify-between text-white">
-              <span>Uploading {uploadType === 'resume' ? 'resume' : 'pitch deck'}...</span>
-              <span>{uploadProgress}%</span>
+          <div className="px-4 py-3 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border-t border-white/10">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin text-blue-400" />
+                <span className="text-xs font-medium text-white">Uploading {uploadType === 'resume' ? 'resume' : 'pitch deck'}...</span>
+              </div>
+              <span className="text-xs font-semibold text-blue-400">{uploadProgress}%</span>
             </div>
-            <div 
-              className="h-1 rounded-full overflow-hidden"
-              style={{
-                background: 'rgba(255, 255, 255, 0.1)'
-              }}
-            >
+            <div className="h-2 rounded-full overflow-hidden bg-white/10">
               <div 
-                className="h-full rounded-full transition-all duration-300 ease-in-out"
-                style={{ 
-                  width: `${uploadProgress}%`,
-                  background: 'linear-gradient(135deg, #3B82F6, #0EA5E9)'
-                }}
+                className="h-full rounded-full transition-all duration-300 ease-out bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/50"
+                style={{ width: `${uploadProgress}%` }}
               ></div>
             </div>
           </div>

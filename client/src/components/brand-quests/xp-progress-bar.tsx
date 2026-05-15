@@ -54,7 +54,7 @@ export function XpProgressBar({ balance, monthlyEarned, lifetimeEarned, classNam
                   LVL {currentLevelInfo.level}
                 </Badge>
               </TooltipTrigger>
-              <TooltipContent className="bg-white/10 backdrop-blur-md border border-white/20 text-white">
+              <TooltipContent className="bg-white/5 backdrop-blur-xl border border-white/10 text-white rounded-xl">
                 <p>Your current brand level</p>
               </TooltipContent>
             </Tooltip>
@@ -71,7 +71,7 @@ export function XpProgressBar({ balance, monthlyEarned, lifetimeEarned, classNam
               <TooltipTrigger asChild>
                 <span className="font-medium">{progressInCurrentLevel} / {xpRange} XP to Level {nextLevelInfo.level}</span>
               </TooltipTrigger>
-              <TooltipContent className="space-y-2 w-56 bg-white/10 backdrop-blur-md border border-white/20 text-white">
+              <TooltipContent className="space-y-2 w-56 bg-white/5 backdrop-blur-xl border border-white/10 text-white rounded-xl">
                 <p>Progress: +{progressInCurrentLevel} XP toward Level {nextLevelInfo.level}</p>
                 <p>Level completion: {progressPercentage}%</p>
                 <p>Current balance: {balance} XP</p>

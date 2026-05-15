@@ -16,14 +16,17 @@ router.get("/conversations", async (req, res) => {
   try {
     const userId = Number(req.query.userId);
     
+    console.log(`[Messaging Routes] GET /conversations - userId: ${userId}`);
+    
     if (isNaN(userId)) {
       return res.status(400).json({ error: "Invalid user ID" });
     }
     
     const conversations = await messageService.getConversationsForUser(userId);
+    console.log(`[Messaging Routes] ✅ Returning ${conversations.length} conversations for user ${userId}`);
     res.json(conversations);
   } catch (error) {
-    console.error("Error getting conversations:", error);
+    console.error("[Messaging Routes] ❌ Error getting conversations:", error);
     res.status(500).json({ error: "Failed to get conversations" });
   }
 });

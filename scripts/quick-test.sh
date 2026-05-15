@@ -50,7 +50,7 @@ test_endpoint() {
 
 echo ""
 echo "${B}╔═══════════════════════════════════════════════════════════╗${N}"
-echo "${B}║         BRANDENTIFIER QUICK TEST SUITE                   ║${N}"
+echo "${B}║         BRANDENTIFY QUICK TEST SUITE                   ║${N}"
 echo "${B}║         Target: $BASE_URL"
 echo "${B}╚═══════════════════════════════════════════════════════════╝${N}"
 echo ""
@@ -155,3 +155,4 @@ else
   echo ""
   exit 1
 fi
+

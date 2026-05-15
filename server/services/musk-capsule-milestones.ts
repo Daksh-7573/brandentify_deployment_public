@@ -6,10 +6,7 @@
  */
 
 import { storage } from '../storage';
-import { LocalAIService } from './local-ai-service';
-
-// Initialize FREE Local AI Service (uses VPS Ollama)
-const localAI = new LocalAIService();
+import { generateAIResponse } from './ai-provider';
 
 interface MilestoneGenerationRequest {
   userId: number;
@@ -39,6 +36,14 @@ interface MilestoneGenerationResult {
   success: boolean;
   message: string;
   years?: YearMilestone[];
+}
+
+interface StructuredMilestone {
+  milestone_title: string;
+  description: string;
+  recommended_actions: string[];
+  expected_outcome: string;
+  estimated_timeframe: string;
 }
 
 // Helper function to check if a goal relates to CEO career path
@@ -91,9 +96,7 @@ function isCEORelatedGoal(goalType: string, customGoal?: string, description?: s
  * @returns Generated milestones for each year in the timeframe
  */
 export async function generateCapsuleMilestones(options: MilestoneGenerationRequest): Promise<MilestoneGenerationResult> {
-  console.log(`[Musk AI] Starting milestone generation for career capsule ${options.capsuleId}`);
-  console.log(`[Musk AI] Options:`, JSON.stringify(options));
-  console.log(`[Musk AI] Using FREE VPS Ollama for milestone generation`);
+  console.log(`[CareerCapsule] Generating milestones for capsule ${options.capsuleId}`);
   
   try {
     // Get user profile data
@@ -115,238 +118,39 @@ export async function generateCapsuleMilestones(options: MilestoneGenerationRequ
     const education = await storage.getEducationsByUserId(options.userId);
     console.log(`[Musk AI] Career data retrieved: ${experiences.length} experiences, ${skills.length} skills, ${education.length} education entries`);
 
-    // Format the prompt for the AI
-    const aiContext = `
-You are Musk, an elite career development AI coach specialized in creating hyper-personalized, industry-specific career progression plans.
-Your task is to create a detailed, actionable ${options.timeframe}-year career roadmap with specific milestones and tasks that feels custom-crafted for this unique professional.
+    // Format a strict structured prompt for milestone generation
+    const yearsOfExperience = experiences.length;
+    const goalText = options.goalType === 'custom'
+      ? (options.customGoal || 'custom career goal')
+      : options.goalType.replace('_', ' ');
 
-USER CAREER GOAL: 
-${options.goalType === 'custom' ? options.customGoal : options.goalType.replace('_', ' ')}
+    const aiContext = `Create a career milestone roadmap for a professional.
 
-GOAL DETAILS:
-${options.description || 'No additional details provided'}
+User information:
+Industry: ${options.industry || user.industry || 'Not specified'}
+Domain: ${user.domain || 'Not specified'}
+Experience: ${yearsOfExperience} years
+Goal: ${goalText}
+Current Role: ${user.title || 'Not specified'}
+Goal details: ${options.description || 'Not provided'}
+Top skills: ${skills.slice(0, 8).map((skill: any) => (typeof skill === 'string' ? skill : skill.name)).join(', ') || 'Not provided'}
 
-GOAL TIMELINE:
-${options.timeframe} years
+Generate 5 milestones.
 
-TARGET INDUSTRY:
-${options.industry || 'Not specified'}
+Each milestone must include:
+- milestone_title
+- description
+- recommended_actions
+- expected_outcome
+- estimated_timeframe
 
-MUSK'S STRUCTURED THINKING PROCESS:
-Follow this specific 6-step process to create a personalized career roadmap:
+Requirements:
+- recommended_actions must be an array of exactly 3 concise, actionable items.
+- Be specific to the user's industry and role.
+- Use realistic and measurable outcomes.
+- Avoid generic advice.
 
-STEP 1: UNDERSTAND THE GOAL TYPE AND DESCRIPTION
-I need to classify this goal as:
-- Is this a learning goal, career switch, promotion, branding, or entrepreneurial?
-- Is it skill-based (e.g., Learn React) or position-based (e.g., Become VP)?
-- Does the description include a specific level of ambition (e.g., "Top 5 company," "remote role")?
-This classification helps me select the right milestone templates and patterns.
-
-STEP 2: ANALYZE THE USER'S PROFILE
-I'll carefully analyze:
-- Current title, experience level
-- Skills & proficiencies (beginner/intermediate/expert)
-- Industry/domain knowledge
-- Education and past projects
-- Career history and trajectory
-This ensures I don't recommend beginner material to a senior professional or vice versa.
-
-STEP 3: BREAK TIMEFRAME INTO PHASES
-For a ${options.timeframe}-year plan, I'll structure it into strategic phases:
-- Phase 1: Exploration + Foundation (initial period)
-- Phase 2: Skill acquisition + small wins (middle period) 
-- Phase 3: Implementation + impact (later period)
-- Phase 4: Positioning + application/launch (final period)
-This time-based phasing creates a scaffold for milestone placement.
-
-STEP 4: MAP MILESTONES USING 4-LAYER LOGIC
-For each phase, I'll include a mix of these milestone types:
-- Learning milestones: Courses, certifications, structured knowledge acquisition
-- Practice milestones: Projects, contributions, hands-on application
-- Exposure milestones: Networking, thought leadership, community building
-- Action milestones: Applications, interviews, launches, career moves
-This ensures a balanced approach to career development.
-
-STEP 5: PERSONALIZE BASED ON PROFILE GAPS
-I'll customize milestones based on profile analysis:
-- If weak in public presence → add personal branding milestones
-- If already skilled → skip beginner courses
-- If in college → add academic alignment steps
-This prevents one-size-fits-all planning.
-
-STEP 6: BUILD CLEAR, ACHIEVABLE TASKS PER MILESTONE
-Each milestone will include:
-- A specific, actionable title
-- Detailed description with links to resources
-- Realistic deadline
-- Measurable completion criteria
-These tasks will be concrete and implementable.
-
-CAREER GOAL TYPE ANALYSIS:
-${options.goalType === 'position_change' ? 
-  `This user wants to change positions, which typically requires:
-   - Identifying transferable skills and experience gaps
-   - Building networks in the target position's community
-   - Gaining relevant certifications and qualifications
-   - Creating tangible work examples for the new position
-   - Developing a compelling narrative around the transition` 
-  : options.goalType === 'skill_acquisition' ?
-  `This user wants to acquire new skills, which typically requires:
-   - Identifying the most valuable skills within their industry/domain
-   - Finding optimal learning resources and pathways
-   - Building practical application opportunities for new skills
-   - Getting mentorship from practitioners with those skills
-   - Creating demonstration projects to showcase new abilities`
-  : options.goalType === 'promotion' ?
-  `This user is seeking a promotion, which typically requires:
-   - Understanding the competencies needed at the next level
-   - Demonstrating leadership and strategic thinking
-   - Building visibility with decision makers
-   - Taking on projects that demonstrate readiness for more responsibility
-   - Quantifying their impact and value to the organization`
-  : options.goalType === 'industry_switch' ?
-  `This user wants to switch industries, which typically requires:
-   - Research and networking in the target industry
-   - Identifying transferable skills and addressing gaps
-   - Understanding the target industry's culture and expectations
-   - Building experience through side projects, volunteering, or part-time work
-   - Developing industry-specific knowledge and vocabulary`
-  : options.goalType === 'entrepreneurship' ?
-  `This user is pursuing entrepreneurship, which typically requires:
-   - Market research and business planning
-   - Building MVP (minimum viable product) and iterating
-   - Networking with potential investors/partners
-   - Developing sales, marketing, and operational skills
-   - Creating legal and financial frameworks`
-  : options.goalType === 'relocation' ?
-  `This user is planning career relocation, which typically requires:
-   - Understanding job market differences in the target location
-   - Building a remote network in the new location
-   - Adapting skills to regional requirements
-   - Understanding visa/work permit requirements (if international)
-   - Planning the logistics of job searching while relocating`
-  : options.goalType === 'education' ?
-  `This user is pursuing further education, which typically requires:
-   - Researching programs aligned with career goals
-   - Preparing applications and securing recommendations
-   - Planning financial resources and time management
-   - Balancing current work with educational commitments
-   - Leveraging new knowledge in career advancement`
-  : options.goalType === 'certification' ?
-  `This user is pursuing professional certification, which typically requires:
-   - Selecting the most valuable certificates for their goals
-   - Structured study and preparation
-   - Practical application of certification material
-   - Test preparation strategies
-   - Leveraging the certification for career advancement`
-  : `This user has a custom career goal that will require personalized milestones and tasks.`
-}
-
-INDUSTRY-SPECIFIC ANALYSIS:
-${options.industry ? 
-  `For the ${options.industry} industry, important considerations include:
-   - Current technology trends: AI/ML adoption, automation, digital transformation
-   - Regulatory changes impacting roles and responsibilities
-   - Emerging job titles and roles in this sector
-   - Industry-specific certifications gaining recognition
-   - Skills gaps reported by industry leaders
-   - Networking opportunities specific to this field`
-  : 'Industry not specified - provide general career progression advice.'
-}
-
-CURRENT MARKET TRENDS TO INCORPORATE:
-- Leadership skills emphasizing emotional intelligence and remote/hybrid team management
-- Rising demand for data literacy and analytical decision-making across all roles
-- Increasing importance of cross-functional collaboration and communication
-- Growth of project-based work requiring adaptability and self-management
-- Emphasis on continuous learning and skill development as core competency
-${options.industry ? `- Specific ${options.industry} industry trends including emerging technologies and shifting job requirements` : ''}
-
-USER PROFILE:
-- Name: ${user.name}
-- Current title: ${user.title || 'Not specified'}
-- Industry: ${user.industry || 'Not specified'}
-- Domain: ${user.domain || 'Not specified'}
-- Location: ${user.location || 'Not specified'}
-
-WORK EXPERIENCE:
-${experiences.length > 0 ? 
-  experiences.map(exp => 
-    `- ${exp.title} at ${exp.company} (${exp.startDate.substring(0, 4)} - ${exp.endDate ? exp.endDate.substring(0, 4) : 'Present'})
-     Industry: ${exp.industry || 'Not specified'}
-     Domain: ${exp.domain || 'Not specified'}
-     Key responsibilities: ${exp.keyResponsibilities || 'Not specified'}`
-  ).join('\n') : 
-  'No work experience data available'}
-
-SKILLS:
-${skills.length > 0 ? 
-  skills.map(skill => 
-    typeof skill === 'string' ? skill : skill.name
-  ).join(', ') : 
-  'No skills data available'}
-
-EDUCATION:
-${education.length > 0 ? 
-  education.map(edu => 
-    `- ${edu.degree} in ${edu.fieldOfStudy || 'Not specified'} from ${edu.institution} (${edu.startDate.substring(0, 4)} - ${edu.endDate ? edu.endDate.substring(0, 4) : 'Present'})`
-  ).join('\n') : 
-  'No education data available'}
-
-TASK:
-Create a hyper-personalized, action-oriented ${options.timeframe}-year career development plan with ultra-specific milestone tasks that directly address the user's goals and incorporate current industry realities.
-
-For each year (1 through ${options.timeframe}), provide:
-1. An inspiring, specific title that captures the focus for that year
-2. A detailed description with specific outcomes expected that year, including:
-   - Explicit technical/hard skills to be mastered (name actual technologies, tools, platforms)
-   - Specific knowledge domains to develop (name actual subjects, methodologies, frameworks)
-   - Named professional relationships and communities to connect with (actual groups, organizations)
-   - Concrete, measurable achievements that demonstrate progress
-3. A significant milestone achievement that represents major progress
-4. 3-5 highly specific tasks with actionable descriptions and strategically timed due dates that:
-   - Name exact skills, certifications, or qualifications (not vague "foundational skills")
-   - Specify actual courses, books, platforms or learning resources by name
-   - Include specific companies, technologies, certifications by name
-   - Reference actual networking events, conferences, communities by name when possible
-   - Detail concrete deliverables/outputs for each task (portfolio pieces, certifications, etc.)
-   - Provide implementation-ready action steps
-
-Format your response as a JSON array with the following structure:
-[
-  {
-    "year": 1,
-    "title": "Year 1 Title",
-    "description": "Description of Year 1",
-    "milestone": "Key milestone for Year 1",
-    "tasks": [
-      {
-        "title": "Task 1 Title",
-        "description": "Task 1 Description",
-        "dueDate": "YYYY-MM-DD",
-        "priority": 1
-      },
-      ...more tasks
-    ]
-  },
-  ...more years
-]
-
-IMPORTANT GUIDELINES:
-1. NEVER use vague phrases like "foundational skills" or "industry knowledge" - always specify exactly which skills (e.g., "Python OOP programming," "Figma prototyping," "Sprint planning," etc.)
-2. ALWAYS replace generic guidance with ultra-specific recommendations:
-   - Instead of: "Learn programming fundamentals"
-   - Use: "Complete Harvard's CS50x on edX to master C programming fundamentals including pointers, memory management, and data structures"
-3. Name actual technologies, certifications, platforms, and resources by their specific proper names
-4. Include URLs, course numbers, book titles, and specific learning resources whenever possible
-5. Specify which specific communities, forums, events, or networks the user should join
-6. Use a confident, motivational tone appropriate for career coaching
-7. Create milestones that include measurable deliverables and concrete outputs
-8. Due dates should consider logical sequencing and realistic timeframes
-9. Priority is a number from 1-3 (1=high priority, 2=medium, 3=low)
-10. Your response must be ONLY the requested JSON format (no other text)
-
-Remember, your mission is to create a career roadmap so personalized and actionable that the user feels it was custom-created just for them.
+Return JSON format only as an array of milestone objects.
 `;
 
     // Using the helper function that was moved outside of the generateCapsuleMilestones function to check if a goal relates to CEO career path
@@ -395,157 +199,151 @@ For each year's milestones, include specific courses, books, and development act
 `;
     }
 
-    // Get AI response using FREE VPS Ollama
-    let aiResponse;
-    
-    const systemPrompt = isCEOCareerPath ? 
-      "You are Musk, an elite career development AI coach specialized in CEO career paths. Generate specific, actionable CEO career milestones with extreme detail. Include actual executive training programs, business schools, leadership books, networking events, and certifications. For each year, specify 3-5 concrete tasks focusing on the five key CEO skill areas (Strategic Business Leadership, Organizational Leadership, Advanced Decision-Making, Communication & Influence, and Industry-Specific Knowledge). Each task should include specific resources (actual course names, book titles, certification programs). Avoid vague terms - be extremely specific. Return only valid JSON." :
-      "You are Musk, an elite career development AI coach. Generate specific, actionable career milestones with extreme detail. Include actual technologies, platforms, certifications, companies, events, books, and courses. For each year milestone, specify 3-5 concrete tasks with clear deliverables. Avoid vague terms like 'learn basics' or 'networking' - be extremely specific. Return only valid JSON.";
-    
-    // Combine system and user prompts for Ollama
+    const systemPrompt = isCEOCareerPath
+      ? "You are a career strategy expert focused on executive growth plans. Return only strict JSON."
+      : "You are a career strategy expert. Return only strict JSON.";
+
     const fullPrompt = `${systemPrompt}\n\n${enhancedContext}`;
-    
-    // Call FREE VPS Ollama instead of expensive OpenAI
-    // Use higher maxTokens (6000) for milestone generation as responses are typically longer
-    aiResponse = await localAI.generateCompletion(fullPrompt, undefined, 6000);
 
-    // Parse the response as JSON
-    let milestones;
-    try {
-      // Log the raw AI response for debugging
-      console.log(`[Musk AI] Raw AI response (full): ${aiResponse}`);
-      
-      if (!aiResponse || aiResponse.trim() === '') {
-        console.error('[Musk AI] Empty response from AI');
-        return {
-          success: false,
-          message: "AI returned empty response"
-        };
-      }
-      
-      // Extract JSON from response (may include extra text from both Ollama and OpenAI)
-      // First, try to extract from markdown code blocks if present
-      let jsonText = aiResponse;
-      
-      // Remove markdown code blocks (```json ... ``` or ``` ... ```)
-      const codeBlockMatch = aiResponse.match(/```(?:json)?\s*([\s\S]*?)```/);
-      if (codeBlockMatch) {
-        jsonText = codeBlockMatch[1].trim();
-        console.log('[Musk AI] Extracted JSON from markdown code block');
-      }
-      
-      // Decode HTML entities that AI sometimes generates
-      jsonText = jsonText
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'");
-      
-      // Try to match JSON array first (most common format)
-      let jsonMatch = jsonText.match(/\[[\s\S]*\]/);
-      
-      // If no array found, try to match JSON object
-      if (!jsonMatch) {
-        jsonMatch = jsonText.match(/\{[\s\S]*\}/);
-      }
-      
-      if (!jsonMatch) {
-        console.error('[Musk AI] No JSON found in response:', aiResponse.substring(0, 500));
-        return {
-          success: false,
-          message: "No valid JSON found in AI response"
-        };
-      }
-      
-      let parsedResponse;
-      try {
-        parsedResponse = JSON.parse(jsonMatch[0]);
-      } catch (parseError) {
-        // JSON is likely truncated - try to repair it
-        console.log('[Musk AI] Initial parse failed, attempting to repair truncated JSON...');
-        
-        let repairedJson = jsonMatch[0];
-        
-        // Try to find complete year objects in a truncated array
-        // Match all complete year objects: {"year": N, ... }
-        const yearObjectRegex = /\{\s*"year"\s*:\s*\d+[\s\S]*?"tasks"\s*:\s*\[[\s\S]*?\]\s*\}/g;
-        const completeYears = repairedJson.match(yearObjectRegex);
-        
-        if (completeYears && completeYears.length > 0) {
-          // Reconstruct array from complete year objects only
-          repairedJson = '[' + completeYears.join(',') + ']';
-          console.log(`[Musk AI] Recovered ${completeYears.length} complete year objects from truncated response`);
-          
-          try {
-            parsedResponse = JSON.parse(repairedJson);
-          } catch (repairError) {
-            console.error('[Musk AI] Repair attempt failed:', repairError);
-            throw parseError; // Re-throw original error
-          }
-        } else {
-          throw parseError; // Re-throw original error
-        }
-      }
-      console.log(`[Musk AI] Parsed response type: ${Array.isArray(parsedResponse) ? 'Array' : 'Object'}, structure: ${Array.isArray(parsedResponse) ? `Array[${parsedResponse.length}]` : JSON.stringify(Object.keys(parsedResponse))}`);
-      
-      // Handle different response formats
-      if (Array.isArray(parsedResponse)) {
-        milestones = parsedResponse;
-      } else if (parsedResponse.years && Array.isArray(parsedResponse.years)) {
-        milestones = parsedResponse.years;
-      } else if ((parsedResponse.year || parsedResponse.yearNumber) && parsedResponse.title && parsedResponse.tasks) {
-        // The AI returned a single year object instead of an array
-        console.log('[Musk AI] Detected single year object, converting to array');
-        milestones = [parsedResponse];
-      } else {
-        milestones = parsedResponse;
-      }
-      
-      console.log(`[Musk AI] Extracted milestones type: ${Array.isArray(milestones) ? 'Array' : typeof milestones}`);
+    const parsedMilestones = await generateValidatedMilestones(fullPrompt);
+    const years = normalizeStructuredMilestones(parsedMilestones, options.timeframe || 3);
 
-      // Validate the milestones structure
-      if (!Array.isArray(milestones)) {
-        console.log(`[Musk AI] Milestone validation failed. Type: ${typeof milestones}, Value: ${JSON.stringify(milestones).substring(0, 200)}...`);
-        return {
-          success: false,
-          message: "Invalid milestone format received from AI"
-        };
-      }
-      
-      // Additional validation for empty array
-      if (milestones.length === 0) {
-        console.log('[Musk AI] Milestone validation failed: Empty array');
-        return {
-          success: false,
-          message: "Empty milestone array received from AI"
-        };
-      }
-      
-      // Log the successful milestone structure
-      console.log(`[Musk AI] Successfully extracted ${milestones.length} milestones`);
-      
-
-      return {
-        success: true,
-        message: "Successfully generated career milestones",
-        years: milestones
-      };
-    } catch (error) {
-      console.error("[Musk AI] Error parsing AI response:", error);
-      console.error("[Musk AI] Full AI response for debugging:", aiResponse?.substring(0, 1000));
-      return {
-        success: false,
-        message: `Failed to parse AI-generated milestones: ${error instanceof Error ? error.message : 'Unknown error'}`
-      };
-    }
+    console.log("[CareerCapsule] Milestones generated successfully");
+    return {
+      success: true,
+      message: "Successfully generated career milestones",
+      years,
+    };
   } catch (error) {
     console.error("Error generating career milestones:", error);
+    const fallbackYears = getTemplateMilestones(options, options.timeframe || 3);
     return {
-      success: false,
-      message: "Failed to generate career milestones"
+      success: true,
+      message: "Using fallback template milestones",
+      years: fallbackYears,
     };
   }
+}
+
+async function generateValidatedMilestones(prompt: string): Promise<StructuredMilestone[]> {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const response = await generateAIResponse(prompt);
+      const parsed = parseStructuredMilestones(response);
+      validateStructuredMilestones(parsed);
+      return parsed;
+    } catch (error) {
+      lastError = error;
+      console.warn(`[CareerCapsule] Milestone parsing failed on attempt ${attempt}`, error);
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error("Milestone generation failed after retry");
+}
+
+function parseStructuredMilestones(raw: string): StructuredMilestone[] {
+  if (!raw || !raw.trim()) {
+    throw new Error("AI returned empty milestone output");
+  }
+
+  const blockMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  const candidate = blockMatch ? blockMatch[1].trim() : raw.trim();
+
+  const arrayMatch = candidate.match(/\[[\s\S]*\]/);
+  if (!arrayMatch) {
+    throw new Error("No JSON array found in AI output");
+  }
+
+  const parsed = JSON.parse(arrayMatch[0]);
+  if (!Array.isArray(parsed)) {
+    throw new Error("Milestones JSON is not an array");
+  }
+
+  return parsed as StructuredMilestone[];
+}
+
+function validateStructuredMilestones(milestones: StructuredMilestone[]) {
+  if (!milestones.length) {
+    throw new Error("Milestones array is empty");
+  }
+
+  milestones.forEach((milestone, idx) => {
+    if (!milestone.milestone_title || !milestone.description || !milestone.expected_outcome || !milestone.estimated_timeframe) {
+      throw new Error(`Milestone ${idx + 1} missing required fields`);
+    }
+
+    if (!Array.isArray(milestone.recommended_actions) || milestone.recommended_actions.length === 0) {
+      throw new Error(`Milestone ${idx + 1} has invalid recommended_actions`);
+    }
+  });
+}
+
+function normalizeStructuredMilestones(
+  milestones: StructuredMilestone[],
+  timeframe: number
+): YearMilestone[] {
+  const maxYears = Math.max(1, Math.min(timeframe, milestones.length));
+  const now = new Date();
+
+  return milestones.slice(0, maxYears).map((milestone, index) => {
+    const yearNumber = index + 1;
+    const dueDate = new Date(now);
+    dueDate.setFullYear(now.getFullYear() + yearNumber);
+    dueDate.setMonth(5, 15);
+
+    return {
+      year: yearNumber,
+      title: `Year ${yearNumber}: ${milestone.milestone_title}`,
+      description: milestone.description,
+      milestone: milestone.expected_outcome,
+      tasks: milestone.recommended_actions.slice(0, 5).map((action, taskIndex) => ({
+        title: action,
+        description: `${action}. Target timeframe: ${milestone.estimated_timeframe}`,
+        dueDate: dueDate.toISOString().split('T')[0],
+        priority: taskIndex === 0 ? 1 : 2,
+      })),
+    };
+  });
+}
+
+function getTemplateMilestones(options: MilestoneGenerationRequest, timeframe: number): YearMilestone[] {
+  const goalLabel = options.customGoal || options.goalType.replace('_', ' ');
+  const safeTimeframe = Math.max(1, timeframe);
+
+  return Array.from({ length: safeTimeframe }, (_, idx) => {
+    const year = idx + 1;
+    const baseDate = new Date();
+    baseDate.setFullYear(baseDate.getFullYear() + year);
+
+    return {
+      year,
+      title: `Year ${year}: Progress toward ${goalLabel}`,
+      description: `Build measurable progress toward ${goalLabel} with role-specific outcomes in ${options.industry || 'your industry'}.`,
+      milestone: `Complete major yearly checkpoint for ${goalLabel}`,
+      tasks: [
+        {
+          title: "Define measurable quarterly targets",
+          description: "Document 3 measurable KPIs and track progress monthly.",
+          dueDate: new Date(baseDate.getFullYear(), 2, 15).toISOString().split('T')[0],
+          priority: 1,
+        },
+        {
+          title: "Execute one portfolio-ready project",
+          description: "Deliver one outcome with documented impact and lessons learned.",
+          dueDate: new Date(baseDate.getFullYear(), 6, 15).toISOString().split('T')[0],
+          priority: 2,
+        },
+        {
+          title: "Expand strategic network",
+          description: "Build 5 high-quality professional connections aligned with this goal.",
+          dueDate: new Date(baseDate.getFullYear(), 10, 15).toISOString().split('T')[0],
+          priority: 2,
+        },
+      ],
+    };
+  });
 }
 
 /**

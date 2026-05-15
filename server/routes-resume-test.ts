@@ -3,6 +3,7 @@
  */
 import { Router } from 'express';
 import { LocalAIService } from './services/local-ai-service';
+import { generateAIResponse } from './services/central-ai-provider';
 
 // Create a router
 export const resumeTestRoutes = Router();
@@ -10,9 +11,6 @@ export const resumeTestRoutes = Router();
 // Test route for enhanced resume analysis
 resumeTestRoutes.post('/test-resume-analysis', async (req, res) => {
   try {
-    // Initialize OpenAI client
-    const openai = new OpenAI();
-    
     // Get resume text from request, or use a sample if not provided
     const resumeText = req.body.resumeText || `
 John Doe
@@ -160,7 +158,7 @@ FORMAT YOUR RESPONSE USING THESE GUIDELINES:
 resumeTestRoutes.post('/test-canva-resume-analysis', async (req, res) => {
   try {
     // Initialize local AI service
-    const localAI = new LocalAIService();
+    const localAI = LocalAIService.getInstance();
     
     // Get resume text from request, or use a sample designed resume if not provided
     const resumeText = req.body.resumeText || `
@@ -278,24 +276,13 @@ FORMAT YOUR RESPONSE USING THESE GUIDELINES:
   6. Improvement Recommendations
   7. Next Steps`;
 
-    // Make the direct OpenAI API call
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o", // Use the latest model for best results with complex layouts
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt
-        },
-        {
-          role: "user",
-          content: userPrompt
-        }
-      ],
+    const aiResult = await generateAIResponse(userPrompt, {
+      systemPrompt,
       temperature: 0.7,
-      max_tokens: 1500 // Longer response for comprehensive analysis
+      maxTokens: 1500,
     });
 
-    const analysis = completion.choices[0].message.content || '';
+    const analysis = aiResult.text || '';
     
     // Send back the analysis result as JSON
     res.json({

@@ -9,6 +9,7 @@ import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin, FileText, Trop
 import NotificationBell from "@/components/notifications/notification-bell";
 import { PremiumBadge } from "@/components/ui/premium-badge";
 import { prefetchRoute, prefetchProfileData } from "@/lib/route-prefetch";
+import { FEATURES } from "@/config/features";
 
 export default function Header() {
   const { user, signOut } = useAuth();
@@ -162,7 +163,7 @@ export default function Header() {
 
   return (
     <nav className="neo-glass-panel fixed top-0 left-0 right-0 z-[9999] pointer-events-auto" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999 }}>
-      <div className="w-full px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-3 sm:px-4 lg:px-8">
         <div className="flex items-center h-16 gap-0">
           {/* Logo Section */}
           <div className="flex-shrink-0 flex items-center">
@@ -174,8 +175,8 @@ export default function Header() {
                 <div className="h-8 w-8 bg-gradient-to-br from-white to-white/60 rounded-lg flex items-center justify-center shadow-sm transition-transform group-hover:scale-105">
                   <span className="text-black font-bold text-lg">B</span>
                 </div>
-                <span className="text-xl font-bold cursor-pointer bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80">
-                  Brandentifier
+                <span className="hidden sm:inline text-xl font-bold cursor-pointer bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80">
+                  Brandentify
                 </span>
               </div>
               {userId === 1 && (
@@ -187,7 +188,7 @@ export default function Header() {
           </div>
           
           {/* Main Navigation - Centered */}
-          <div className="hidden md:flex items-center gap-1 flex-1 justify-center px-6">
+          <div className="hidden lg:flex items-center gap-1 flex-1 justify-center px-6">
             {/* HERO: Brand Quests - Primary Feature */}
             <Button
               variant="ghost"
@@ -241,11 +242,13 @@ export default function Header() {
               variant="ghost"
               size="sm" 
               className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
-                isActive('/radar') 
+                isActive('/smart-radar') 
                   ? 'text-white bg-white/10 hover:bg-white/15 neo-glass-nav-item active' 
-                  : 'text-white/80 hover:text-white hover:bg-white/5 neo-glass-nav-item'
+                  : 'text-white/60 hover:text-white hover:bg-white/5 neo-glass-nav-item'
               }`}
-              onClick={() => setLocation('/radar')}
+              onClick={() => setLocation('/smart-radar')}
+              onMouseEnter={() => prefetchRoute('/smart-radar')}
+              title="Smart Radar (Coming Soon)"
             >
               <MapPin className="h-4 w-4" />
               <span>Smart Radar</span>
@@ -268,12 +271,12 @@ export default function Header() {
           </div>
           
           {/* Right Section - Buttons */}
-          <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-auto">
             {/* Mobile menu button */}
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden rounded-md h-9 w-9 backdrop-blur-sm border text-white/90 bg-white/10 border-white/20 hover:bg-white/15 hover:border-white/30 transition-all duration-300"
+              className="lg:hidden rounded-md h-9 w-9 backdrop-blur-sm border text-white/90 bg-white/10 border-white/20 hover:bg-white/15 hover:border-white/30 transition-all duration-300"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Mobile menu"
             >
@@ -287,7 +290,7 @@ export default function Header() {
             
             {/* Create Pulse Button */}
             <button 
-              className="neo-glass-button hidden sm:flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+              className="neo-glass-button hidden xl:flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
               onClick={() => setLocation('/create-pulse-new')}
             >
               <Zap className="h-4 w-4" />
@@ -298,7 +301,7 @@ export default function Header() {
             
             {/* Messages Icon */}
             <div
-              className={`hidden sm:flex cursor-pointer relative transition-all duration-300 ${
+              className={`hidden lg:flex cursor-pointer relative transition-all duration-300 ${
                 isActive('/messages') 
                   ? 'text-white' 
                   : 'text-white/90 hover:text-white'
@@ -326,11 +329,11 @@ export default function Header() {
             </div>
             
             {/* Notification Bell */}
-            <NotificationBell className="hidden sm:flex" />
+            <NotificationBell className="hidden lg:flex" />
             
             {/* User profile section - combined name and avatar */}
             <div 
-              className={`flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-lg backdrop-blur-sm border transition-all duration-300 group ${
+              className={`flex items-center gap-2 cursor-pointer px-2 sm:px-3 py-1.5 rounded-lg backdrop-blur-sm border transition-all duration-300 group min-w-0 ${
                 isActive('/profile') 
                   ? 'text-white bg-white/20 border-white/40 shadow-md' 
                   : 'text-white/90 bg-white/10 border-white/20 hover:bg-white/15 hover:border-white/30'
@@ -339,7 +342,7 @@ export default function Header() {
               onMouseEnter={() => { prefetchRoute('/profile'); if (userId) prefetchProfileData(userId); }}
             >
               {/* User name */}
-              <span className="text-sm font-medium text-white hidden md:block min-w-[60px]">
+              <span className="text-sm font-medium text-white hidden xl:block min-w-[60px]">
                 {userDataLoading ? (
                   <div className="h-4 w-20 bg-white/10 animate-pulse rounded" />
                 ) : (
@@ -381,7 +384,7 @@ export default function Header() {
 
       {/* Mobile menu dropdown */}
       {isMobileMenuOpen && (
-        <div className="md:hidden neo-glass-card border-0 shadow-2xl">
+        <div className="lg:hidden neo-glass-card border-0 shadow-2xl">
           <div className="px-4 pt-3 pb-4 space-y-2">
             {/* HERO: Brand Quests First */}
             <Button
@@ -469,14 +472,15 @@ export default function Header() {
               variant="ghost"
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
-                isActive('/radar') 
+                isActive('/smart-radar') 
                   ? 'text-white bg-white/20 hover:bg-white/25' 
-                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+                  : 'text-white/60 hover:bg-white/10 hover:text-white'
               }`}
               onClick={() => {
-                setLocation('/radar');
+                setLocation('/smart-radar');
                 setIsMobileMenuOpen(false);
               }}
+              title="Smart Radar (Coming Soon)"
             >
               <MapPin className="h-4 w-4 mr-3 ml-0.5" />
               <span>Smart Radar</span>

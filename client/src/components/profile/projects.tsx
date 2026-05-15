@@ -1405,10 +1405,10 @@ export default function Projects() {
                               <FormItem>
                                 <FormLabel>Profile Link*</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="https://brandentifier.replit.app/profile/username" {...field} value={field.value || ''} />
+                                  <Input placeholder="https://brandentify.replit.app/profile/username" {...field} value={field.value || ''} />
                                 </FormControl>
                                 <FormDescription>
-                                  Add Brandentifier profile link to connect with users
+                                  Add Brandentify profile link to connect with users
                                 </FormDescription>
                                 <FormMessage />
                               </FormItem>
@@ -1444,10 +1444,10 @@ export default function Projects() {
                               <FormItem>
                                 <FormLabel>Client Profile Link*</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="https://brandentifier.replit.app/profile/username" {...field} />
+                                  <Input placeholder="https://brandentify.replit.app/profile/username" {...field} />
                                 </FormControl>
                                 <FormDescription>
-                                  Add Brandentifier profile link of your client
+                                  Add Brandentify profile link of your client
                                 </FormDescription>
                                 <FormMessage />
                               </FormItem>
@@ -2037,10 +2037,10 @@ export default function Projects() {
                                   <FormItem>
                                     <FormLabel>Profile Link*</FormLabel>
                                     <FormControl>
-                                      <Input placeholder="https://brandentifier.replit.app/profile/username" {...field} value={field.value || ''} />
+                                      <Input placeholder="https://brandentify.replit.app/profile/username" {...field} value={field.value || ''} />
                                     </FormControl>
                                     <FormDescription>
-                                      Add Brandentifier profile link to connect with users
+                                      Add Brandentify profile link to connect with users
                                     </FormDescription>
                                     <FormMessage />
                                   </FormItem>
@@ -2132,10 +2132,10 @@ export default function Projects() {
                                   <FormItem>
                                     <FormLabel>Client Profile Link*</FormLabel>
                                     <FormControl>
-                                      <Input placeholder="https://brandentifier.replit.app/profile/username" {...field} value={field.value || ''} />
+                                      <Input placeholder="https://brandentify.replit.app/profile/username" {...field} value={field.value || ''} />
                                     </FormControl>
                                     <FormDescription>
-                                      Add Brandentifier profile link of your client
+                                      Add Brandentify profile link of your client
                                     </FormDescription>
                                     <FormMessage />
                                   </FormItem>
@@ -2405,10 +2405,10 @@ export default function Projects() {
                             <FormItem>
                               <FormLabel>Profile Link*</FormLabel>
                               <FormControl>
-                                <Input placeholder="https://brandentifier.replit.app/profile/username" {...field} value={field.value || ''} />
+                                <Input placeholder="https://brandentify.replit.app/profile/username" {...field} value={field.value || ''} />
                               </FormControl>
                               <FormDescription>
-                                Add Brandentifier profile link to connect with users
+                                Add Brandentify profile link to connect with users
                               </FormDescription>
                               <FormMessage />
                             </FormItem>
@@ -2501,10 +2501,10 @@ export default function Projects() {
                             <FormItem>
                               <FormLabel>Client Profile Link*</FormLabel>
                               <FormControl>
-                                <Input placeholder="https://brandentifier.replit.app/profile/username" {...field} value={field.value || ''} />
+                                <Input placeholder="https://brandentify.replit.app/profile/username" {...field} value={field.value || ''} />
                               </FormControl>
                               <FormDescription>
-                                Add Brandentifier profile link of your client
+                                Add Brandentify profile link of your client
                               </FormDescription>
                               <FormMessage />
                             </FormItem>

@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { NeoGlassSection } from "@/components/ui/neo-glass/index";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -20,19 +20,19 @@ interface OnboardingQuickSetupProps {
   onBack: () => void;
 }
 
-export default function OnboardingQuickSetup({ 
-  userName, 
+export default function OnboardingQuickSetup({
+  userName,
   selectedGoal,
-  onComplete, 
-  onBack 
+  onComplete,
+  onBack
 }: OnboardingQuickSetupProps) {
   const [title, setTitle] = useState<string>("");
   const [industry, setIndustry] = useState<string>("");
   const [domain, setDomain] = useState<string>("");
 
   // Get available domains based on selected industry
-  const availableDomains = industry && INDUSTRY_DOMAINS[industry] 
-    ? INDUSTRY_DOMAINS[industry] 
+  const availableDomains = industry && INDUSTRY_DOMAINS[industry]
+    ? INDUSTRY_DOMAINS[industry]
     : [];
 
   // Reset domain when industry changes
@@ -40,22 +40,29 @@ export default function OnboardingQuickSetup({
     setDomain("");
   }, [industry]);
 
+  const isDomainRequired = availableDomains.length > 0;
+
   const handleContinue = () => {
-    if (title && industry) {
-      onComplete({ 
-        title, 
-        industry, 
-        domain: domain || undefined 
-      });
+    if (!title.trim() || !industry) {
+      return;
     }
+    if (isDomainRequired && !domain) {
+      return;
+    }
+
+    onComplete({
+      title,
+      industry,
+      domain: isDomainRequired ? domain : (domain || "all")
+    });
   };
 
-  const isValid = title.trim() && industry;
+  const isValid = !!title.trim() && !!industry && (!isDomainRequired || !!domain);
 
   return (
-    <div 
+    <div
       className="fixed inset-0 w-full h-full responsive-background"
-      style={{ 
+      style={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -64,7 +71,7 @@ export default function OnboardingQuickSetup({
     >
       {/* Glass UI overlay */}
       <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
-      
+
       <div className="relative z-10 w-full h-full flex items-center justify-center p-4 overflow-y-auto py-8">
         <div className="w-full max-w-2xl my-auto">
           <NeoGlassSection className="p-8 sm:p-12">
@@ -73,11 +80,11 @@ export default function OnboardingQuickSetup({
               <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">
                 🚀 Quick Setup
               </h1>
-              
+
               <p className="text-lg text-white/80 max-w-xl mx-auto mb-2">
                 Tell us about your professional focus
               </p>
-              
+
               <p className="text-white/60 max-w-xl mx-auto text-sm">
                 This helps us create role-specific quests tailored to your career
               </p>
@@ -109,7 +116,7 @@ export default function OnboardingQuickSetup({
                   Industry <span className="text-red-400">*</span>
                 </Label>
                 <Select value={industry} onValueChange={setIndustry}>
-                  <SelectTrigger 
+                  <SelectTrigger
                     className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                     data-testid="select-industry"
                   >
@@ -117,8 +124,8 @@ export default function OnboardingQuickSetup({
                   </SelectTrigger>
                   <SelectContent className="bg-gray-900/95 border-white/20 backdrop-blur-xl">
                     {INDUSTRIES.map((ind) => (
-                      <SelectItem 
-                        key={ind} 
+                      <SelectItem
+                        key={ind}
                         value={ind}
                         className="text-white hover:bg-white/10 focus:bg-white/20 cursor-pointer"
                       >
@@ -139,7 +146,7 @@ export default function OnboardingQuickSetup({
                     Domain (Optional)
                   </Label>
                   <Select value={domain} onValueChange={setDomain}>
-                    <SelectTrigger 
+                    <SelectTrigger
                       className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                       data-testid="select-domain"
                     >
@@ -147,8 +154,8 @@ export default function OnboardingQuickSetup({
                     </SelectTrigger>
                     <SelectContent className="bg-gray-900/95 border-white/20 backdrop-blur-xl max-h-60">
                       {availableDomains.map((dom) => (
-                        <SelectItem 
-                          key={dom} 
+                        <SelectItem
+                          key={dom}
                           value={dom}
                           className="text-white hover:bg-white/10 focus:bg-white/20 cursor-pointer"
                         >
@@ -196,11 +203,11 @@ export default function OnboardingQuickSetup({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center bg-black/20 -mx-8 -mb-8 sm:-mx-12 sm:-mb-12 p-8 border-t border-white/10 mt-12">
               <Button
                 onClick={onBack}
                 variant="ghost"
-                className="text-white/70 hover:text-white hover:bg-white/10"
+                className="text-white/70 hover:text-white rounded-full px-6"
                 data-testid="button-back"
               >
                 ← Back
@@ -210,11 +217,10 @@ export default function OnboardingQuickSetup({
                 onClick={handleContinue}
                 disabled={!isValid}
                 size="lg"
-                className={`px-8 py-6 text-lg font-semibold transition-all duration-300 ${
-                  isValid
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-xl hover:shadow-2xl transform hover:scale-105' 
-                    : 'bg-white/10 text-white/40 cursor-not-allowed'
-                }`}
+                className={`px-10 py-6 text-lg font-semibold rounded-full transition-all duration-500 ${isValid
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] transform hover:scale-105'
+                    : 'bg-white/10 text-white/20 cursor-not-allowed'
+                  }`}
                 data-testid="button-continue-setup"
               >
                 Continue →
@@ -222,8 +228,8 @@ export default function OnboardingQuickSetup({
             </div>
 
             {/* Time Indicator */}
-            <div className="text-center mt-6 text-white/50 text-sm">
-              Step 2 of 5 · ~2 minutes
+            <div className="text-center mt-12 text-white/40 text-xs uppercase tracking-widest">
+              Step 2 of 7 · Shaping your profile
             </div>
           </NeoGlassSection>
         </div>
@@ -231,3 +237,4 @@ export default function OnboardingQuickSetup({
     </div>
   );
 }
+

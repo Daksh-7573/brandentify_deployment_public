@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import path from "path";
 import fs from "fs";
@@ -10,8 +11,7 @@ import fileUpload from "express-fileupload";
 import cookieParser from "cookie-parser";
 import compression from "compression";
 import { createProxyMiddleware } from "http-proxy-middleware";
-import { registerRoutes } from "./routes";
-import { setupVite, log } from "./vite";
+import { log } from "./vite";
 import { questProgressMiddleware } from "./middleware/quest-progress-tracker";
 import { setupSecurity, validateFileUpload } from "./security";
 import { setupInfrastructureSecurity } from "./infrastructure-security";
@@ -23,17 +23,57 @@ import { firebaseAuthRedirectHandler } from "./firebase-auth-handler";
 import { apiGateway } from "./services/api-gateway";
 import { messageQueue, TaskTypes } from "./services/message-queue";
 import { muskPulseScheduler } from "./services/musk-pulse-scheduler";
-import { dailyQuestScheduler } from "./services/daily-quest-scheduler";
 import { timezoneAwareQuestScheduler } from "./services/timezone-aware-quest-scheduler";
 import { trendRefreshScheduler } from "./services/trend-intelligence/trend-refresh-scheduler";
 import { trendSpikeScheduler } from "./services/trend-intelligence/trend-spike-scheduler";
 import { initMentorScheduler } from "./services/mentor-scheduler";
 import { cacheMiddleware } from "./middleware/cache-middleware";
 import { performanceMiddleware } from "./middleware/performance-middleware";
-import { logDatabaseStartupInfo } from "./db";
+import { logDatabaseStartupInfo, warmupDatabase, startDatabaseHeartbeat } from "./db";
 import { clickjackingProtection, securityHeaders } from "./middleware/clickjacking-protection";
+import { ensureOllamaRunning } from "./services/ollama-service";
+import { waitForDatabaseReady, databaseReady } from "./database-health";
+import { generateMissedQuestsForAllUsers } from "./services/startup-quest-recovery";
+import { ensureWeeklyQuestsForAllUsers } from "./services/weekly-quest-recovery";
+import { bootstrapApp, attachClientHosting, getHttpServer } from "./app-bootstrap";
 
-const app = express();
+export const app = express();
+export { bootstrapApp } from "./app-bootstrap";
+
+process.on("uncaughtException", (err) => {
+  console.error("[Process] Uncaught Exception:", err);
+});
+
+process.on("unhandledRejection", (err) => {
+  console.error("[Process] Unhandled Rejection:", err);
+});
+
+// ✅ CRITICAL: Initialize required directories BEFORE any middleware that uses them
+// This MUST be done before fileUpload middleware configuration to prevent temporal dead zone errors
+const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+const projectDir = path.join(uploadsDir, 'projects');
+const mediaDir = path.join(uploadsDir, 'media');
+const tmpDir = path.join(process.cwd(), 'tmp');
+
+// Ensure directories exist - CRITICAL for production file uploads
+try {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+  if (!fs.existsSync(projectDir)) {
+    fs.mkdirSync(projectDir, { recursive: true });
+  }
+  if (!fs.existsSync(mediaDir)) {
+    fs.mkdirSync(mediaDir, { recursive: true });
+  }
+  // CRITICAL: Explicitly create tmp directory for file uploads (fixes production issues)
+  if (!fs.existsSync(tmpDir)) {
+    fs.mkdirSync(tmpDir, { recursive: true });
+    console.log(`✅ [STARTUP] Created tmp directory: ${tmpDir}`);
+  }
+} catch (err) {
+  console.error(`⚠️ [STARTUP] Error creating directories:`, err);
+}
 
 // Configure for external domain access with specific trust proxy setting for rate limiting
 // CRITICAL: This MUST be set BEFORE any middleware that uses req.ip (like rate limiting)
@@ -466,6 +506,7 @@ const requestTimeout = (req: Request, res: Response, next: NextFunction) => {
   const isAIEndpoint = req.path.includes('/ai/') || 
                       req.path.includes('/musk/') || 
                       req.path.includes('/api/musk/') ||
+                      req.path.includes('/musk-chat/') ||
                       req.path.includes('/resume/analyze');
   
   if (!isAIEndpoint) {
@@ -498,23 +539,36 @@ app.use(express.json({ limit: '50mb' })); // Support large base64 images
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 console.log('✅ [MIDDLEWARE] Global body parsing middleware configured successfully');
 
-// Setup express-fileupload middleware only for multipart requests
-app.use((req, res, next) => {
-  // Only apply file upload middleware for multipart content
-  if (req.headers['content-type']?.includes('multipart/form-data')) {
-    return fileUpload({
-      limits: { fileSize: 25 * 1024 * 1024 }, // 25MB max file size
-      useTempFiles: true,
-      tempFileDir: tmpDir, // Use the explicitly created tmp directory
-      createParentPath: true,
-      debug: true, // Enable debug for ALL environments to track production issues
-      abortOnLimit: true,
-      safeFileNames: true,
-      preserveExtension: true
-    })(req, res, next);
-  }
-  next();
+// Configure express-fileupload globally for all requests
+// This ensures multipart/form-data is properly parsed on ALL requests
+// The middleware will only actually process multipart requests internally
+console.log('🔧 [MIDDLEWARE] Configuring express-fileupload for multipart form data...');
+const globalFileUploadMiddleware = fileUpload({
+  limits: { fileSize: 25 * 1024 * 1024 }, // 25MB max file size
+  useTempFiles: true,
+  tempFileDir: tmpDir, // Use the explicitly created tmp directory
+  createParentPath: true,
+  debug: true, // Enable debug for ALL environments to track production issues
+  abortOnLimit: true,
+  safeFileNames: true,
+  preserveExtension: true,
+  responseOnLimit: 'File size exceeds maximum allowed (25MB)',
+  responseOnAbortData: 'File upload was aborted'
 });
+
+app.use((req: Request, res: Response, next: NextFunction) => {
+  // Let multer own these endpoints without express-fileupload consuming the stream first.
+  const multerOwnedPaths = [
+    "/api/resume/analyze",
+    "/api/musk-chat/upload-resume",
+    "/api/career-tools/upload-resume",
+  ];
+  if (multerOwnedPaths.some((segment) => req.path.includes(segment))) {
+    return next();
+  }
+  return (globalFileUploadMiddleware as any)(req, res, next);
+});
+console.log('✅ [MIDDLEWARE] express-fileupload middleware configured successfully');
 
 // Add secure file validation middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -523,7 +577,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   }
   
   // Skip validation for media upload endpoints that have their own validation
-  const mediaUploadPaths = ['/api/pulses/upload-media', '/api/projects/upload-media', '/api/musk/resume-upload', '/api/musk/pitchdeck-upload'];
+  const mediaUploadPaths = [
+    '/api/pulses/upload-media',
+    '/api/projects/upload-media',
+    '/api/musk/pitchdeck-upload',
+    '/api/musk-chat/upload-resume',
+  ];
   if (mediaUploadPaths.some(path => req.path.includes(path))) {
     return next();
   }
@@ -544,31 +603,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-const projectDir = path.join(uploadsDir, 'projects');
-const mediaDir = path.join(uploadsDir, 'media');
-const tmpDir = path.join(process.cwd(), 'tmp');
-
-// Ensure directories exist - CRITICAL for production file uploads
-try {
-  if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-  }
-  if (!fs.existsSync(projectDir)) {
-    fs.mkdirSync(projectDir, { recursive: true });
-  }
-  if (!fs.existsSync(mediaDir)) {
-    fs.mkdirSync(mediaDir, { recursive: true });
-  }
-  // CRITICAL: Explicitly create tmp directory for file uploads (fixes production issues)
-  if (!fs.existsSync(tmpDir)) {
-    fs.mkdirSync(tmpDir, { recursive: true });
-    console.log(`✅ [STARTUP] Created tmp directory: ${tmpDir}`);
-  }
-} catch (err) {
-  console.error(`⚠️ [STARTUP] Error creating directories:`, err);
-}
+// NOTE: tmpDir and upload directories are now initialized at app startup (lines 41-67)
+// This ensures they exist before fileUpload middleware is configured
 
 // Serve static files from public directory with proper MIME types
 app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads'), {
@@ -774,201 +810,182 @@ app.use('/uploads', express.static(uploadsPath, {
 
 console.log('✅ Static file serving configured for uploads');
 
-(async () => {
-  const server = await registerRoutes(app);
+/**
+ * Bootstrap schedulers after database is ready
+ * Prevents crashes when Neon endpoint is paused during cold start
+ */
+async function bootstrapSchedulers() {
+  console.log('\n🎯 SCHEDULER BOOTSTRAP STARTING...');
+  console.log('=====================================');
   
-  // DISABLED: Musk Pulse automation system
-  // console.log("Starting Musk Pulse automation system...");
-  // muskPulseScheduler.start();
-  // console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 2 PM, and 7 PM daily");
+  // Wait for database to be ready before starting schedulers
+  const dbReady = await waitForDatabaseReady();
+  
+  if (!dbReady) {
+    console.error('❌ SCHEDULERS DISABLED: Database unavailable');
+    console.error('⚠️  Server will run in degraded mode without automated schedulers');
+    console.error('=====================================\n');
+    return false;
+  }
+  
+  console.log('✅ Database ready - starting schedulers...\n');
+
+  // Startup fallback: generate quests immediately for users who missed today's assignment.
+  // Runs regardless of time and is duplicate-safe through per-user day/week checks.
+  try {
+    const recoveryResult = await generateMissedQuestsForAllUsers();
+    console.log(
+      `[StartupQuestRecovery] Summary: processed=${recoveryResult.usersProcessed}, missing=${recoveryResult.usersMissingQuests}, updated=${recoveryResult.usersUpdated}, generated=${recoveryResult.questsGenerated}, skipped=${recoveryResult.usersSkipped}, failed=${recoveryResult.usersFailed}`
+    );
+  } catch (recoveryError: any) {
+    const isNeonPaused =
+      recoveryError.message?.includes("endpoint has been disabled") ||
+      recoveryError.message?.includes("Database temporarily unavailable");
+
+    if (isNeonPaused) {
+      console.warn("⏸️  Database paused during startup quest recovery - continuing scheduler bootstrap");
+    } else {
+      console.error("❌ Startup quest recovery failed:", recoveryError);
+    }
+  }
+
+  // Smart weekly recovery: Ensure all users have a full week (7 days) of quests
+  // Only generates MISSING days - never overwrites or duplicates
+  // Running this after daily recovery ensures complete week coverage
+  try {
+    const weeklyResult = await ensureWeeklyQuestsForAllUsers();
+    console.log(
+      `[StartupWeeklyRecovery] Summary: checked=${weeklyResult.usersChecked}, missing=${weeklyResult.usersWithMissingQuests}, complete=${weeklyResult.usersAlreadyComplete}, generated=${weeklyResult.questsGenerated}`
+    );
+  } catch (weeklyRecoveryError: any) {
+    const isNeonPaused =
+      weeklyRecoveryError.message?.includes("endpoint has been disabled") ||
+      weeklyRecoveryError.message?.includes("Database temporarily unavailable");
+
+    if (isNeonPaused) {
+      console.warn("⏸️  Database paused during weekly quest recovery - continuing scheduler bootstrap");
+    } else {
+      console.error("❌ Startup weekly recovery failed:", weeklyRecoveryError);
+    }
+  }
+  
+  try {
+    // 🚀 START TIMEZONE-AWARE QUEST SCHEDULER (PRIMARY)
+    console.log("========================================");
+    console.log("🚀 STARTING DAILY QUEST SCHEDULER SYSTEM");
+    console.log("========================================");
+    timezoneAwareQuestScheduler.startScheduler();
+    console.log("✅ Timezone-Aware Quest Scheduler started - checking every 15 minutes for users due for quests");
+    
+    // Initialize nextQuestAssignmentTime for existing users (one-time migration, non-blocking)
+    console.log("🔄 Initializing timezone-aware quest times for existing users...");
+    timezoneAwareQuestScheduler.initializeUsersNextAssignmentTime()
+      .then(() => console.log("✅ User quest times initialized"))
+      .catch((err: any) => {
+        const isNeonPaused = 
+          err.message?.includes("endpoint has been disabled") ||
+          err.message?.includes("Database temporarily unavailable");
+        
+        if (isNeonPaused) {
+          console.warn("⏸️  Database paused during user initialization - will retry later");
+        } else {
+          console.error("❌ Failed to initialize user quest times:", err);
+        }
+      });
+
+    // AUTO-HEAL: Detect and fix stuck users on startup (non-blocking)
+    console.log("🔧 Running auto-heal check for stuck users...");
+    timezoneAwareQuestScheduler.autoHealStuckUsers()
+      .then((healedCount) => {
+        if (healedCount > 0) {
+          console.log(`✅ Auto-heal complete: Fixed ${healedCount} stuck users`);
+        } else {
+          console.log("✅ No stuck users found - all users healthy");
+        }
+      })
+      .catch((err: any) => {
+        const isNeonPaused = 
+          err.message?.includes("endpoint has been disabled") ||
+          err.message?.includes("Database temporarily unavailable");
+        
+        if (isNeonPaused) {
+          console.warn("⏸️  Database paused during auto-heal - will retry on next cycle");
+        } else {
+          console.error("❌ Auto-heal check failed:", err);
+        }
+      });
+
+    // Start Trend Intelligence Refresh Scheduler for market trend tracking
+    console.log("Starting Trend Intelligence Refresh Scheduler...");
+    trendRefreshScheduler.startScheduler();
+    console.log("Trend Intelligence Scheduler started - refreshing market trends hourly with 6-hour cleanup");
+
+    // Start Trend Spike Scheduler for instant quest generation
+    // DISABLED: Instant quests temporarily disabled for improvements - will re-enable in future
+    // console.log("Starting Trend Spike Scheduler for instant quests...");
+    // trendSpikeScheduler.start();
+    // console.log("Trend Spike Scheduler started - detecting trending topics hourly and generating instant quests");
+    
+    console.log("\n✅ ALL SCHEDULERS STARTED SUCCESSFULLY");
+    console.log("=====================================\n");
+    return true;
+    
+  } catch (error: any) {
+    console.error("❌ CRITICAL: Failed to start schedulers:", error);
+    console.error("⚠️  Server will continue but schedulers are disabled");
+    console.error("=====================================\n");
+    return false;
+  }
+}
+
+if (process.env.VERCEL !== "1") {
+(async () => {
+  await bootstrapApp(app);
+  const server = getHttpServer();
+  if (!server) {
+    throw new Error("HTTP server was not created during bootstrap");
+  }
+
   console.log("⚠️  Musk Pulse automation system is DISABLED - no AI pulses will be generated");
 
-  // 🚀 START DAILY QUEST SCHEDULER (PRIMARY: Daily quest generation at 12:01 AM UTC)
-  console.log("========================================");
-  console.log("🚀 STARTING DAILY QUEST SCHEDULER SYSTEM");
-  console.log("========================================");
-  dailyQuestScheduler.startScheduler();
-  console.log("✅ Daily Quest Scheduler started - generating Career & Social quests at 12:01 AM UTC daily");
-  
-  // Run initial quest assignment on startup
-  (async () => {
-    try {
-      console.log("🔄 [STARTUP] Running initial quest assignment...");
-      const bootResult = await dailyQuestScheduler.triggerFullDailyProcess();
-      console.log(`🎉 [STARTUP] Quest assignment complete: ${bootResult.successfulAssignments} assigned, ${bootResult.expiredQuests} expired`);
-    } catch (bootError) {
-      console.error("❌ [STARTUP] Initial quest assignment failed:", bootError);
-    }
-  })();
-
-  // Start Timezone-Aware Quest Scheduler for personalized quest assignment (SECONDARY)
-  console.log("Starting Timezone-Aware Quest Scheduler system (backup)...");
-  timezoneAwareQuestScheduler.startScheduler();
-  console.log("✅ Timezone-Aware Quest Scheduler started - checking every 15 minutes for users due for quests");
-  
-  // Initialize nextQuestAssignmentTime for existing users (one-time migration)
-  console.log("🔄 Initializing timezone-aware quest times for existing users...");
-  timezoneAwareQuestScheduler.initializeUsersNextAssignmentTime()
-    .then(() => console.log("✅ User quest times initialized"))
-    .catch((err) => console.error("❌ Failed to initialize user quest times:", err));
-
-  // AUTO-HEAL: Detect and fix stuck users on startup
-  // This catches any users who got stuck due to previous bugs
-  console.log("🔧 Running auto-heal check for stuck users...");
-  timezoneAwareQuestScheduler.autoHealStuckUsers()
-    .then((healedCount) => {
-      if (healedCount > 0) {
-        console.log(`✅ Auto-heal complete: Fixed ${healedCount} stuck users`);
-      } else {
-        console.log("✅ No stuck users found - all users healthy");
-      }
-    })
-    .catch((err) => console.error("❌ Auto-heal check failed:", err));
-
-  // Start Trend Intelligence Refresh Scheduler for market trend tracking
-  console.log("Starting Trend Intelligence Refresh Scheduler...");
-  trendRefreshScheduler.startScheduler();
-  console.log("Trend Intelligence Scheduler started - refreshing market trends hourly with 6-hour cleanup");
-
-  // Start Trend Spike Scheduler for instant quest generation
-  // DISABLED: Instant quests temporarily disabled for improvements - will re-enable in future
-  // console.log("Starting Trend Spike Scheduler for instant quests...");
-  // trendSpikeScheduler.start();
-  // console.log("Trend Spike Scheduler started - detecting trending topics hourly and generating instant quests");
-  
-  // OLD QUEST AUTO-GENERATION SYSTEM - DISABLED (replaced with timezone-aware scheduler)
-  // The new timezone-aware quest scheduler checks every 15 minutes and assigns quests
-  // at midnight in each user's local timezone instead of a global UTC time
-  // console.log("========================================");
-  // console.log("🚀 QUEST AUTO-GENERATION STARTING (Background)");
-  // console.log("========================================");
-  
-  // Run in background - don't block server startup
-  // (async () => {
-  //   try {
-  //     const { dailyQuestScheduler } = await import('./services/daily-quest-scheduler');
-  //     const bootResult = await dailyQuestScheduler.triggerFullDailyProcess();
-  //     console.log(`🎉 [BOOT] Quest auto-generation complete: ${bootResult.successfulAssignments} quests assigned, ${bootResult.expiredQuests} expired`);
-  //   } catch (bootError) {
-  //     console.error("❌ [BOOT] Quest auto-generation failed:", bootError);
-  //   }
-  // })();
-  
-  // Schedule hourly failsafe - DISABLED (replaced with 15-minute timezone-aware checks)
-  // setInterval(async () => {
-  //   try {
-  //     console.log("🔄 [HOURLY] Running quest check...");
-  //     const { dailyQuestScheduler } = await import('./services/daily-quest-scheduler');
-  //     const hourlyResult = await dailyQuestScheduler.triggerFullDailyProcess();
-  //     if (hourlyResult.successfulAssignments > 0) {
-  //       console.log(`✅ [HOURLY] Assigned ${hourlyResult.successfulAssignments} quests`);
-  //     }
-  //   } catch (hourlyError) {
-  //     console.error("❌ [HOURLY] Quest check failed:", hourlyError);
-  //   }
-  // }, 60 * 60 * 1000); // Every 60 minutes
-  
-  // CRITICAL FIX: Setup API Gateway AFTER routes to prevent body consumption
-  console.log("Setting up API Gateway after routes (FIXED: Profile picture upload issue)");
-  app.use(apiGateway.routeRequest);
-  app.use(apiGateway.healthCheckMiddleware);
-  app.use(apiGateway.timeoutMiddleware);
-  console.log("API Gateway setup completed - request body consumption issue resolved");
-
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    throw err;
-  });
-
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  const isProduction = process.env.NODE_ENV === 'production';
-  
-  if (isProduction) {
-    console.log("🚀 Production mode: Setting up static file serving");
-    
-    // Find the correct client build directory by checking candidates in order
-    const clientRootCandidates = [
-      path.join(__dirname, 'public'),  // when running from dist/index.js
-      path.join(process.cwd(), 'dist', 'public'),
-      path.join(process.cwd(), 'public')  // ultimate fallback
-    ];
-    
-    let clientRoot = null;
-    for (const candidate of clientRootCandidates) {
-      if (fs.existsSync(candidate)) {
-        clientRoot = candidate;
-        console.log(`[Production Static] Found client files at: ${clientRoot}`);
-        break;
-      }
-    }
-    
-    if (!clientRoot) {
-      throw new Error(
-        `Could not find client build directory. Checked: ${clientRootCandidates.join(', ')}`
-      );
-    }
-    
-    // Honor environment override if set
-    if (process.env.STATIC_ROOT && fs.existsSync(process.env.STATIC_ROOT)) {
-      clientRoot = process.env.STATIC_ROOT;
-      console.log(`[Production Static] Using STATIC_ROOT override: ${clientRoot}`);
-    }
-    
-    console.log(`[Production Static] Client files:`, fs.readdirSync(clientRoot));
-    
-    // Mount static assets with immutable cache headers
-    app.use('/assets', express.static(path.join(clientRoot, 'assets'), {
-      immutable: true,
-      maxAge: '1y'
-    }));
-    
-    // Serve all static files with proper MIME types
-    app.use(express.static(clientRoot, {
-      setHeaders: (res, path) => {
-        if (path.endsWith('.js') || path.endsWith('.mjs')) {
-          res.setHeader('Content-Type', 'application/javascript');
-        }
-      }
-    }));
-    
-    // SPA fallback - serve index.html for all non-API routes
-    app.get('*', (req, res) => {
-      // Skip API routes
-      if (req.path.startsWith('/api/')) {
-        return res.status(404).json({ error: 'API endpoint not found' });
-      }
-      
-      const indexPath = path.join(clientRoot, 'index.html');
-      console.log(`[Production Static] Serving SPA fallback for ${req.path} from: ${indexPath}`);
-      res.sendFile(indexPath);
-    });
-  } else {
-    console.log("🔧 Development mode: Setting up Vite development server");
-    await setupVite(app, server);
-  }
+  await attachClientHosting(app);
 
   // ALWAYS serve the app on port 5000
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
-  const port = 5000;
-  server.listen(port, "0.0.0.0", async () => {
-    log(`serving on port ${port}`);
+  const PORT = process.env.PORT ? Number(process.env.PORT) : 5000;
+
+  server.listen(PORT, "0.0.0.0", async () => {
+    console.log(`✅ Server running on port ${PORT}`);
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    log(`serving on port ${PORT}`);
     console.log(`🚀 Server accessible at:`);
-    console.log(`   - Local: http://localhost:${port}`);
-    console.log(`   - Network: http://0.0.0.0:${port}`);
+    console.log(`   - Local: http://localhost:${PORT}`);
+    console.log(`   - Network: http://0.0.0.0:${PORT}`);
     console.log(`   - External: https://${process.env.REPLIT_DOMAINS}`);
     console.log(`🔧 Domain connectivity: Server bound to 0.0.0.0 for external access`);
     console.log(`📄 Direct access: https://${process.env.REPLIT_DOMAINS}/direct-access.html`);
     console.log(`🔍 Debugging: REPLIT_DOMAINS=${process.env.REPLIT_DOMAINS}`);
-    console.log(`🔍 Server listening on all interfaces (0.0.0.0:${port})`);
+    console.log(`🔍 Server listening on all interfaces (0.0.0.0:${PORT})`);
     
     // 🔍 DATABASE VERIFICATION - Critical for database unification verification
     await logDatabaseStartupInfo();
+
+    // Warmup and scheduler bootstrap should not block server availability.
+    warmupDatabase()
+      .then(() => console.log('✅ Database warmup completed'))
+      .catch((err) => console.warn('⚠️ Database warmup failed (continuing):', err instanceof Error ? err.message : String(err)));
+
+    bootstrapSchedulers()
+      .then((started) => {
+        if (!started) {
+          console.warn('⚠️ Scheduler bootstrap did not fully start (server remains online)');
+        }
+      })
+      .catch((err) => console.error('❌ Scheduler bootstrap error (server remains online):', err));
+    
+    // 💓 START DATABASE HEARTBEAT (prevents Neon auto-pause)
+    startDatabaseHeartbeat(4); // Ping every 4 minutes
     
     // 🚀 START AUTOMATED SCHEDULERS
     console.log('🎯 Starting automated schedulers...');
@@ -980,9 +997,22 @@ console.log('✅ Static file serving configured for uploads');
     // Start Mentor Scheduler (handles mentorship expiry reminders and auto-deactivation)
     initMentorScheduler();
     console.log('✅ Mentor Scheduler started');
+    
+    // 🚀 START OLLAMA SERVICE (auto-start if not running)
+    // Non-blocking - continues even if Ollama fails to start
+    console.log('🤖 Checking Ollama service...');
+    ensureOllamaRunning()
+      .then(() => console.log('✅ Ollama service ready'))
+      .catch((err) => console.warn('⚠️  Ollama auto-start failed (will retry on first analysis):', err.message));
   });
   
-  server.on('error', (err) => {
-    console.error('Server error:', err);
+  server.on('error', (err: any) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`❌ Port ${PORT} is already in use.`);
+      console.error('Resolve conflict with: netstat -ano | findstr :5000 and taskkill /PID <PID> /F');
+    } else {
+      console.error('Server error:', err);
+    }
   });
 })();
+}

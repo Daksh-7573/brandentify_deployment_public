@@ -75,17 +75,17 @@ export interface SilenceSignal {
  */
 export function detectUserConfidence(message: string): ConfidenceSignals {
   const lowercaseMsg = message.toLowerCase();
-  
+
   // Enhanced confidence indicators with emotional cues
   const veryLowIndicators = ['confused', 'completely lost', 'no idea', 'overwhelmed', 'stuck'];
   const lowIndicators = ['not sure', 'i think', 'maybe', 'uncertain', 'unsure', 'help me', 'stuck', '?'];
   const highIndicators = ['i want to', "i'm planning", "i've done", 'i know', 'definitely', 'let\'s'];
   const veryHighIndicators = ['absolutely', "i'm determined", 'i will', 'ready to', 'excited to', 'motivated', 'i\'m going to'];
-  
+
   let veryLowCount = 0, lowCount = 0, highCount = 0, veryHighCount = 0;
   const detected: string[] = [];
   let emotionalState: 'confused' | 'uncertain' | 'exploring' | 'determined' | 'ambitious' = 'exploring';
-  
+
   // Count indicators
   veryLowIndicators.forEach(ind => {
     if (lowercaseMsg.includes(ind)) {
@@ -94,7 +94,7 @@ export function detectUserConfidence(message: string): ConfidenceSignals {
       emotionalState = 'confused';
     }
   });
-  
+
   lowIndicators.forEach(ind => {
     if (lowercaseMsg.includes(ind)) {
       lowCount++;
@@ -102,7 +102,7 @@ export function detectUserConfidence(message: string): ConfidenceSignals {
       if (emotionalState === 'exploring') emotionalState = 'uncertain';
     }
   });
-  
+
   highIndicators.forEach(ind => {
     if (lowercaseMsg.includes(ind)) {
       highCount++;
@@ -110,7 +110,7 @@ export function detectUserConfidence(message: string): ConfidenceSignals {
       emotionalState = 'determined';
     }
   });
-  
+
   veryHighIndicators.forEach(ind => {
     if (lowercaseMsg.includes(ind)) {
       veryHighCount++;
@@ -118,11 +118,11 @@ export function detectUserConfidence(message: string): ConfidenceSignals {
       emotionalState = 'ambitious';
     }
   });
-  
+
   // Determine refined confidence level
   let confidenceLevel: 'very_low' | 'low' | 'medium' | 'high' | 'very_high' = 'medium';
   let recommendedTone: 'gentle_guide' | 'supportive' | 'neutral' | 'strategic' | 'power_user' = 'neutral';
-  
+
   if (veryLowCount > 0) {
     confidenceLevel = 'very_low';
     recommendedTone = 'gentle_guide';
@@ -136,13 +136,13 @@ export function detectUserConfidence(message: string): ConfidenceSignals {
     confidenceLevel = 'high';
     recommendedTone = 'strategic';
   }
-  
+
   // Message length analysis
   if (message.length < 15 && confidenceLevel === 'medium') {
     confidenceLevel = 'low';
     recommendedTone = 'supportive';
   }
-  
+
   return {
     confidenceLevel,
     indicators: detected,
@@ -156,7 +156,7 @@ export function detectUserConfidence(message: string): ConfidenceSignals {
  */
 export function identifyProfileGaps(context: MuskContext, intent: string): ProfileGap[] {
   const gaps: ProfileGap[] = [];
-  
+
   // Define gap importance weights based on intent
   const gapWeights: Record<string, Record<string, number>> = {
     profile_optimization: {
@@ -193,9 +193,9 @@ export function identifyProfileGaps(context: MuskContext, intent: string): Profi
       headline: 5
     }
   };
-  
+
   const weights = gapWeights[intent] || gapWeights.default;
-  
+
   // Determine career stage for multiplier
   const careerStage = determineCareerStageFromContext(context);
   const careerStageMultipliers: Record<string, number> = {
@@ -204,16 +204,16 @@ export function identifyProfileGaps(context: MuskContext, intent: string): Profi
     mid_career: 1.0,
     senior_level: 0.9   // Senior doesn't need as much urgency
   };
-  
+
   const careerMultiplier = careerStageMultipliers[careerStage] || 1.0;
-  
+
   // Check each potential gap
   const hasTitle = context.userData?.title && context.userData.title.trim().length > 0;
-  const hasAboutMe = context.userData?.aboutMe && context.userData.aboutMe.trim().length > 0;
+  const hasWhatIOffer = (context.userData as any)?.whatIOffer && (context.userData as any).whatIOffer.trim().length > 0;
   const hasProjects = (context.projects?.length || 0) > 0;
   const hasExperiences = (context.experiences?.length || 0) > 0;
   const hasSkills = (context.skills?.length || 0) > 0;
-  
+
   if (!hasTitle) {
     const timeUrgency = 1.3; // Title is critical immediately
     gaps.push({
@@ -226,7 +226,7 @@ export function identifyProfileGaps(context: MuskContext, intent: string): Profi
       impactScore: (weights.title || 8) * 0.9 * careerMultiplier * timeUrgency
     });
   }
-  
+
   if (!hasProjects) {
     const timeUrgency = 1.2;
     gaps.push({
@@ -239,7 +239,7 @@ export function identifyProfileGaps(context: MuskContext, intent: string): Profi
       impactScore: (weights.projects || 8) * 0.85 * careerMultiplier * timeUrgency
     });
   }
-  
+
   if (!hasExperiences) {
     const timeUrgency = careerStage === 'entry_level' ? 1.3 : 1.0;
     gaps.push({
@@ -252,7 +252,7 @@ export function identifyProfileGaps(context: MuskContext, intent: string): Profi
       impactScore: (weights.experiences || 7) * 0.8 * careerMultiplier * timeUrgency
     });
   }
-  
+
   if (!hasSkills) {
     const timeUrgency = 1.1;
     gaps.push({
@@ -265,11 +265,11 @@ export function identifyProfileGaps(context: MuskContext, intent: string): Profi
       impactScore: (weights.skills || 7) * 0.75 * careerMultiplier * timeUrgency
     });
   }
-  
-  if (!hasAboutMe) {
+
+  if (!hasWhatIOffer) {
     const timeUrgency = 0.9;
     gaps.push({
-      field: 'aboutMe',
+      field: 'what_i_offer',
       isEmpty: true,
       importanceWeight: weights.aboutMe || 6,
       relevanceToIntent: 0.7,
@@ -278,7 +278,7 @@ export function identifyProfileGaps(context: MuskContext, intent: string): Profi
       impactScore: (weights.aboutMe || 6) * 0.7 * careerMultiplier * timeUrgency
     });
   }
-  
+
   // Sort by impact score (highest first)
   return gaps.sort((a, b) => b.impactScore - a.impactScore);
 }
@@ -302,23 +302,23 @@ export function extractConversationMemory(messages: Array<{ content: string; sen
     recentIntents: [],
     topicContinuity: []
   };
-  
+
   if (!messages || messages.length === 0) {
     return memory;
   }
-  
+
   // Extract the last few user messages
   const userMessages = messages.filter(m => m.sender === 'user').slice(-3);
-  
+
   // Simple topic extraction from messages
   const allText = userMessages.map(m => m.content.toLowerCase()).join(' ');
-  
+
   // Track unresolved questions (ending with ?)
   const unresolvedMatches = allText.match(/[^.!?]*\?/g);
   if (unresolvedMatches && unresolvedMatches.length > 0) {
     memory.lastUnresolvedQuestion = unresolvedMatches[unresolvedMatches.length - 1].trim();
   }
-  
+
   // Extract common topics
   const topics = ['profile', 'career', 'skills', 'projects', 'experiences', 'linkedin', 'resume', 'interview', 'networking', 'salary'];
   topics.forEach(topic => {
@@ -326,7 +326,7 @@ export function extractConversationMemory(messages: Array<{ content: string; sen
       memory.topicContinuity.push(topic);
     }
   });
-  
+
   return memory;
 }
 
@@ -335,13 +335,13 @@ export function extractConversationMemory(messages: Array<{ content: string; sen
  */
 export function generateOutcomeAnchoredFollowUps(context: MuskContext, intent: string): Array<{ text: string; purpose: FollowUpPurpose }> {
   const outcomes: Array<{ text: string; purpose: FollowUpPurpose }> = [];
-  
+
   const hasExperiences = (context.experiences?.length || 0) > 0;
   const hasSkills = (context.skills?.length || 0) > 0;
   const hasProjects = (context.projects?.length || 0) > 0;
   const userTitle = context.userData?.title;
   const userIndustry = context.userData?.industry;
-  
+
   // Generate based on intent with outcome focus
   switch (intent) {
     case 'profile_optimization':
@@ -356,7 +356,7 @@ export function generateOutcomeAnchoredFollowUps(context: MuskContext, intent: s
         purpose: FollowUpPurpose.DECIDE
       });
       break;
-      
+
     case 'career_growth':
       if (hasExperiences) {
         outcomes.push({
@@ -369,7 +369,7 @@ export function generateOutcomeAnchoredFollowUps(context: MuskContext, intent: s
         purpose: FollowUpPurpose.CLARIFY
       });
       break;
-      
+
     case 'skill_development':
       outcomes.push({
         text: "Should we prioritize skills for your current role or for your next career move?",
@@ -380,7 +380,7 @@ export function generateOutcomeAnchoredFollowUps(context: MuskContext, intent: s
         purpose: FollowUpPurpose.EXECUTE
       });
       break;
-      
+
     case 'networking':
       outcomes.push({
         text: "Do you want to improve visibility in your industry or expand into a new sector?",
@@ -391,7 +391,7 @@ export function generateOutcomeAnchoredFollowUps(context: MuskContext, intent: s
         purpose: FollowUpPurpose.EXECUTE
       });
       break;
-      
+
     case 'interview_prep':
       outcomes.push({
         text: "Want me to create a personalized interview guide based on your target roles?",
@@ -402,7 +402,7 @@ export function generateOutcomeAnchoredFollowUps(context: MuskContext, intent: s
         purpose: FollowUpPurpose.CLARIFY
       });
       break;
-      
+
     default:
       outcomes.push({
         text: "What specific outcome would you like to achieve in the next 30 days?",
@@ -413,7 +413,7 @@ export function generateOutcomeAnchoredFollowUps(context: MuskContext, intent: s
         purpose: FollowUpPurpose.EXECUTE
       });
   }
-  
+
   return outcomes;
 }
 
@@ -424,25 +424,25 @@ function fillFollowUpTemplate(template: string, slots: Record<string, string>): 
   try {
     let filled = template;
     const originalFilled = filled;
-    
+
     // Fill all slots
     Object.entries(slots).forEach(([key, value]) => {
       filled = filled.replace(`{{${key}}}`, value);
     });
-    
+
     // Check if there are unfilled slots remaining (indicates missing slot data)
     const unfilledSlots = filled.match(/\{\{(\w+)\}\}/g);
     if (unfilledSlots && unfilledSlots.length > 0) {
       console.warn(`[FIL] Unfilled slots detected: ${unfilledSlots.join(', ')} - Falling back to original`);
       return null; // Signal failure to fall back
     }
-    
+
     // Check if result is reasonable length (catch extremely short results)
     if (filled.trim().length < 10) {
       console.warn(`[FIL] Template result too short: "${filled}" - Falling back to original`);
       return null;
     }
-    
+
     return filled;
   } catch (error) {
     console.error(`[FIL] Template filling error: ${error instanceof Error ? error.message : String(error)}`);
@@ -586,7 +586,7 @@ function getFollowUpTemplates(confidence: ConfidenceSignals): Record<FollowUpPur
       ]
     }
   };
-  
+
   return templates[confidence.confidenceLevel] || templates.medium;
 }
 
@@ -605,16 +605,16 @@ export function adaptFollowUpTone(
   confidence: ConfidenceSignals
 ): Array<{ text: string; purpose: FollowUpPurpose; tone: string }> {
   const templates = getFollowUpTemplates(confidence);
-  
+
   return followUps.map(followUp => {
     let adaptedText = followUp.text;
     let usedTemplate = false;
-    
+
     // Try to enrich with template if available
     const purposeTemplates = templates[followUp.purpose];
     if (purposeTemplates && purposeTemplates.length > 0) {
       const selectedTemplate = purposeTemplates[0];
-      
+
       // Extract slots from original text and fill template
       const slots: Record<string, string> = {
         topic: extractKeyword(followUp.text) || 'your goals',
@@ -624,10 +624,10 @@ export function adaptFollowUpTone(
         option2: 'option B',
         timeframe: '30 days'
       };
-      
+
       // Attempt template filling with error handling
       const filledTemplate = fillFollowUpTemplate(selectedTemplate, slots);
-      
+
       if (filledTemplate !== null) {
         // Template succeeded - use it
         adaptedText = filledTemplate;
@@ -638,7 +638,7 @@ export function adaptFollowUpTone(
         adaptedText = followUp.text;
       }
     }
-    
+
     return {
       ...followUp,
       text: adaptedText,
@@ -665,22 +665,22 @@ function extractKeyword(text: string): string {
  */
 export function detectSilenceSignal(userMessage: string): SilenceSignal {
   const msg = userMessage.toLowerCase().trim();
-  
+
   // Low-effort acknowledgments
   const acknowledgments = ['okay', 'ok', 'yeah', 'sure', 'got it', 'thanks', 'good', 'cool', 'nice'];
   const uncertain = ['hmm', 'um', 'uh', 'i guess', 'maybe'];
   const engaged = ['interesting', 'wow', 'that\'s great', 'tell me more', 'how', 'why', 'what', 'when'];
   const actionReady = ['let\'s', 'let me', 'i will', 'i\'ll', 'ready', 'let\'s go', 'let\'s do it'];
-  
+
   // Check message length and type
   const isShort = msg.length < 15;
   const isOneWord = msg.split(' ').length === 1;
   const hasQuestion = msg.includes('?');
-  
+
   let responseType: 'acknowledgment' | 'uncertain' | 'engaged' | 'action_ready' = 'engaged';
   let isLowEffort = false;
   let suggestedAction = undefined;
-  
+
   // Categorize response
   if (actionReady.some(a => msg.includes(a))) {
     responseType = 'action_ready';
@@ -693,7 +693,7 @@ export function detectSilenceSignal(userMessage: string): SilenceSignal {
     isLowEffort = true;
     suggestedAction = "Want me to take the next step for you?";
   }
-  
+
   return {
     isLowEffortResponse: isLowEffort,
     responseType,
@@ -739,7 +739,7 @@ export function groupFollowUpsIntoBundles(
       priority: 'low'
     }
   };
-  
+
   // Distribute follow-ups into bundles based on purpose
   followUps.forEach(followUp => {
     switch (followUp.purpose) {
@@ -765,7 +765,7 @@ export function groupFollowUpsIntoBundles(
         bundles.next_best_steps.followUps.push(followUp);
     }
   });
-  
+
   // Return only non-empty bundles, sorted by priority
   return Object.values(bundles)
     .filter(bundle => bundle.followUps.length > 0)
@@ -776,33 +776,66 @@ export function groupFollowUpsIntoBundles(
 }
 
 /**
+ * Retrieve relevant follow-up templates from database (Hybrid Knowledge Engine)
+ */
+export async function retrieveIndustryTemplates(
+  industry: string,
+  intent: string,
+  limit: number = 2
+): Promise<Array<{ text: string; purpose: FollowUpPurpose; actionHint?: string }>> {
+  try {
+    const { pool } = await import('../db');
+
+    // Attempt to match by industry and intent (type)
+    const result = await pool.query(
+      `SELECT text, type as purpose, action_hint as "actionHint" 
+       FROM followup_templates 
+       WHERE (LOWER(industry) = LOWER($1) OR industry = 'General')
+       AND type = $2
+       ORDER BY (industry != 'General') DESC
+       LIMIT $3`,
+      [industry, intent, limit]
+    );
+
+    return result.rows.map(row => ({
+      text: row.text,
+      purpose: row.purpose as FollowUpPurpose,
+      actionHint: row.actionHint
+    }));
+  } catch (error) {
+    console.warn('[FIL] Database template retrieval failed, using fallback logic', error);
+    return [];
+  }
+}
+
+/**
  * Main FIL orchestrator: Generate smart follow-ups using all intelligence layers (Phase 3: Bundle Support)
  */
-export function generateFollowUpIntelligence(
+export async function generateFollowUpIntelligence(
   context: MuskContext,
   intent: string,
   conversationHistory?: Array<{ content: string; sender: 'user' | 'musk' }>
-): {
-  followUps: Array<{ text: string; purpose: FollowUpPurpose; tone: string }>;
+): Promise<{
+  followUps: Array<{ text: string; purpose: FollowUpPurpose; tone: string; actionHint?: string }>;
   bundles: FollowUpBundle[];
   silenceSignal?: SilenceSignal;
   memory: ConversationMemory;
   gaps: ProfileGap[];
   confidence: ConfidenceSignals;
-} {
+}> {
   // 1. Detect user confidence
   const lastUserMessage = conversationHistory?.[conversationHistory.length - 1]?.content || '';
   const confidence = detectUserConfidence(lastUserMessage);
-  
+
   // 1.5 (Phase 3) Detect silence signals
   const silenceSignal = detectSilenceSignal(lastUserMessage);
-  
+
   // 2. Identify profile gaps
   const gaps = identifyProfileGaps(context, intent);
-  
+
   // 3. Extract conversation memory
   const memory = conversationHistory ? extractConversationMemory(conversationHistory) : { recentIntents: [], topicContinuity: [] };
-  
+
   // If smart silence detected, return early with suggested action
   if (silenceSignal.isLowEffortResponse) {
     return {
@@ -827,10 +860,19 @@ export function generateFollowUpIntelligence(
       confidence
     };
   }
-  
-  // 4. Generate outcome-anchored follow-ups
-  let followUps = generateOutcomeAnchoredFollowUps(context, intent);
-  
+
+  // 4. Generate outcome-anchored follow-ups (AI-calculated)
+  let followUps: any[] = generateOutcomeAnchoredFollowUps(context, intent);
+
+  // 4.5 (Hybrid Layer) Fetch curated templates from DB
+  const industry = context.userData?.industry || 'General';
+  const dbTemplates = await retrieveIndustryTemplates(industry, intent);
+
+  if (dbTemplates.length > 0) {
+    // Add DB templates at the beginning (they are high-quality curated)
+    followUps = [...dbTemplates, ...followUps];
+  }
+
   // 5. Add gap-driven follow-up if highest impact gap exists
   if (gaps.length > 0 && gaps[0].impactScore > 5) {
     const topGap = gaps[0];
@@ -840,7 +882,7 @@ export function generateFollowUpIntelligence(
     };
     followUps = [gapFollowUp, ...followUps];
   }
-  
+
   // 6. Add memory-continuity follow-up if unresolved question exists
   if (memory.lastUnresolvedQuestion) {
     const continuityFollowUp: { text: string; purpose: FollowUpPurpose } = {
@@ -849,15 +891,15 @@ export function generateFollowUpIntelligence(
     };
     followUps = [continuityFollowUp, ...followUps.slice(0, 2)];
   }
-  
+
   // 7. Adapt tone based on confidence
-  const tonedFollowUps = adaptFollowUpTone(followUps.slice(0, 3), confidence);
-  
+  const tonedFollowUps = adaptFollowUpTone(followUps.slice(0, 4), confidence);
+
   // 8. (Phase 3) Group into semantic bundles for UI
   const bundles = groupFollowUpsIntoBundles(tonedFollowUps);
-  
+
   return {
-    followUps: tonedFollowUps,
+    followUps: tonedFollowUps as any,
     bundles,
     silenceSignal,
     memory,

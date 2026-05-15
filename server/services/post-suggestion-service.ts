@@ -27,7 +27,7 @@ export class PostSuggestionService {
   private localAI: LocalAIService;
 
   constructor() {
-    this.localAI = new LocalAIService();
+    this.localAI = LocalAIService.getInstance();
   }
 
   /**

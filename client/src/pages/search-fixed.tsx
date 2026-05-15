@@ -397,7 +397,7 @@ function SearchPage() {
 
   return (
     <div 
-      className="flex h-screen flex-col responsive-background"
+      className="flex min-h-screen flex-col responsive-background overflow-x-hidden"
       style={{ 
         backgroundImage: `url(${backgroundImage})`
       }}
@@ -405,18 +405,18 @@ function SearchPage() {
       {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
       
-      <div className="relative z-10 flex h-screen flex-col">
+      <div className="relative z-10 flex min-h-screen flex-col overflow-x-hidden">
         <Header />
         <div className="flex flex-1 overflow-hidden"> {/* Removed pt-16 to match Brand Quests spacing */}
         {/* Main content area */}
         <div className="flex-1 overflow-auto">
-          <NeoGlassLayout className="mt-3 mx-6"> {/* Matched Industry Pulse's margin */}
+          <NeoGlassLayout className="mt-3 mx-2 sm:mx-4 lg:mx-6"> {/* Matched Industry Pulse's margin */}
             {/* Main content */}
-            <div className="flex-1 max-w-4xl">
-              <div className="mb-8 flex justify-between items-center">
-                <div>
-                  <h1 className="text-3xl font-bold tracking-tight text-white">Discover & Connect</h1>
-                  <p className="text-white/80 mt-1">
+            <div className="w-full max-w-3xl lg:max-w-4xl mx-auto">
+              <div className="mb-4 md:mb-6 lg:mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div className="w-full sm:w-auto">
+                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Discover & Connect</h1>
+                  <p className="text-white/80 mt-1 text-sm sm:text-base">
                     Find content, professionals, and networking opportunities in one place
                   </p>
                 </div>
@@ -447,30 +447,31 @@ function SearchPage() {
                 </TabsList>
 
                 {/* Search Tab */}
-                <TabsContent value="search" className="space-y-6">
+                <TabsContent value="search" className="space-y-4 sm:space-y-6">
                   {/* Search Form */}
-                  <form onSubmit={handleSearch} className="flex gap-2 mb-6">
+                  <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2 mb-4 sm:mb-6">
                     <Input
                       type="text"
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       placeholder="Search pulses, profiles, or hashtags..."
-                      className="neo-glass-input flex-1"
+                      className="neo-glass-input flex-1 text-sm sm:text-base"
                     />
                     <button
                       type="submit"
-                      className="neo-glass-button flex items-center gap-2 py-2 px-4"
+                      className="neo-glass-button flex items-center justify-center gap-2 py-2 px-4 w-full sm:w-auto min-h-[40px] text-sm sm:text-base"
                       disabled={isLoading}
                     >
                       {isLoading ? (
                         <span className="flex items-center">
                           <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
-                          <span>Searching...</span>
+                          <span className="hidden sm:inline">Searching...</span>
+                          <span className="sm:hidden">...</span>
                         </span>
                       ) : (
                         <span className="flex items-center">
-                          <SearchIcon className="h-4 w-4 mr-2" />
-                          Search
+                          <SearchIcon className="h-4 w-4 sm:mr-2" />
+                          <span className="hidden sm:inline">Search</span>
                         </span>
                       )}
                     </button>
@@ -478,27 +479,27 @@ function SearchPage() {
 
                   {/* Search Category Tabs */}
                   <Tabs defaultValue={activeCategory === "smart-connect" ? "pulses" : activeCategory} onValueChange={handleTabChange}>
-                    <TabsList className="mb-6 dark-tabs-list">
+                    <TabsList className="mb-4 sm:mb-6 dark-tabs-list w-full grid grid-cols-3 h-auto">
                       <TabsTrigger 
                         value="pulses" 
-                        className="dark-tabs-trigger"
+                        className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5 py-2 px-2 text-xs sm:text-sm"
                       >
-                        <MessageSquare size={16} className="mr-1.5" />
-                        <span>Pulses</span>
+                        <MessageSquare size={14} className="sm:mr-1" />
+                        <span className="text-center">Pulses</span>
                       </TabsTrigger>
                       <TabsTrigger 
                         value="profiles" 
-                        className="dark-tabs-trigger"
+                        className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5 py-2 px-2 text-xs sm:text-sm"
                       >
-                        <Users size={16} className="mr-1.5" />
-                        <span>Profiles</span>
+                        <Users size={14} className="sm:mr-1" />
+                        <span className="text-center">Profiles</span>
                       </TabsTrigger>
                       <TabsTrigger 
                         value="hashtags" 
-                        className="dark-tabs-trigger"
+                        className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5 py-2 px-2 text-xs sm:text-sm"
                       >
-                        <Hash size={16} className="mr-1.5" />
-                        <span>Hashtags</span>
+                        <Hash size={14} className="sm:mr-1" />
+                        <span className="text-center">Hashtags</span>
                       </TabsTrigger>
                     </TabsList>
 
@@ -1006,3 +1007,4 @@ function SearchPage() {
 };
 
 export default SearchPage;
+

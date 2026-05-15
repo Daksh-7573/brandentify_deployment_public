@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/select";
 
 interface OnboardingTier3Props {
-  onComplete: (data: { 
-    skills: Array<{ name: string; level: string }>, 
+  onComplete: (data: {
+    skills: Array<{ name: string; level: string }>,
     services?: Array<{
       title: string;
       description?: string;
@@ -32,8 +32,8 @@ interface OnboardingTier3Props {
 
 const SKILL_LEVELS = ["Beginner", "Intermediate", "Advanced", "Expert"];
 
-export default function OnboardingTier3({ 
-  onComplete, 
+export default function OnboardingTier3({
+  onComplete,
   onBack,
   onSkip
 }: OnboardingTier3Props) {
@@ -100,8 +100,8 @@ export default function OnboardingTier3({
         isActive: s.isActive
       };
     });
-    
-    onComplete({ 
+
+    onComplete({
       skills: validSkills,
       services: validServices.length > 0 ? validServices : undefined
     });
@@ -110,9 +110,9 @@ export default function OnboardingTier3({
   const hasValidSkill = skills.some(s => s.name.trim());
 
   return (
-    <div 
+    <div
       className="fixed inset-0 w-full h-full responsive-background"
-      style={{ 
+      style={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -121,7 +121,7 @@ export default function OnboardingTier3({
     >
       {/* Glass UI overlay */}
       <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
-      
+
       <div className="relative z-10 w-full h-full flex items-center justify-center p-4 overflow-y-auto py-8">
         <div className="w-full max-w-3xl my-auto">
           <NeoGlassSection className="p-8 sm:p-12">
@@ -130,11 +130,11 @@ export default function OnboardingTier3({
               <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3">
                 🎯 Skills & Services
               </h1>
-              
+
               <p className="text-lg text-white/80 max-w-xl mx-auto mb-2">
                 Showcase your expertise and offerings
               </p>
-              
+
               <p className="text-white/60 max-w-xl mx-auto text-sm">
                 Add your key skills and services you provide to potential connections
               </p>
@@ -173,11 +173,11 @@ export default function OnboardingTier3({
                         />
                       </div>
                       <div className="w-40">
-                        <Select 
-                          value={skill.level} 
+                        <Select
+                          value={skill.level}
                           onValueChange={(value) => updateSkill(index, 'level', value)}
                         >
-                          <SelectTrigger 
+                          <SelectTrigger
                             className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                             data-testid={`select-skill-level-${index}`}
                           >
@@ -185,8 +185,8 @@ export default function OnboardingTier3({
                           </SelectTrigger>
                           <SelectContent className="bg-gray-900/95 border-white/20 backdrop-blur-xl">
                             {SKILL_LEVELS.map((level) => (
-                              <SelectItem 
-                                key={level} 
+                              <SelectItem
+                                key={level}
                                 value={level}
                                 className="text-white hover:bg-white/10 focus:bg-white/20 cursor-pointer"
                               >
@@ -280,11 +280,11 @@ export default function OnboardingTier3({
                       <div className="grid grid-cols-2 gap-3">
                         <div>
                           <Label className="text-white text-sm mb-1.5 block">Currency</Label>
-                          <Select 
-                            value={service.currency} 
+                          <Select
+                            value={service.currency}
                             onValueChange={(value: 'USD' | 'INR') => updateService(index, 'currency', value)}
                           >
-                            <SelectTrigger 
+                            <SelectTrigger
                               className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-10"
                               data-testid={`select-service-currency-${index}`}
                             >
@@ -378,45 +378,44 @@ export default function OnboardingTier3({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center bg-black/20 -mx-8 -mb-8 sm:-mx-12 sm:-mb-12 p-8 border-t border-white/10 mt-12">
               <Button
                 onClick={onBack}
                 variant="ghost"
-                className="text-white/70 hover:text-white hover:bg-white/10"
+                className="text-white/70 hover:text-white rounded-full px-6"
                 data-testid="button-back"
               >
                 ← Back
               </Button>
 
-              <div className="flex gap-3">
+              <div className="flex gap-4">
                 <Button
                   onClick={onSkip}
                   variant="ghost"
-                  className="text-white/70 hover:text-white hover:bg-white/10"
+                  className="text-white/50 hover:text-white rounded-full"
                   data-testid="button-skip-tier2"
                 >
-                  Skip for now
+                  Skip
                 </Button>
 
                 <Button
                   onClick={handleContinue}
                   disabled={!hasValidSkill}
                   size="lg"
-                  className={`px-8 py-6 text-lg font-semibold transition-all duration-300 ${
-                    hasValidSkill
-                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-xl hover:shadow-2xl transform hover:scale-105' 
-                      : 'bg-white/10 text-white/40 cursor-not-allowed'
-                  }`}
+                  className={`px-10 py-6 text-lg font-semibold rounded-full transition-all duration-500 ${hasValidSkill
+                      ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] transform hover:scale-105'
+                      : 'bg-white/10 text-white/20 cursor-not-allowed'
+                    }`}
                   data-testid="button-complete-tier3"
                 >
-                  Complete Setup →
+                  Continue →
                 </Button>
               </div>
             </div>
 
             {/* Time Indicator */}
-            <div className="text-center mt-6 text-white/50 text-sm">
-              Step 4 of 4 · Final step! ~5 minutes
+            <div className="text-center mt-12 text-white/40 text-xs uppercase tracking-widest">
+              Step 4 of 7 · Showcasing your skills
             </div>
           </NeoGlassSection>
         </div>
@@ -424,3 +423,4 @@ export default function OnboardingTier3({
     </div>
   );
 }
+

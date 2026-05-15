@@ -2,7 +2,7 @@ import { WorkExperience, Education, Skill, InsertWorkExperience, InsertEducation
 import { LocalAIService } from "./local-ai-service";
 
 // Initialize FREE Local AI Service (uses VPS Ollama)
-const localAI = new LocalAIService();
+const localAI = LocalAIService.getInstance();
 
 /**
  * Parse structured resume text (output from GPT-based processing)

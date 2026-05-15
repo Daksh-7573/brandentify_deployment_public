@@ -4,12 +4,15 @@ import { connectionStatusEnum } from '@shared/schema';
 import { z } from 'zod';
 import * as messageService from './services/message-service';
 import jwt from 'jsonwebtoken';
+import type { WebSocket } from 'ws';
 
-const router = express.Router();
+// Factory function to create router with WebSocket support
+export function createConnectionRouter(wsClients?: Map<number, WebSocket>) {
+  const router = express.Router();
 
 /**
  * Helper function to get the authenticated user ID from the JWT session cookie
- * This is the primary authentication method for Brandentifier
+ * This is the primary authentication method for Brandentify
  */
 function getAuthenticatedUserId(req: Request): number | null {
   // First, try to verify JWT from session cookie (primary auth method)
@@ -128,7 +131,16 @@ router.get('/users/:userId/received-connection-requests', async (req: Request, r
       return res.status(403).json({ message: 'You can only view your own connection requests' });
     }
 
+    console.log(`[Connection Routes] Fetching received requests for user ${userId}`);
     const requests = await storage.getConnectionRequestsByReceiverId(userId);
+    console.log(`[Connection Routes] ✅ Found ${requests.length} received requests for user ${userId}`);
+    console.log(`[Connection Routes] Request details:`, requests.map(r => ({ 
+      id: r.id, 
+      senderId: r.senderId, 
+      senderName: r.senderName,
+      status: r.status,
+      createdAt: r.createdAt 
+    })));
     return res.status(200).json(requests);
   } catch (error) {
     console.error('Error fetching received connection requests:', error);
@@ -235,6 +247,7 @@ router.post('/connection-requests', async (req: Request, res: Response) => {
     
     // Create the connection request
     console.log(`[Connection Routes] Creating request: ${senderId} -> ${receiverId}`);
+    console.log(`[Connection Routes] Request details:`, { senderId, receiverId, reason, message: message?.substring(0, 50) });
     const newRequest = await storage.createConnectionRequest({
       senderId,
       receiverId,
@@ -242,14 +255,44 @@ router.post('/connection-requests', async (req: Request, res: Response) => {
       reason,
       message
     });
+    console.log(`[Connection Routes] ✅ Request created successfully with ID: ${newRequest.id}`);
+    console.log(`[Connection Routes] Full request:`, JSON.stringify(newRequest, null, 2));
     
     // Create notification for receiver
     try {
       const sender = await storage.getUser(senderId);
+      console.log(`[Connection Routes] Creating notification for receiver ${receiverId}`);
       const { createConnectionRequestNotification } = await import('./services/notification-service');
       await createConnectionRequestNotification(receiverId, sender?.name || 'Someone');
+      console.log(`[Connection Routes] ✅ Notification created for receiver ${receiverId}`);
+      
+      // 🔥 Broadcast connection request via WebSocket for real-time notification
+      if (wsClients && wsClients.has(receiverId)) {
+        const receiverWs = wsClients.get(receiverId);
+        if (receiverWs && receiverWs.readyState === 1) { // 1 = WebSocket.OPEN
+          try {
+            receiverWs.send(JSON.stringify({
+              type: 'connection_request',
+              requestId: newRequest.id,
+              senderId: senderId,
+              senderName: sender?.name || 'Someone',
+              senderPhotoUrl: sender?.photoURL,
+              reason: reason,
+              message: message,
+              createdAt: newRequest.createdAt,
+            }));
+            console.log(`[Connection Routes] 🔔 WebSocket notification sent to receiver ${receiverId}`);
+          } catch (wsError) {
+            console.error(`[Connection Routes] ⚠️  WebSocket send failed:`, wsError);
+          }
+        } else {
+          console.log(`[Connection Routes] ℹ️  Receiver ${receiverId} WebSocket not in OPEN state`);
+        }
+      } else {
+        console.log(`[Connection Routes] ℹ️  Receiver ${receiverId} not connected via WebSocket`);
+      }
     } catch (notificationError) {
-      console.error('Error sending connection request notification:', notificationError);
+      console.error('[Connection Routes] ❌ Error sending connection request notification:', notificationError);
     }
     
     return res.status(201).json(newRequest);
@@ -288,13 +331,58 @@ router.put('/connection-requests/:id/accept', async (req: Request, res: Response
     }
 
     // Create a conversation between the two users
+    console.log(`[Connection Routes] Creating conversation between sender ${request.senderId} and receiver ${request.receiverId}...`);
     const conversation = await messageService.getOrCreateDirectConversation(
       request.senderId,
       request.receiverId
     );
+    console.log(`[Connection Routes] ✅ Conversation created/retrieved: ID ${conversation?.id}`);
 
     // Update the connection request
     const updatedRequest = await storage.acceptConnectionRequest(id, conversation?.id || 0);
+    
+    // 🔥 Notify both users via WebSocket about the new conversation
+    if (wsClients && conversation?.id) {
+      // Notify sender (User A) - connection accepted + conversation created
+      if (wsClients.has(request.senderId)) {
+        const senderWs = wsClients.get(request.senderId);
+        if (senderWs && senderWs.readyState === 1) { // 1 = WebSocket.OPEN
+          try {
+            const receiver = await storage.getUser(request.receiverId);
+            senderWs.send(JSON.stringify({
+              type: 'connection_accepted',
+              receiverId: request.receiverId,
+              receiverName: receiver?.name || 'Someone',
+              conversationId: conversation.id,
+              message: `${receiver?.name || 'Someone'} accepted your connection request`
+            }));
+            console.log(`[Connection Routes] 🔔 Connection accepted notification sent to sender ${request.senderId}`);
+          } catch (wsError) {
+            console.error(`[Connection Routes] ⚠️  WebSocket send to sender failed:`, wsError);
+          }
+        }
+      }
+      
+      // Notify receiver (User B) - new conversation available
+      if (wsClients.has(request.receiverId)) {
+        const receiverWs = wsClients.get(request.receiverId);
+        if (receiverWs && receiverWs.readyState === 1) {
+          try {
+            const sender = await storage.getUser(request.senderId);
+            receiverWs.send(JSON.stringify({
+              type: 'new_conversation',
+              senderId: request.senderId,
+              senderName: sender?.name || 'Someone',
+              conversationId: conversation.id,
+              message: `Conversation with ${sender?.name || 'Someone'} is now available`
+            }));
+            console.log(`[Connection Routes] 🔔 New conversation notification sent to receiver ${request.receiverId}`);
+          } catch (wsError) {
+            console.error(`[Connection Routes] ⚠️  WebSocket send to receiver failed:`, wsError);
+          }
+        }
+      }
+    }
     
     // Create notification for sender
     try {
@@ -398,4 +486,9 @@ router.put('/connection-requests/:id/cancel', async (req: Request, res: Response
   }
 });
 
-export default router;
+  return router;
+}
+
+// Default export for backwards compatibility (without WebSocket)
+export default createConnectionRouter();
+

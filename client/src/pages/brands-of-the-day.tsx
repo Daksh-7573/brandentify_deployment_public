@@ -151,7 +151,7 @@ export default function BrandsOfTheDayPage() {
   return (
     <div className="container py-8">
       <Helmet>
-        <title>Brands of the Day | Brandentifier</title>
+        <title>Brands of the Day | Brandentify</title>
       </Helmet>
 
       <div className="flex justify-between items-center mb-8">

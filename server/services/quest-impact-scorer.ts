@@ -70,7 +70,7 @@ export class QuestImpactScorer {
       impactScore: 75,
       impactLevel: 'medium',
       estimatedMinutes: 15,
-      description: 'Share industry insight on Brandentifier'
+      description: 'Share industry insight on Brandentify'
     },
     'linkedin_carousel': {
       questType: 'linkedin_carousel',
@@ -222,7 +222,7 @@ export class QuestImpactScorer {
       description: 'Follow relevant industry hashtags'
     },
     
-    // BRANDENTIFIER ENGAGEMENT QUESTS
+    // BRANDENTIFY ENGAGEMENT QUESTS
     'deep_engage_single_pulse': {
       questType: 'deep_engage_single_pulse',
       impactScore: 60,
@@ -270,7 +270,7 @@ export class QuestImpactScorer {
       impactScore: 15,
       impactLevel: 'quick_win',
       estimatedMinutes: 3,
-      description: 'Participate in industry polls on Brandentifier'
+      description: 'Participate in industry polls on Brandentify'
     }
   };
 
@@ -371,3 +371,4 @@ export class QuestImpactScorer {
 }
 
 export const questImpactScorer = new QuestImpactScorer();
+

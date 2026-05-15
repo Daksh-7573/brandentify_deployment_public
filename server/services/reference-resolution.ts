@@ -102,7 +102,7 @@ export async function enhancedReferenceResolution(
     }
 
     // Initialize FREE Local AI Service (uses VPS Ollama)
-    const localAI = new LocalAIService();
+    const localAI = LocalAIService.getInstance();
 
     // Build context from recent messages
     let conversationContext = "Recent conversation:\n";

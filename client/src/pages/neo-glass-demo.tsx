@@ -65,7 +65,7 @@ export default function NeoGlassDemoPage() {
               Neo-Glass UI
             </h1>
             <p className="neo-glass-text-muted text-xl max-w-2xl">
-              Modern glassmorphism UI for Brandentifier with frosted glass elements, 
+              Modern glassmorphism UI for Brandentify with frosted glass elements, 
               gradients, and elegant glowing accents.
             </p>
             

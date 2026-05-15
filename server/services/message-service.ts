@@ -56,6 +56,8 @@ export async function createConversation(
  * @returns List of conversations with last message and unread count
  */
 export async function getConversationsForUser(userId: number) {
+  console.log(`[messageService.getConversationsForUser] Fetching conversations for user ${userId}`);
+  
   // Get all conversation IDs this user is part of
   const userParticipations = await db
     .select({ conversationId: conversationParticipants.conversationId })
@@ -66,12 +68,17 @@ export async function getConversationsForUser(userId: number) {
         isNull(conversationParticipants.leftAt)
       )
     );
+  
+  console.log(`[messageService.getConversationsForUser] User ${userId} is participant in ${userParticipations.length} conversations`);
     
   const conversationIds = userParticipations.map(p => p.conversationId);
   
   if (conversationIds.length === 0) {
+    console.log(`[messageService.getConversationsForUser] No conversations found for user ${userId}`);
     return [];
   }
+  
+  console.log(`[messageService.getConversationsForUser] Conversation IDs: [${conversationIds.join(', ')}]`);
   
   // Get the conversations with additional data
   const conversationsWithData = [];
@@ -121,16 +128,17 @@ export async function getConversationsForUser(userId: number) {
       if (user) {
         participantsWithDetails.push({
           ...participant,
-          user: {
-            id: user.id,
-            name: user.name,
-            username: user.username,
-            photoURL: user.photoURL,
-            title: user.title
-          }
+          userName: user.name,        // Flatten user name to participant level
+          userPhotoURL: user.photoURL, // Flatten user photo to participant level
+          userUsername: user.username, // Also include username
+          userTitle: user.title        // Also include title
         });
       }
     }
+    
+    console.log(`[messageService.getConversationsForUser] 📋 Conversation ${convId} participants:`, 
+      participantsWithDetails.map(p => ({ userId: p.userId, userName: p.userName, userPhotoURL: p.userPhotoURL }))
+    );
     
     // Count unread messages
     const unreadCount = await db
@@ -160,6 +168,7 @@ export async function getConversationsForUser(userId: number) {
     });
   }
   
+  console.log(`[messageService.getConversationsForUser] ✅ Returning ${conversationsWithData.length} conversations for user ${userId}`);
   return conversationsWithData;
 }
 
@@ -415,16 +424,17 @@ export async function getConversation(conversationId: number) {
     if (user) {
       participantsWithDetails.push({
         ...participant,
-        user: {
-          id: user.id,
-          name: user.name,
-          username: user.username,
-          photoURL: user.photoURL,
-          title: user.title
-        }
+        userName: user.name,        // Flatten user name to participant level
+        userPhotoURL: user.photoURL, // Flatten user photo to participant level
+        userUsername: user.username, // Also include username
+        userTitle: user.title        // Also include title
       });
     }
   }
+  
+  console.log(`[messageService.getConversation] 📋 Conversation ${conversationId} participants:`, 
+    participantsWithDetails.map(p => ({ userId: p.userId, userName: p.userName, userPhotoURL: p.userPhotoURL }))
+  );
   
   return {
     ...conversation,
@@ -543,6 +553,8 @@ export async function getTotalUnreadMessageCount(userId: number) {
 }
 
 export async function getOrCreateDirectConversation(user1Id: number, user2Id: number) {
+  console.log(`[messageService.getOrCreateDirectConversation] Starting for users: ${user1Id} and ${user2Id}`);
+  
   // Check if these users already have a direct conversation
   // Find conversations where both users are participants
   const user1Conversations = await db
@@ -554,6 +566,8 @@ export async function getOrCreateDirectConversation(user1Id: number, user2Id: nu
         isNull(conversationParticipants.leftAt)
       )
     );
+  
+  console.log(`[messageService.getOrCreateDirectConversation] User ${user1Id} has ${user1Conversations.length} conversations`);
     
   const user2Conversations = await db
     .select({ conversationId: conversationParticipants.conversationId })
@@ -564,11 +578,15 @@ export async function getOrCreateDirectConversation(user1Id: number, user2Id: nu
         isNull(conversationParticipants.leftAt)
       )
     );
+  
+  console.log(`[messageService.getOrCreateDirectConversation] User ${user2Id} has ${user2Conversations.length} conversations`);
     
   // Find common conversations
   const commonConversationIds = user1Conversations
     .map(c => c.conversationId)
     .filter(id => user2Conversations.some(c => c.conversationId === id));
+  
+  console.log(`[messageService.getOrCreateDirectConversation] Found ${commonConversationIds.length} common conversations`);
     
   // Check each common conversation to see if it's a direct message (non-group) with just these two users
   for (const conversationId of commonConversationIds) {
@@ -596,12 +614,14 @@ export async function getOrCreateDirectConversation(user1Id: number, user2Id: nu
         
       if (participantCount[0]?.count === 2) {
         // This is a direct conversation between these two users
+        console.log(`[messageService.getOrCreateDirectConversation] ✅ Found existing conversation ID: ${conversationId}`);
         return await getConversation(conversationId);
       }
     }
   }
   
   // No existing direct conversation found, create one
+  console.log(`[messageService.getOrCreateDirectConversation] No existing conversation found, creating new one...`);
   const user1 = await storage.getUser(user1Id);
   const user2 = await storage.getUser(user2Id);
   
@@ -622,6 +642,9 @@ export async function getOrCreateDirectConversation(user1Id: number, user2Id: nu
     },
     [user1Id, user2Id]
   );
+  
+  console.log(`[messageService.getOrCreateDirectConversation] ✅ Created new conversation ID: ${result.conversation.id}`);
+  console.log(`[messageService.getOrCreateDirectConversation] Participants: [${user1Id}, ${user2Id}]`);
   
   return await getConversation(result.conversation.id);
 }

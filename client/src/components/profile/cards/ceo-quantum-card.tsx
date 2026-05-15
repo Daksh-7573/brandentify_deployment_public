@@ -35,8 +35,8 @@ const CEOQuantumCard: React.FC<CEOQuantumCardProps> = ({ userData, isLoading = f
   };
 
   const profileLink = userData.randomProfileLink 
-    ? `brandentifier.com/r/${userData.randomProfileLink}` 
-    : `brandentifier.com/@${userData.brandName || userData.username}`;
+    ? `brandentify.com/r/${userData.randomProfileLink}` 
+    : `brandentify.com/@${userData.brandName || userData.username}`;
 
   const handleCopyEmail = async () => {
     if (userData.email) {
@@ -336,3 +336,4 @@ const CEOQuantumCard: React.FC<CEOQuantumCardProps> = ({ userData, isLoading = f
 };
 
 export default CEOQuantumCard;
+

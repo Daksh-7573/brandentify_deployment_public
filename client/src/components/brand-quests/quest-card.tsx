@@ -333,7 +333,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   };
   
   return (
-    <div className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-xl p-5 shadow-lg transition-all hover:shadow-xl hover:bg-black/30 hover:scale-[1.02] duration-300">
+    <div className="w-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-lg transition-all hover:shadow-xl hover:bg-white/8 hover:scale-[1.02] duration-300">
       <div className="pb-2">
         <div className="flex justify-between items-start">
           <div className="flex-1">
@@ -365,7 +365,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
             {getQuestStatusLabel(quest.status)}
           </Badge>
         </div>
-        <p className="ml-7 mt-1 text-white/80 text-sm">
+        <p className="ml-7 mt-1 text-gray-400 text-sm">
           {questDefinition?.description}
         </p>
         
@@ -535,7 +535,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                       : `Auto-tracking: ${quest.progress}/${questDefinition.targetCount} completed`}
                 </div>
               </TooltipTrigger>
-              <TooltipContent className="bg-gray-900/90 text-white border-white/10">
+              <TooltipContent className="bg-white/10 backdrop-blur-md text-white border border-white/20">
                 {isComplete && quest.xpEarned 
                   ? `You earned ${quest.xpEarned} XP and ${quest.badgeEarned ? `the ${getBadgeLabel(quest.badgeEarned)} badge` : 'no badge'}`
                   : isComplete 
@@ -553,9 +553,9 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
             {isActive && (
               <Button
                 size="sm"
-                variant="outline"
                 onClick={() => setConfirmOpen(true)}
-                className="text-xs px-2 py-1 h-auto bg-white/5 border-white/20 text-white/80 hover:bg-white/10 hover:border-white/30 hover:text-white"
+                className="neo-glass-button text-xs px-4 py-2 h-auto"
+                style={{ borderRadius: '5px' }}
                 disabled={completeQuestMutation.isPending}
               >
                 {completeQuestMutation.isPending ? 'Completing...' : 'Mark Complete'}
@@ -574,17 +574,19 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
       
       {/* Confirmation Dialog for Completion */}
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <AlertDialogContent className="bg-gray-900/90 border-white/10 text-white">
+        <AlertDialogContent className="bg-white/5 backdrop-blur-xl border border-white/10 text-white rounded-2xl">
           <AlertDialogHeader>
             <AlertDialogTitle>Complete Quest</AlertDialogTitle>
-            <AlertDialogDescription className="text-white/70">
+            <AlertDialogDescription className="text-gray-400">
               Are you sure you want to mark this quest as complete? You will earn {questDefinition.xpReward} XP
               {questDefinition.badgeReward ? ` and the ${getBadgeLabel(questDefinition.badgeReward)} badge` : ''}.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-gray-800 text-white border-white/10 hover:bg-gray-700">Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleComplete} className="bg-white/20 text-white hover:bg-white/30">
+            <AlertDialogCancel className="neo-glass-button bg-white/5 text-white border-white/10 hover:bg-white/10" style={{ borderRadius: '5px' }}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleComplete} className="neo-glass-button bg-white/20 text-white hover:bg-white/30" style={{ borderRadius: '5px' }}>
               Complete Quest
             </AlertDialogAction>
           </AlertDialogFooter>

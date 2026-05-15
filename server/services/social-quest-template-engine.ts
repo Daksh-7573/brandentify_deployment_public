@@ -171,7 +171,7 @@ export class SocialQuestTemplateEngine {
 
   /**
    * Intelligent platform selection based on user's target audiences
-   * Returns 2-3 optimal platforms where their audiences are most active (NO BRANDENTIFIER)
+   * Returns 2-3 optimal platforms where their audiences are most active (NO BRANDENTIFY)
    */
   async selectOptimalPlatforms(userId: number): Promise<string[]> {
     try {
@@ -198,7 +198,7 @@ export class SocialQuestTemplateEngine {
   /**
    * Create audience-based platform mapping
    * Selects platforms based on where user's PRIMARY and SECONDARY audiences are most active
-   * NO BRANDENTIFIER - only external platforms
+   * NO BRANDENTIFY - only external platforms
    */
   private createAudienceBasedPlatformMapping(user: any): string[] {
     const platformScores: { [platform: string]: number } = {

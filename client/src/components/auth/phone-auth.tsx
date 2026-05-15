@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { PhoneInput } from "@/components/ui/phone-input";
-import { AuthContext } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { MobileSignupForm } from "./mobile-signup-form";
 
@@ -36,7 +36,7 @@ const otpSchema = z.object({
 });
 
 export function PhoneAuth() {
-  const authContext = useContext(AuthContext);
+  const { signIn } = useAuth();
   const [_, setLocation] = useLocation();
   const [otpSent, setOtpSent] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
@@ -127,7 +127,7 @@ export function PhoneAuth() {
           setUserData(data.user);
         } else {
           // For existing users, log in directly
-          authContext.signInWithPhone(data.user);
+          signIn(data.user);
           
           // Small delay to show success message before redirecting
           setTimeout(() => {
@@ -169,7 +169,7 @@ export function PhoneAuth() {
       }
       
       // Now sign in with the updated user data
-      authContext.signInWithPhone(updatedUser);
+      signIn(updatedUser);
       
       setSuccessMessage("Profile created successfully! Redirecting...");
       
@@ -220,7 +220,7 @@ export function PhoneAuth() {
             />
             <Button
               type="submit"
-              className="w-full"
+              className="neo-glass-button w-full"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
@@ -231,8 +231,7 @@ export function PhoneAuth() {
             </Button>
             <Button
               type="button"
-              variant="ghost"
-              className="w-full mt-2"
+              className="neo-glass-button secondary w-full mt-2"
               onClick={() => setOtpSent(false)}
               disabled={isSubmitting}
             >
@@ -269,7 +268,7 @@ export function PhoneAuth() {
           />
           <Button
             type="submit"
-            className="w-full"
+            className="neo-glass-button w-full"
             disabled={isSubmitting}
           >
             {isSubmitting ? (

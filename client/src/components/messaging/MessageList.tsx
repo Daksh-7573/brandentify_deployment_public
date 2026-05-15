@@ -5,9 +5,11 @@ import { format, isToday, isYesterday } from 'date-fns';
 import { Check, Loader2, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { clientEncryption } from '@/lib/encryption';
+import { useAuth } from '@/hooks/use-auth';
 
 const MessageList: React.FC = () => {
   const { currentConversation, markConversationAsRead } = useChat();
+  const { user } = useAuth();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const conversationId = currentConversation?.id;
 
@@ -134,7 +136,7 @@ const MessageList: React.FC = () => {
     return groups;
   }, []);
 
-  const userId = localStorage.getItem('userId');
+  const userId = user?.id ? String(user.id) : (localStorage.getItem('userId') || '');
 
   return (
     <div className="flex-1 flex flex-col space-y-6">

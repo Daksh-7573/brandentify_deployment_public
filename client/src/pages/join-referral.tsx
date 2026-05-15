@@ -49,9 +49,10 @@ export default function JoinReferralPage({ code }: { code: string }) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-800">
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-white mb-4">Joining Brandentifier...</h1>
+        <h1 className="text-2xl font-bold text-white mb-4">Joining Brandentify...</h1>
         <p className="text-gray-400">Please wait while we process your invite link</p>
       </div>
     </div>
   );
 }
+

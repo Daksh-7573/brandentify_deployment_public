@@ -29,7 +29,7 @@ router.get('/direct-content', async (req: Request, res: Response) => {
     const mockContent = [
       {
         id: 1,
-        title: 'Getting Started with Brandentifier',
+        title: 'Getting Started with Brandentify',
         slug: 'getting-started',
         type: 'article',
         status: 'published',

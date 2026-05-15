@@ -17,8 +17,7 @@ import { Progress } from "@/components/ui/progress";
 import { Search as SearchIcon, Users, MessageSquare, Hash, UserPlus, Star, MapPin, ArrowUpRight, ArrowDownRight, Plus, Check, ChevronRight, Sparkles, Building, FileCode, Image } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
-import Header from "@/components/layout/header";
-import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
+// NeoGlass components removed - using direct design system styling
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
 // Constants for form options
@@ -338,7 +337,7 @@ function SearchPage() {
     };
     
     return (
-      <Card className="group overflow-hidden border border-white/20 bg-gray-900/60 backdrop-blur-md shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] hover:bg-gray-800/60">
+      <Card className="group overflow-hidden border border-white/20 bg-white/5 backdrop-blur-xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] hover:bg-white/10">
         <CardContent className="p-5 flex justify-between items-center">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors duration-300">
@@ -346,7 +345,7 @@ function SearchPage() {
             </div>
             <div>
               <h3 className="font-semibold text-white">#{tag.name}</h3>
-              <p className="text-xs text-gray-300">{tag.count} {tag.count === 1 ? 'post' : 'posts'}</p>
+              <p className="text-xs text-gray-400">{tag.count} {tag.count === 1 ? 'post' : 'posts'}</p>
             </div>
           </div>
           
@@ -354,7 +353,7 @@ function SearchPage() {
             <button 
               className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all hover:scale-105 flex items-center ${
                 isFollowing 
-                  ? 'text-white bg-gray-800/80 border border-white/20 hover:bg-gray-700/80 hover:shadow-md' 
+                  ? 'text-white bg-black/90 border border-white/20 hover:bg-white/10 hover:shadow-md' 
                   : 'bg-white/20 text-white hover:bg-white/30 hover:shadow-md'
               }`}
               onClick={handleFollowToggle}
@@ -392,18 +391,12 @@ function SearchPage() {
   };
 
   return (
-    <div className="flex h-screen flex-col">
-      <Header />
-      <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
-        {/* Main content area - Mobile responsive */}
-        <div className="flex-1 overflow-auto">
-          <NeoGlassLayout className="mt-3 mx-2 sm:mx-4 lg:mx-6"> {/* Responsive margins */}
-            {/* Main content */}
-            <div className="flex-1 max-w-4xl">
+    <div className="w-full min-h-full text-white selection:bg-white/20 font-['Outfit'] relative flex justify-center px-4 sm:px-6 lg:px-8 pt-28 pb-8">
+      <div className="w-full max-w-5xl bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8">
               <div className="mb-4 sm:mb-6 lg:mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="w-full sm:w-auto">
                   <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Discover & Connect</h1>
-                  <p className="text-white/80 mt-1 text-sm sm:text-base">
+                  <p className="text-gray-400 mt-1 text-sm sm:text-base">
                     Find content, professionals, and networking opportunities in one place
                   </p>
                 </div>
@@ -502,19 +495,19 @@ function SearchPage() {
                     {/* Pulses Results */}
                     <TabsContent value="pulses">
                       {!submittedQuery ? (
-                        <NeoGlassSection>
+                        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8">
                           <div className="flex flex-col items-center justify-center py-10">
-                            <MessageSquare className="h-16 w-16 text-white/80 mb-4" />
+                            <MessageSquare className="h-16 w-16 text-gray-400 mb-4" />
                             <h3 className="text-xl font-semibold mb-2 text-white">Search for pulses</h3>
-                            <p className="text-center text-white/70 max-w-md mb-6">
+                            <p className="text-center text-gray-400 max-w-md mb-6">
                               Discover polls, media shares, and projects from professionals
                             </p>
                           </div>
-                        </NeoGlassSection>
+                        </div>
                       ) : isLoading ? (
                         <div className="space-y-4">
                           {[1, 2, 3].map((i) => (
-                            <Card key={i} className="bg-gray-900/60 backdrop-blur-md border border-white/10 shadow-xl">
+                            <Card key={i} className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl">
                               <CardContent className="py-4">
                                 <div className="flex items-center gap-3 mb-3">
                                   <Skeleton className="h-10 w-10 rounded-full bg-white/10" />
@@ -538,7 +531,7 @@ function SearchPage() {
                       ) : searchResults && searchResults.pulses && searchResults.pulses.length > 0 ? (
                         <div className="space-y-3 sm:space-y-4">
                           {searchResults.pulses.map((pulse) => (
-                            <NeoGlassSection key={pulse.id} className="overflow-hidden mb-4 sm:mb-6">
+                            <div key={pulse.id} className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 md:p-6 overflow-hidden mb-4 sm:mb-6">
                               <div className="pb-2 sm:pb-3">
                                 <div className="flex justify-between">
                                   <div className="flex items-start gap-2 sm:gap-3">
@@ -555,7 +548,7 @@ function SearchPage() {
                                       <div className="font-medium text-white text-sm sm:text-base truncate">
                                         {pulse.user?.name || "Anonymous User"}
                                       </div>
-                                      <div className="flex items-center gap-1 sm:gap-2 text-xs text-white/70">
+                                      <div className="flex items-center gap-1 sm:gap-2 text-xs text-gray-400">
                                         <span className="truncate">
                                           {formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true })}
                                         </span>
@@ -573,50 +566,50 @@ function SearchPage() {
                               </div>
                               <div className="px-3 sm:px-4 py-2">
                                 <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-white line-clamp-2">{pulse.title}</h3>
-                                <p className="text-white/70 text-sm sm:text-base line-clamp-3">{pulse.content}</p>
+                                <p className="text-gray-400 text-sm sm:text-base line-clamp-3">{pulse.content}</p>
                               </div>
                               <div className="flex justify-between pt-0 px-3 sm:px-4 pb-3 sm:pb-4">
                                 <Button 
                                   variant="ghost" 
                                   size="sm" 
-                                  className="text-gray-300 hover:text-white hover:bg-white/10 text-xs sm:text-sm"
+                                  className="text-gray-400 hover:text-white hover:bg-white/10 text-xs sm:text-sm"
                                   onClick={() => setLocation(`/pulses/${pulse.id}`)}
                                 >
                                   View details
                                 </Button>
                               </div>
-                            </NeoGlassSection>
+                            </div>
                           ))}
                         </div>
                       ) : (
-                        <NeoGlassSection>
+                        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8">
                           <div className="flex flex-col items-center justify-center py-10">
-                            <MessageSquare className="h-16 w-16 text-white/80 mb-4" />
+                            <MessageSquare className="h-16 w-16 text-gray-400 mb-4" />
                             <h3 className="text-xl font-semibold mb-2 text-white">No pulses found</h3>
-                            <p className="text-center text-white/70 max-w-md mb-6">
+                            <p className="text-center text-gray-400 max-w-md mb-6">
                               Try a different search term or check for typos
                             </p>
                           </div>
-                        </NeoGlassSection>
+                        </div>
                       )}
                     </TabsContent>
 
                     {/* Profiles Results */}
                     <TabsContent value="profiles">
                       {!submittedQuery ? (
-                        <NeoGlassSection>
+                        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8">
                           <div className="flex flex-col items-center justify-center py-10">
-                            <Users className="h-16 w-16 text-white/80 mb-4" />
+                            <Users className="h-16 w-16 text-gray-400 mb-4" />
                             <h3 className="text-xl font-semibold mb-2 text-white">Search for profiles</h3>
-                            <p className="text-center text-white/70 max-w-md mb-6">
+                            <p className="text-center text-gray-400 max-w-md mb-6">
                               Discover professionals across various industries
                             </p>
                           </div>
-                        </NeoGlassSection>
+                        </div>
                       ) : isLoading ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                           {[1, 2, 3, 4, 5, 6].map((i) => (
-                            <Card key={i} className="overflow-hidden rounded-xl shadow-xl border border-white/10 bg-gray-900/60 backdrop-blur-md">
+                            <Card key={i} className="overflow-hidden rounded-xl shadow-xl border border-white/10 bg-white/5 backdrop-blur-xl">
                               <div className="bg-gradient-to-br from-white/15 via-white/10 to-white/5 h-28 relative overflow-hidden">
                                 <div className="absolute bottom-0 left-0 w-20 h-20 bg-white/10 rounded-full -mb-10 -ml-10 blur-xl"></div>
                                 <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mt-10 -mr-10 blur-xl"></div>
@@ -648,21 +641,21 @@ function SearchPage() {
                             industry: string | null;
                             randomProfileLink: string | null;
                           }) => (
-                            <Card key={profile.id} className="overflow-hidden rounded-xl border border-white/10 bg-gray-900/60 backdrop-blur-md shadow-xl hover:shadow-2xl transition-all hover:scale-[1.02]">
+                            <Card key={profile.id} className="overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all hover:scale-[1.02]">
                               <div className="bg-gradient-to-br from-white/15 via-white/10 to-white/5 h-28 relative overflow-hidden">
                                 <div className="absolute bottom-0 left-0 w-20 h-20 bg-white/10 rounded-full -mb-10 -ml-10 blur-xl"></div>
                                 <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mt-10 -mr-10 blur-xl"></div>
                               </div>
                               <div className="px-6 pb-6 relative">
                                 <div className="flex justify-center -mt-12 mb-4">
-                                  <Avatar className="h-24 w-24 ring-4 ring-white/20 bg-gray-800">
+                                  <Avatar className="h-24 w-24 ring-4 ring-white/20 bg-black/90">
                                     <AvatarImage src={profile.photoURL || undefined} />
                                     <AvatarFallback className="text-xl">{getInitials(profile.name)}</AvatarFallback>
                                   </Avatar>
                                 </div>
                                 <div className="text-center">
                                   <h3 className="text-xl font-semibold text-white">{profile.name}</h3>
-                                  <p className="text-gray-300">{profile.title || "Professional"}</p>
+                                  <p className="text-gray-400">{profile.title || "Professional"}</p>
                                   
                                   {(profile.location || profile.industry) && (
                                     <div className="mt-2 flex flex-wrap justify-center gap-2">
@@ -695,34 +688,34 @@ function SearchPage() {
                           ))}
                         </div>
                       ) : (
-                        <NeoGlassSection>
+                        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8">
                           <div className="flex flex-col items-center justify-center py-10">
-                            <Users className="h-16 w-16 text-white/80 mb-4" />
+                            <Users className="h-16 w-16 text-gray-400 mb-4" />
                             <h3 className="text-xl font-semibold mb-2 text-white">No profiles found</h3>
-                            <p className="text-center text-white/70 max-w-md mb-6">
+                            <p className="text-center text-gray-400 max-w-md mb-6">
                               Try a different search term or check for typos
                             </p>
                           </div>
-                        </NeoGlassSection>
+                        </div>
                       )}
                     </TabsContent>
 
                     {/* Hashtags Results */}
                     <TabsContent value="hashtags">
                       {!submittedQuery ? (
-                        <NeoGlassSection>
+                        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8">
                           <div className="flex flex-col items-center justify-center py-10">
-                            <Hash className="h-16 w-16 text-white/80 mb-4" />
+                            <Hash className="h-16 w-16 text-gray-400 mb-4" />
                             <h3 className="text-xl font-semibold mb-2 text-white">Search for hashtags</h3>
-                            <p className="text-center text-white/70 max-w-md mb-6">
+                            <p className="text-center text-gray-400 max-w-md mb-6">
                               Find and follow topics that interest you
                             </p>
                           </div>
-                        </NeoGlassSection>
+                        </div>
                       ) : isLoading ? (
                         <div className="space-y-4">
                           {[1, 2, 3, 4, 5].map((i) => (
-                            <Card key={i} className="border border-white/10 bg-gray-900/60 backdrop-blur-md shadow-xl">
+                            <Card key={i} className="border border-white/10 bg-white/5 backdrop-blur-xl shadow-xl">
                               <CardContent className="p-4 flex justify-between items-center">
                                 <div className="flex items-center gap-3">
                                   <Skeleton className="h-10 w-10 rounded-full bg-white/10" />
@@ -743,15 +736,15 @@ function SearchPage() {
                           ))}
                         </div>
                       ) : (
-                        <NeoGlassSection>
+                        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8">
                           <div className="flex flex-col items-center justify-center py-10">
-                            <Hash className="h-16 w-16 text-white/80 mb-4" />
+                            <Hash className="h-16 w-16 text-gray-400 mb-4" />
                             <h3 className="text-xl font-semibold mb-2 text-white">No hashtags found</h3>
-                            <p className="text-center text-white/70 max-w-md mb-6">
+                            <p className="text-center text-gray-400 max-w-md mb-6">
                               Try a different search term or check for typos
                             </p>
                           </div>
-                        </NeoGlassSection>
+                        </div>
                       )}
                     </TabsContent>
                   </Tabs>
@@ -759,10 +752,10 @@ function SearchPage() {
 
                 {/* Smart Connect Tab */}
                 <TabsContent value="smart-connect">
-                  <NeoGlassSection>
+                  <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 mb-6">
                     <div className="mb-6">
                       <h2 className="text-2xl font-bold text-white mb-2">Smart Connection</h2>
-                      <p className="text-gray-300">
+                      <p className="text-gray-400">
                         Find professionals who match your career needs
                       </p>
                     </div>
@@ -771,7 +764,7 @@ function SearchPage() {
                       <Card className="neo-glass-card-smart-connect mb-8">
                         <CardHeader className="pb-4">
                           <CardTitle className="text-white text-xl font-semibold">Smart Connection Preferences</CardTitle>
-                          <CardDescription className="text-white/70">
+                          <CardDescription className="text-gray-400">
                             Define your criteria to discover the most relevant professional connections
                           </CardDescription>
                         </CardHeader>
@@ -877,7 +870,7 @@ function SearchPage() {
                       <Card className="neo-glass-card-smart-connect">
                         <CardHeader className="pb-4">
                           <CardTitle className="text-white text-xl font-semibold">Smart Connection Results</CardTitle>
-                          <CardDescription className="text-white/70">
+                          <CardDescription className="text-gray-400">
                             Professionals who match your criteria based on intelligent analysis
                           </CardDescription>
                         </CardHeader>
@@ -919,7 +912,7 @@ function SearchPage() {
                                       
                                       <div className="flex-grow">
                                         <h4 className="font-medium text-white">{match.user.name}</h4>
-                                        <p className="text-sm text-gray-300">{match.user.title}</p>
+                                        <p className="text-sm text-gray-400">{match.user.title}</p>
                                         
                                         <div className="flex flex-wrap gap-1 mt-2">
                                           {match.strengthAreas?.map((area: string, i: number) => (
@@ -929,7 +922,7 @@ function SearchPage() {
                                           ))}
                                         </div>
                                         
-                                        <div className="flex items-center mt-3 text-xs text-gray-300">
+                                        <div className="flex items-center mt-3 text-xs text-gray-400">
                                           <MapPin size={12} className="mr-1" />
                                           {match.user.location}
                                         </div>
@@ -960,7 +953,7 @@ function SearchPage() {
                                       <h5 className="text-xs font-medium mb-2 text-white">Why This Match</h5>
                                       {match.compatibilityInsights && match.compatibilityInsights.length > 0 && (
                                         <div className="mb-3">
-                                          <p className="text-xs text-gray-300 mb-1">Compatibility Insights:</p>
+                                          <p className="text-xs text-gray-400 mb-1">Compatibility Insights:</p>
                                           <ul className="space-y-1">
                                             {match.compatibilityInsights.slice(0, 2).map((insight: string, i: number) => (
                                               <li key={i} className="text-xs text-white flex items-start">
@@ -973,7 +966,7 @@ function SearchPage() {
                                       )}
                                       {match.matchReasons && match.matchReasons.length > 0 && (
                                         <div>
-                                          <p className="text-xs text-gray-300 mb-1">Match Reasons:</p>
+                                          <p className="text-xs text-gray-400 mb-1">Match Reasons:</p>
                                           <ul className="space-y-1">
                                             {match.matchReasons.slice(0, 2).map((reason: string, i: number) => (
                                               <li key={i} className="text-xs text-white flex items-start">
@@ -991,9 +984,9 @@ function SearchPage() {
                             </div>
                           ) : (
                             <div className="flex flex-col items-center justify-center py-10">
-                              <UserPlus className="h-16 w-16 text-white/80 mb-4" />
+                              <UserPlus className="h-16 w-16 text-gray-400 mb-4" />
                               <h3 className="text-xl font-semibold mb-2 text-white">No matches found</h3>
-                              <p className="text-center text-white/70 max-w-md mb-6">
+                              <p className="text-center text-gray-400 max-w-md mb-6">
                                 Try adjusting your criteria to find more professionals
                               </p>
                             </div>
@@ -1001,7 +994,7 @@ function SearchPage() {
                         </CardContent>
                         {showMatchResults && matchMutation.isSuccess && matchMutation.data && matchMutation.data.length > 0 && (
                           <CardFooter className="flex justify-between">
-                            <p className="text-sm text-gray-300">Showing top {matchMutation.data.length} matches</p>
+                            <p className="text-sm text-gray-400">Showing top {matchMutation.data.length} matches</p>
                             <button 
                               className="px-4 py-1.5 rounded-full bg-white/10 border border-white/20 hover:bg-white/20 hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 shadow-sm font-medium transition-all text-sm flex items-center gap-1.5 text-white"
                             >
@@ -1012,13 +1005,10 @@ function SearchPage() {
                         )}
                       </Card>
                     )}
-                  </NeoGlassSection>
+                  </div>
                 </TabsContent>
               </Tabs>
             </div>
-          </NeoGlassLayout>
-        </div>
-      </div>
     </div>
   );
 };

@@ -1,0 +1,1840 @@
+﻿src/components/profile/projects.tsx(1062,14): error TS17008: JSX element 'Form' has no corresponding closing tag.
+src/components/profile/projects.tsx(2167,13): error TS17002: Expected corresponding JSX closing tag for 'DialogContent'.
+src/components/profile/projects.tsx(2168,11): error TS17002: Expected corresponding JSX closing tag for 'Dialog'.
+src/components/profile/projects.tsx(2169,7): error TS1005: ')' expected.
+src/components/profile/projects.tsx(2169,9): error TS17002: Expected corresponding JSX closing tag for 'div'.
+src/components/profile/projects.tsx(2171,7): error TS1005: ')' expected.
+src/components/profile/projects.tsx(2603,5): error TS1128: Declaration or statement expected.
+src/components/profile/projects.tsx(2604,3): error TS1109: Expression expected.
+src/pages/admin/content.tsx(771,21): error TS1005: ')' expected.
+src/pages/radar.tsx(834,5): error TS1005: ')' expected.
+src/pages/radar.tsx(835,3): error TS1109: Expression expected.
+src/pages/radar.tsx(836,1): error TS1128: Declaration or statement expected.
+src/pages/search-backup.tsx(376,13): error TS17002: Expected corresponding JSX closing tag for 'CardContent'.
+src/pages/search-backup.tsx(377,11): error TS17002: Expected corresponding JSX closing tag for 'Card'.
+src/pages/search-backup.tsx(378,7): error TS1005: ')' expected.
+src/pages/search-backup.tsx(379,5): error TS1109: Expression expected.
+src/pages/search-backup.tsx(380,3): error TS1128: Declaration or statement expected.
+src/pages/search-backup.tsx(985,17): error TS1005: ')' expected.
+src/pages/search-backup.tsx(985,19): error TS17002: Expected corresponding JSX closing tag for 'NeoGlassSection'.
+src/pages/search-backup.tsx(986,17): error TS17002: Expected corresponding JSX closing tag for 'TabsContent'.
+src/pages/search-backup.tsx(987,15): error TS17002: Expected corresponding JSX closing tag for 'Tabs'.
+src/pages/search-backup.tsx(988,13): error TS17002: Expected corresponding JSX closing tag for 'NeoGlassLayout'.
+src/pages/search-backup.tsx(989,11): error TS17002: Expected corresponding JSX closing tag for 'div'.
+src/pages/search-backup.tsx(991,5): error TS1005: ')' expected.
+src/pages/search-backup.tsx(992,3): error TS1109: Expression expected.
+src/pages/search-backup.tsx(993,1): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(1882,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1882,7): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1882,18): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1882,28): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1882,33): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1882,70): error TS1005: ';' expected.
+../server/routes-broken.ts(1882,82): error TS1005: ';' expected.
+../server/routes-broken.ts(1882,180): error TS1005: ';' expected.
+../server/routes-broken.ts(1882,182): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1882,184): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1882,198): error TS1435: Unknown keyword or identifier. Did you mean 'break down'?
+../server/routes-broken.ts(1882,208): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1882,211): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1884,1): error TS1127: Invalid character.
+../server/routes-broken.ts(1884,2): error TS1127: Invalid character.
+../server/routes-broken.ts(1884,4): error TS1127: Invalid character.
+../server/routes-broken.ts(1884,7): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1884,12): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1884,31): error TS1005: ';' expected.
+../server/routes-broken.ts(1886,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1886,12): error TS1005: ';' expected.
+../server/routes-broken.ts(1886,25): error TS1109: Expression expected.
+../server/routes-broken.ts(1886,39): error TS1005: ';' expected.
+../server/routes-broken.ts(1886,51): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1886,55): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1887,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1887,18): error TS1005: ';' expected.
+../server/routes-broken.ts(1887,27): error TS1109: Expression expected.
+../server/routes-broken.ts(1887,40): error TS1005: ';' expected.
+../server/routes-broken.ts(1887,69): error TS1005: ';' expected.
+../server/routes-broken.ts(1888,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1888,16): error TS1005: ';' expected.
+../server/routes-broken.ts(1888,35): error TS1005: ';' expected.
+../server/routes-broken.ts(1888,46): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1888,50): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1888,63): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1888,74): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1889,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1889,13): error TS1005: ';' expected.
+../server/routes-broken.ts(1889,35): error TS1109: Expression expected.
+../server/routes-broken.ts(1889,47): error TS1005: ';' expected.
+../server/routes-broken.ts(1889,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1889,63): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1891,1): error TS1127: Invalid character.
+../server/routes-broken.ts(1891,2): error TS1127: Invalid character.
+../server/routes-broken.ts(1891,4): error TS1127: Invalid character.
+../server/routes-broken.ts(1891,7): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1891,14): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1893,1): error TS1127: Invalid character.
+../server/routes-broken.ts(1893,2): error TS1127: Invalid character.
+../server/routes-broken.ts(1893,3): error TS1127: Invalid character.
+../server/routes-broken.ts(1893,5): error TS1005: ';' expected.
+../server/routes-broken.ts(1893,6): error TS1127: Invalid character.
+../server/routes-broken.ts(1893,7): error TS1127: Invalid character.
+../server/routes-broken.ts(1893,9): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1893,17): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,1): error TS1435: Unknown keyword or identifier. Did you mean 'this'?
+../server/routes-broken.ts(1894,6): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,11): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,18): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,21): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,26): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,36): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,52): error TS1005: '(' expected.
+../server/routes-broken.ts(1894,63): error TS1005: ')' expected.
+../server/routes-broken.ts(1894,68): error TS1435: Unknown keyword or identifier. Did you mean 'static'?
+../server/routes-broken.ts(1894,78): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,87): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,91): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,121): error TS1005: ';' expected.
+../server/routes-broken.ts(1894,132): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,138): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,144): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,151): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,161): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,164): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,174): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,184): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,189): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,193): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1894,209): error TS1005: ';' expected.
+../server/routes-broken.ts(1894,216): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1896,1): error TS1003: Identifier expected.
+../server/routes-broken.ts(1896,7): error TS1005: ';' expected.
+../server/routes-broken.ts(1896,15): error TS1109: Expression expected.
+../server/routes-broken.ts(1897,12): error TS1005: ';' expected.
+../server/routes-broken.ts(1897,17): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1897,27): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1897,42): error TS1005: '(' expected.
+../server/routes-broken.ts(1897,51): error TS1005: ')' expected.
+../server/routes-broken.ts(1898,10): error TS1005: ';' expected.
+../server/routes-broken.ts(1898,14): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1898,17): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1898,27): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1898,35): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1898,44): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1899,12): error TS1005: ';' expected.
+../server/routes-broken.ts(1899,18): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1899,30): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1899,33): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1899,40): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1900,10): error TS1005: ';' expected.
+../server/routes-broken.ts(1900,59): error TS1005: ',' expected.
+../server/routes-broken.ts(1900,62): error TS1005: ',' expected.
+../server/routes-broken.ts(1902,1): error TS1127: Invalid character.
+../server/routes-broken.ts(1902,2): error TS1127: Invalid character.
+../server/routes-broken.ts(1902,3): error TS1127: Invalid character.
+../server/routes-broken.ts(1902,5): error TS1005: ';' expected.
+../server/routes-broken.ts(1902,6): error TS1127: Invalid character.
+../server/routes-broken.ts(1902,7): error TS1127: Invalid character.
+../server/routes-broken.ts(1902,9): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1903,1): error TS1435: Unknown keyword or identifier. Did you mean 'this'?
+../server/routes-broken.ts(1903,6): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1903,11): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1903,21): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1903,42): error TS1005: ';' expected.
+../server/routes-broken.ts(1903,52): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1903,56): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1903,65): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1903,75): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1903,78): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1903,83): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1903,97): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1903,103): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1903,111): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1903,122): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1905,1): error TS1003: Identifier expected.
+../server/routes-broken.ts(1905,7): error TS1005: ';' expected.
+../server/routes-broken.ts(1905,15): error TS1109: Expression expected.
+../server/routes-broken.ts(1906,12): error TS1005: ';' expected.
+../server/routes-broken.ts(1906,34): error TS1005: ';' expected.
+../server/routes-broken.ts(1907,10): error TS1005: ';' expected.
+../server/routes-broken.ts(1907,29): error TS1005: ';' expected.
+../server/routes-broken.ts(1907,35): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1907,39): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1908,12): error TS1005: ';' expected.
+../server/routes-broken.ts(1908,30): error TS1005: '(' expected.
+../server/routes-broken.ts(1908,42): error TS1005: ';' expected.
+../server/routes-broken.ts(1908,52): error TS1005: ';' expected.
+../server/routes-broken.ts(1909,11): error TS1005: ')' expected.
+../server/routes-broken.ts(1909,22): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1909,36): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1909,43): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1911,1): error TS1127: Invalid character.
+../server/routes-broken.ts(1911,2): error TS1127: Invalid character.
+../server/routes-broken.ts(1911,3): error TS1127: Invalid character.
+../server/routes-broken.ts(1911,5): error TS1005: ';' expected.
+../server/routes-broken.ts(1911,6): error TS1127: Invalid character.
+../server/routes-broken.ts(1911,7): error TS1127: Invalid character.
+../server/routes-broken.ts(1911,34): error TS1005: ';' expected.
+../server/routes-broken.ts(1912,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1912,3): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1912,8): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1912,14): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1912,19): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1912,25): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1912,31): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1912,35): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1912,38): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1912,46): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1912,51): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1912,62): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1912,67): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1912,76): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1912,86): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1912,91): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1912,95): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1914,1): error TS1003: Identifier expected.
+../server/routes-broken.ts(1914,7): error TS1005: ';' expected.
+../server/routes-broken.ts(1914,15): error TS1109: Expression expected.
+../server/routes-broken.ts(1915,8): error TS1005: ';' expected.
+../server/routes-broken.ts(1915,19): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1915,28): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1915,45): error TS1005: '(' expected.
+../server/routes-broken.ts(1915,55): error TS1005: ')' expected.
+../server/routes-broken.ts(1916,8): error TS1005: ';' expected.
+../server/routes-broken.ts(1916,18): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1916,29): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1916,37): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1916,41): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1916,44): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1916,53): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1917,14): error TS1005: ';' expected.
+../server/routes-broken.ts(1917,25): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1917,36): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1917,45): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1917,48): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1918,10): error TS1005: ';' expected.
+../server/routes-broken.ts(1918,24): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1918,30): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1918,39): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1920,1): error TS1127: Invalid character.
+../server/routes-broken.ts(1920,2): error TS1127: Invalid character.
+../server/routes-broken.ts(1920,4): error TS1127: Invalid character.
+../server/routes-broken.ts(1920,7): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1922,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1922,4): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1922,15): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1922,20): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1922,36): error TS1005: '(' expected.
+../server/routes-broken.ts(1922,42): error TS1005: ';' expected.
+../server/routes-broken.ts(1922,49): error TS1005: ';' expected.
+../server/routes-broken.ts(1922,64): error TS1005: ')' expected.
+../server/routes-broken.ts(1924,1): error TS17006: An unary expression with the '-' operator is not allowed in the left-hand side of an exponentiation expression. Consider enclosing the expression in parentheses.
+../server/routes-broken.ts(1924,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1924,25): error TS1005: ';' expected.
+../server/routes-broken.ts(1924,33): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1925,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1925,13): error TS1005: ';' expected.
+../server/routes-broken.ts(1925,25): error TS1109: Expression expected.
+../server/routes-broken.ts(1925,37): error TS1005: ';' expected.
+../server/routes-broken.ts(1926,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1926,14): error TS1005: ';' expected.
+../server/routes-broken.ts(1926,31): error TS1005: ';' expected.
+../server/routes-broken.ts(1926,36): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1926,45): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1926,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1926,70): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1927,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1927,16): error TS1005: ';' expected.
+../server/routes-broken.ts(1927,28): error TS1109: Expression expected.
+../server/routes-broken.ts(1927,40): error TS1005: ';' expected.
+../server/routes-broken.ts(1927,53): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1927,77): error TS1005: ';' expected.
+../server/routes-broken.ts(1928,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1928,31): error TS1005: ';' expected.
+../server/routes-broken.ts(1928,40): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1928,44): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1928,53): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1930,1): error TS1127: Invalid character.
+../server/routes-broken.ts(1930,2): error TS1127: Invalid character.
+../server/routes-broken.ts(1930,4): error TS1127: Invalid character.
+../server/routes-broken.ts(1930,18): error TS1005: ';' expected.
+../server/routes-broken.ts(1932,13): error TS1005: ';' expected.
+../server/routes-broken.ts(1932,18): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1932,45): error TS1005: ';' expected.
+../server/routes-broken.ts(1932,55): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1932,68): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1932,77): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1932,80): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1932,85): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1933,15): error TS1005: ';' expected.
+../server/routes-broken.ts(1933,15): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1933,108): error TS1002: Unterminated string literal.
+../server/routes-broken.ts(1934,13): error TS1005: ';' expected.
+../server/routes-broken.ts(1934,37): error TS1005: ';' expected.
+../server/routes-broken.ts(1934,47): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1934,60): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1934,71): error TS1005: '(' expected.
+../server/routes-broken.ts(1934,76): error TS1005: ';' expected.
+../server/routes-broken.ts(1934,86): error TS1005: ';' expected.
+../server/routes-broken.ts(1935,1): error TS1005: ')' expected.
+../server/routes-broken.ts(1935,12): error TS1005: ';' expected.
+../server/routes-broken.ts(1935,36): error TS1005: ';' expected.
+../server/routes-broken.ts(1935,42): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1935,48): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1935,52): error TS1435: Unknown keyword or identifier. Did you mean 'catch'?
+../server/routes-broken.ts(1935,58): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1935,61): error TS1435: Unknown keyword or identifier. Did you mean 'let'?
+../server/routes-broken.ts(1935,74): error TS1005: ';' expected.
+../server/routes-broken.ts(1936,14): error TS1005: ';' expected.
+../server/routes-broken.ts(1936,18): error TS1005: ';' expected.
+../server/routes-broken.ts(1936,45): error TS1109: Expression expected.
+../server/routes-broken.ts(1936,50): error TS1005: '(' expected.
+../server/routes-broken.ts(1936,72): error TS1005: ')' expected.
+../server/routes-broken.ts(1938,1): error TS1127: Invalid character.
+../server/routes-broken.ts(1938,2): error TS1127: Invalid character.
+../server/routes-broken.ts(1938,4): error TS1005: ';' expected.
+../server/routes-broken.ts(1938,11): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1938,24): error TS1005: ';' expected.
+../server/routes-broken.ts(1940,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1940,4): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1940,24): error TS1005: ';' expected.
+../server/routes-broken.ts(1940,27): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1940,38): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1940,68): error TS1005: ';' expected.
+../server/routes-broken.ts(1940,90): error TS1005: ';' expected.
+../server/routes-broken.ts(1940,92): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1940,101): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1940,107): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1940,115): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1940,139): error TS1005: ';' expected.
+../server/routes-broken.ts(1940,148): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1940,159): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1940,173): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1940,178): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1940,189): error TS1005: '(' expected.
+../server/routes-broken.ts(1940,194): error TS1005: ')' expected.
+../server/routes-broken.ts(1940,201): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1940,215): error TS1003: Identifier expected.
+../server/routes-broken.ts(1942,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1942,10): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1942,15): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1942,22): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1942,34): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1942,40): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1942,47): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1942,60): error TS1005: ';' expected.
+../server/routes-broken.ts(1942,77): error TS1005: ';' expected.
+../server/routes-broken.ts(1942,84): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1942,94): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1942,97): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1942,102): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1942,128): error TS1005: ';' expected.
+../server/routes-broken.ts(1942,138): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1942,149): error TS1435: Unknown keyword or identifier. Did you mean 'with'?
+../server/routes-broken.ts(1942,156): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1944,12): error TS1005: ';' expected.
+../server/routes-broken.ts(1944,26): error TS1443: Module declaration names may only use ' or " quoted strings.
+../server/routes-broken.ts(1949,15): error TS1127: Invalid character.
+../server/routes-broken.ts(1949,17): error TS1005: ';' expected.
+../server/routes-broken.ts(1949,26): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1949,37): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1949,50): error TS1005: '(' expected.
+../server/routes-broken.ts(1949,51): error TS1005: ';' expected.
+../server/routes-broken.ts(1951,1): error TS1005: ';' expected.
+../server/routes-broken.ts(1951,7): error TS1005: ')' expected.
+../server/routes-broken.ts(1951,18): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1951,20): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1951,34): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1951,43): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1951,46): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1951,51): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1951,74): error TS1005: ';' expected.
+../server/routes-broken.ts(1951,155): error TS1005: ';' expected.
+../server/routes-broken.ts(1951,157): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1951,160): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1953,1): error TS1127: Invalid character.
+../server/routes-broken.ts(1953,2): error TS1127: Invalid character.
+../server/routes-broken.ts(1953,4): error TS1005: ';' expected.
+../server/routes-broken.ts(1953,7): error TS1005: ';' expected.
+../server/routes-broken.ts(1953,20): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1953,35): error TS1127: Invalid character.
+../server/routes-broken.ts(1955,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1955,6): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1955,29): error TS1005: ';' expected.
+../server/routes-broken.ts(1955,51): error TS1005: ';' expected.
+../server/routes-broken.ts(1955,65): error TS1005: ';' expected.
+../server/routes-broken.ts(1955,70): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1955,81): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1955,85): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1955,92): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1955,105): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1955,112): error TS1435: Unknown keyword or identifier. Did you mean 'var ious'?
+../server/routes-broken.ts(1955,137): error TS1005: ';' expected.
+../server/routes-broken.ts(1955,179): error TS1005: ';' expected.
+../server/routes-broken.ts(1955,195): error TS1005: ';' expected.
+../server/routes-broken.ts(1955,211): error TS1005: ';' expected.
+../server/routes-broken.ts(1955,216): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1955,220): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1955,230): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1955,233): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1955,243): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1955,248): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1955,261): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1955,265): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1957,1): error TS1003: Identifier expected.
+../server/routes-broken.ts(1957,7): error TS1005: ';' expected.
+../server/routes-broken.ts(1957,27): error TS1109: Expression expected.
+../server/routes-broken.ts(1958,13): error TS1005: ';' expected.
+../server/routes-broken.ts(1958,22): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1959,8): error TS1005: ';' expected.
+../server/routes-broken.ts(1959,19): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1960,15): error TS1005: ';' expected.
+../server/routes-broken.ts(1961,11): error TS1005: ';' expected.
+../server/routes-broken.ts(1962,8): error TS1005: ';' expected.
+../server/routes-broken.ts(1962,17): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1962,21): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1964,1): error TS1127: Invalid character.
+../server/routes-broken.ts(1964,2): error TS1127: Invalid character.
+../server/routes-broken.ts(1964,4): error TS1005: ';' expected.
+../server/routes-broken.ts(1964,7): error TS1005: ';' expected.
+../server/routes-broken.ts(1964,25): error TS1127: Invalid character.
+../server/routes-broken.ts(1966,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1966,7): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1966,10): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1966,30): error TS1005: ';' expected.
+../server/routes-broken.ts(1966,41): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1966,46): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1966,58): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1966,70): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1966,73): error TS1435: Unknown keyword or identifier. Did you mean 'function'?
+../server/routes-broken.ts(1966,84): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1966,97): error TS1005: '(' expected.
+../server/routes-broken.ts(1966,102): error TS1005: ')' expected.
+../server/routes-broken.ts(1968,1): error TS17006: An unary expression with the '-' operator is not allowed in the left-hand side of an exponentiation expression. Consider enclosing the expression in parentheses.
+../server/routes-broken.ts(1968,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1968,14): error TS1109: Expression expected.
+../server/routes-broken.ts(1968,16): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1968,24): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1968,35): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1968,41): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1968,45): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1968,53): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1969,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1969,17): error TS1109: Expression expected.
+../server/routes-broken.ts(1969,19): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1969,27): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1969,38): error TS1005: '(' expected.
+../server/routes-broken.ts(1969,52): error TS1005: ';' expected.
+../server/routes-broken.ts(1969,56): error TS1005: ';' expected.
+../server/routes-broken.ts(1969,67): error TS1005: ')' expected.
+../server/routes-broken.ts(1969,72): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1969,83): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1969,87): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1970,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1970,13): error TS1109: Expression expected.
+../server/routes-broken.ts(1970,15): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1970,26): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1970,35): error TS1005: '(' expected.
+../server/routes-broken.ts(1970,43): error TS1005: ';' expected.
+../server/routes-broken.ts(1970,60): error TS1005: ';' expected.
+../server/routes-broken.ts(1970,67): error TS1005: ')' expected.
+../server/routes-broken.ts(1970,77): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1971,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1971,11): error TS1005: ';' expected.
+../server/routes-broken.ts(1971,23): error TS1109: Expression expected.
+../server/routes-broken.ts(1971,25): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1971,34): error TS1435: Unknown keyword or identifier. Did you mean 'yield'?
+../server/routes-broken.ts(1971,40): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1971,46): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1971,54): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1971,66): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1971,73): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1971,77): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1973,1): error TS1127: Invalid character.
+../server/routes-broken.ts(1973,2): error TS1127: Invalid character.
+../server/routes-broken.ts(1973,4): error TS1005: ';' expected.
+../server/routes-broken.ts(1973,7): error TS1005: ';' expected.
+../server/routes-broken.ts(1973,28): error TS1005: ';' expected.
+../server/routes-broken.ts(1973,37): error TS1127: Invalid character.
+../server/routes-broken.ts(1975,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1975,20): error TS1005: ';' expected.
+../server/routes-broken.ts(1975,28): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1975,34): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1975,39): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1975,46): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1975,52): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1977,1): error TS17006: An unary expression with the '-' operator is not allowed in the left-hand side of an exponentiation expression. Consider enclosing the expression in parentheses.
+../server/routes-broken.ts(1977,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1977,18): error TS1005: ';' expected.
+../server/routes-broken.ts(1977,28): error TS1109: Expression expected.
+../server/routes-broken.ts(1977,30): error TS1435: Unknown keyword or identifier. Did you mean 'protected'?
+../server/routes-broken.ts(1977,51): error TS1005: ';' expected.
+../server/routes-broken.ts(1977,58): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1978,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1978,20): error TS1109: Expression expected.
+../server/routes-broken.ts(1978,36): error TS1005: ';' expected.
+../server/routes-broken.ts(1978,40): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1978,47): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1978,52): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1978,56): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1979,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1979,11): error TS1005: ';' expected.
+../server/routes-broken.ts(1979,17): error TS1109: Expression expected.
+../server/routes-broken.ts(1979,19): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1979,28): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1979,31): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1979,49): error TS1005: ';' expected.
+../server/routes-broken.ts(1979,54): error TS1005: '(' expected.
+../server/routes-broken.ts(1979,66): error TS1005: ')' expected.
+../server/routes-broken.ts(1980,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1980,13): error TS1005: ';' expected.
+../server/routes-broken.ts(1980,21): error TS1109: Expression expected.
+../server/routes-broken.ts(1980,36): error TS1005: ';' expected.
+../server/routes-broken.ts(1980,43): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1980,50): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1980,55): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1980,64): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1982,1): error TS1127: Invalid character.
+../server/routes-broken.ts(1982,2): error TS1127: Invalid character.
+../server/routes-broken.ts(1982,4): error TS1005: ';' expected.
+../server/routes-broken.ts(1982,7): error TS1005: ';' expected.
+../server/routes-broken.ts(1982,11): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1982,28): error TS1127: Invalid character.
+../server/routes-broken.ts(1984,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1984,6): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1984,14): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1984,23): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1984,29): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1984,36): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1984,41): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1984,70): error TS1005: ';' expected.
+../server/routes-broken.ts(1986,1): error TS17006: An unary expression with the '-' operator is not allowed in the left-hand side of an exponentiation expression. Consider enclosing the expression in parentheses.
+../server/routes-broken.ts(1986,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1986,13): error TS1005: ';' expected.
+../server/routes-broken.ts(1986,47): error TS1005: ')' expected.
+../server/routes-broken.ts(1986,50): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1986,58): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1986,69): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1986,78): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(1987,1): error TS17006: An unary expression with the '-' operator is not allowed in the left-hand side of an exponentiation expression. Consider enclosing the expression in parentheses.
+../server/routes-broken.ts(1987,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1987,14): error TS1005: ';' expected.
+../server/routes-broken.ts(1987,17): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1987,58): error TS1005: ')' expected.
+../server/routes-broken.ts(1987,67): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1987,78): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1987,85): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(1988,1): error TS17006: An unary expression with the '-' operator is not allowed in the left-hand side of an exponentiation expression. Consider enclosing the expression in parentheses.
+../server/routes-broken.ts(1988,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1988,10): error TS1005: ';' expected.
+../server/routes-broken.ts(1988,13): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1988,49): error TS1005: ';' expected.
+../server/routes-broken.ts(1989,1): error TS17006: An unary expression with the '-' operator is not allowed in the left-hand side of an exponentiation expression. Consider enclosing the expression in parentheses.
+../server/routes-broken.ts(1989,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1989,13): error TS1005: ';' expected.
+../server/routes-broken.ts(1989,47): error TS1005: ';' expected.
+../server/routes-broken.ts(1991,1): error TS1127: Invalid character.
+../server/routes-broken.ts(1991,2): error TS1127: Invalid character.
+../server/routes-broken.ts(1991,4): error TS1005: ';' expected.
+../server/routes-broken.ts(1991,7): error TS1005: ';' expected.
+../server/routes-broken.ts(1991,31): error TS1005: ';' expected.
+../server/routes-broken.ts(1991,42): error TS1127: Invalid character.
+../server/routes-broken.ts(1993,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1993,10): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1993,21): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1993,53): error TS1005: ',' expected.
+../server/routes-broken.ts(1993,56): error TS1005: ',' expected.
+../server/routes-broken.ts(1993,59): error TS1005: ',' expected.
+../server/routes-broken.ts(1993,64): error TS1005: ',' expected.
+../server/routes-broken.ts(1993,74): error TS1005: ';' expected.
+../server/routes-broken.ts(1995,1): error TS17006: An unary expression with the '-' operator is not allowed in the left-hand side of an exponentiation expression. Consider enclosing the expression in parentheses.
+../server/routes-broken.ts(1995,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1995,14): error TS1109: Expression expected.
+../server/routes-broken.ts(1995,30): error TS1005: ',' expected.
+../server/routes-broken.ts(1995,41): error TS1005: ',' expected.
+../server/routes-broken.ts(1996,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1996,17): error TS1109: Expression expected.
+../server/routes-broken.ts(1996,30): error TS1005: ',' expected.
+../server/routes-broken.ts(1996,46): error TS1005: ',' expected.
+../server/routes-broken.ts(1996,56): error TS1005: ',' expected.
+../server/routes-broken.ts(1997,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1997,13): error TS1109: Expression expected.
+../server/routes-broken.ts(1997,30): error TS1005: ',' expected.
+../server/routes-broken.ts(1997,39): error TS1005: ',' expected.
+../server/routes-broken.ts(1997,45): error TS1005: ',' expected.
+../server/routes-broken.ts(1997,50): error TS1005: '(' expected.
+../server/routes-broken.ts(1997,59): error TS1005: ')' expected.
+../server/routes-broken.ts(1997,70): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(1997,80): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(1998,1): error TS17006: An unary expression with the '-' operator is not allowed in the left-hand side of an exponentiation expression. Consider enclosing the expression in parentheses.
+../server/routes-broken.ts(1998,3): error TS1109: Expression expected.
+../server/routes-broken.ts(1998,11): error TS1005: ';' expected.
+../server/routes-broken.ts(1998,17): error TS1109: Expression expected.
+../server/routes-broken.ts(1998,32): error TS1005: ',' expected.
+../server/routes-broken.ts(1998,42): error TS1005: ',' expected.
+../server/routes-broken.ts(1998,49): error TS1005: ',' expected.
+../server/routes-broken.ts(1998,53): error TS1005: ',' expected.
+../server/routes-broken.ts(1998,58): error TS1005: ',' expected.
+../server/routes-broken.ts(1998,65): error TS1005: ',' expected.
+../server/routes-broken.ts(1998,69): error TS1005: '(' expected.
+../server/routes-broken.ts(1998,74): error TS1005: ';' expected.
+../server/routes-broken.ts(1998,85): error TS1005: ';' expected.
+../server/routes-broken.ts(2000,1): error TS1127: Invalid character.
+../server/routes-broken.ts(2000,2): error TS1127: Invalid character.
+../server/routes-broken.ts(2000,4): error TS1005: ';' expected.
+../server/routes-broken.ts(2000,7): error TS1005: ';' expected.
+../server/routes-broken.ts(2000,15): error TS1435: Unknown keyword or identifier. Did you mean 'accessor'?
+../server/routes-broken.ts(2000,22): error TS1127: Invalid character.
+../server/routes-broken.ts(2000,22): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(2002,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2002,6): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2002,19): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2002,30): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2002,37): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2002,46): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2002,55): error TS1005: '(' expected.
+../server/routes-broken.ts(2002,60): error TS1005: ')' expected.
+../server/routes-broken.ts(2002,72): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2002,75): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2002,83): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2002,87): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2002,94): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2002,102): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2002,114): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2002,149): error TS1005: ';' expected.
+../server/routes-broken.ts(2002,359): error TS1002: Unterminated string literal.
+../server/routes-broken.ts(2004,1): error TS1127: Invalid character.
+../server/routes-broken.ts(2004,2): error TS1127: Invalid character.
+../server/routes-broken.ts(2004,4): error TS1005: ';' expected.
+../server/routes-broken.ts(2004,7): error TS1005: ';' expected.
+../server/routes-broken.ts(2004,14): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2004,29): error TS1127: Invalid character.
+../server/routes-broken.ts(2006,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2006,5): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2006,16): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2006,210): error TS1002: Unterminated string literal.
+../server/routes-broken.ts(2008,1): error TS1127: Invalid character.
+../server/routes-broken.ts(2008,2): error TS1127: Invalid character.
+../server/routes-broken.ts(2008,4): error TS1005: ';' expected.
+../server/routes-broken.ts(2008,7): error TS1005: ';' expected.
+../server/routes-broken.ts(2008,31): error TS1005: ';' expected.
+../server/routes-broken.ts(2008,42): error TS1127: Invalid character.
+../server/routes-broken.ts(2010,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2010,6): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2010,16): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2010,25): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2010,192): error TS1002: Unterminated string literal.
+../server/routes-broken.ts(2012,1): error TS1127: Invalid character.
+../server/routes-broken.ts(2012,2): error TS1127: Invalid character.
+../server/routes-broken.ts(2012,4): error TS1005: ';' expected.
+../server/routes-broken.ts(2012,7): error TS1005: ';' expected.
+../server/routes-broken.ts(2012,35): error TS1005: ';' expected.
+../server/routes-broken.ts(2012,41): error TS1127: Invalid character.
+../server/routes-broken.ts(2014,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2014,6): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2014,14): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2014,47): error TS1005: ';' expected.
+../server/routes-broken.ts(2014,74): error TS1005: ';' expected.
+../server/routes-broken.ts(2014,82): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2014,92): error TS1005: '(' expected.
+../server/routes-broken.ts(2014,101): error TS1005: ')' expected.
+../server/routes-broken.ts(2014,128): error TS1005: ';' expected.
+../server/routes-broken.ts(2014,148): error TS1005: ';' expected.
+../server/routes-broken.ts(2014,159): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2014,168): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2014,174): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2014,177): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2014,213): error TS1005: ';' expected.
+../server/routes-broken.ts(2014,221): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2014,234): error TS1003: Identifier expected.
+../server/routes-broken.ts(2016,1): error TS1127: Invalid character.
+../server/routes-broken.ts(2016,2): error TS1127: Invalid character.
+../server/routes-broken.ts(2016,4): error TS1005: ';' expected.
+../server/routes-broken.ts(2016,8): error TS1005: ';' expected.
+../server/routes-broken.ts(2016,32): error TS1005: ';' expected.
+../server/routes-broken.ts(2016,36): error TS1127: Invalid character.
+../server/routes-broken.ts(2018,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2018,13): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2019,1): error TS17006: An unary expression with the '-' operator is not allowed in the left-hand side of an exponentiation expression. Consider enclosing the expression in parentheses.
+../server/routes-broken.ts(2019,3): error TS1109: Expression expected.
+../server/routes-broken.ts(2019,16): error TS1005: ';' expected.
+../server/routes-broken.ts(2019,31): error TS1109: Expression expected.
+../server/routes-broken.ts(2019,33): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2019,37): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2019,49): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2019,60): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2019,65): error TS1435: Unknown keyword or identifier. Did you mean 'string'?
+../server/routes-broken.ts(2019,90): error TS1005: ';' expected.
+../server/routes-broken.ts(2020,3): error TS1109: Expression expected.
+../server/routes-broken.ts(2020,12): error TS1005: ';' expected.
+../server/routes-broken.ts(2020,26): error TS1109: Expression expected.
+../server/routes-broken.ts(2020,28): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2020,39): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2020,42): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2020,69): error TS1005: ';' expected.
+../server/routes-broken.ts(2021,3): error TS1109: Expression expected.
+../server/routes-broken.ts(2021,15): error TS1005: ';' expected.
+../server/routes-broken.ts(2021,24): error TS1109: Expression expected.
+../server/routes-broken.ts(2021,26): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2021,33): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2021,45): error TS1109: Expression expected.
+../server/routes-broken.ts(2021,50): error TS1005: '(' expected.
+../server/routes-broken.ts(2021,57): error TS1005: ')' expected.
+../server/routes-broken.ts(2021,67): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2021,76): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2021,83): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2021,91): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2022,3): error TS1109: Expression expected.
+../server/routes-broken.ts(2022,14): error TS1005: ';' expected.
+../server/routes-broken.ts(2022,19): error TS1109: Expression expected.
+../server/routes-broken.ts(2022,21): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2022,26): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2022,39): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2022,48): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2022,52): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2022,72): error TS1005: ';' expected.
+../server/routes-broken.ts(2022,75): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2024,1): error TS1127: Invalid character.
+../server/routes-broken.ts(2024,2): error TS1127: Invalid character.
+../server/routes-broken.ts(2024,4): error TS1005: ';' expected.
+../server/routes-broken.ts(2024,14): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2026,14): error TS1005: ';' expected.
+../server/routes-broken.ts(2026,32): error TS1005: ';' expected.
+../server/routes-broken.ts(2026,44): error TS1109: Expression expected.
+../server/routes-broken.ts(2026,52): error TS1005: ';' expected.
+../server/routes-broken.ts(2026,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2026,67): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2026,75): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2026,82): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2026,90): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2028,1): error TS1003: Identifier expected.
+../server/routes-broken.ts(2028,14): error TS1005: ';' expected.
+../server/routes-broken.ts(2028,19): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2028,26): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2028,45): error TS1005: ';' expected.
+../server/routes-broken.ts(2028,55): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2028,68): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2028,75): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2028,79): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2028,102): error TS1005: ';' expected.
+../server/routes-broken.ts(2028,102): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2028,200): error TS1002: Unterminated string literal.
+../server/routes-broken.ts(2030,14): error TS1005: ';' expected.
+../server/routes-broken.ts(2030,19): error TS1005: '(' expected.
+../server/routes-broken.ts(2030,35): error TS1109: Expression expected.
+../server/routes-broken.ts(2030,43): error TS1005: ')' expected.
+../server/routes-broken.ts(2030,50): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2030,61): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2030,69): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2030,148): error TS1002: Unterminated string literal.
+../server/routes-broken.ts(2032,17): error TS1005: ';' expected.
+../server/routes-broken.ts(2032,20): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2032,48): error TS1005: ';' expected.
+../server/routes-broken.ts(2032,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2032,68): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2032,97): error TS1005: ';' expected.
+../server/routes-broken.ts(2032,100): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2032,107): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2032,112): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2032,119): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2032,124): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2032,132): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2032,147): error TS1005: '(' expected.
+../server/routes-broken.ts(2032,152): error TS1005: ')' expected.
+../server/routes-broken.ts(2034,1): error TS1003: Identifier expected.
+../server/routes-broken.ts(2034,11): error TS1005: ';' expected.
+../server/routes-broken.ts(2034,15): error TS1005: '(' expected.
+../server/routes-broken.ts(2034,22): error TS1005: ';' expected.
+../server/routes-broken.ts(2034,43): error TS1005: ';' expected.
+../server/routes-broken.ts(2034,51): error TS1005: ')' expected.
+../server/routes-broken.ts(2034,56): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2034,64): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2034,76): error TS1005: '(' expected.
+../server/routes-broken.ts(2034,85): error TS1005: ')' expected.
+../server/routes-broken.ts(2034,123): error TS1005: ';' expected.
+../server/routes-broken.ts(2034,129): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2034,132): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2034,141): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2034,144): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2034,148): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2034,161): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2034,164): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2034,175): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2034,179): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2034,184): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2036,12): error TS1005: ';' expected.
+../server/routes-broken.ts(2036,26): error TS1443: Module declaration names may only use ' or " quoted strings.
+../server/routes-broken.ts(2039,17): error TS1127: Invalid character.
+../server/routes-broken.ts(2039,19): error TS1005: ';' expected.
+../server/routes-broken.ts(2039,26): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2039,38): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2039,51): error TS1005: '(' expected.
+../server/routes-broken.ts(2039,52): error TS1005: ';' expected.
+../server/routes-broken.ts(2041,1): error TS1005: ';' expected.
+../server/routes-broken.ts(2041,7): error TS1005: ')' expected.
+../server/routes-broken.ts(2041,10): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2041,15): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2041,42): error TS1005: ';' expected.
+../server/routes-broken.ts(2041,46): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2041,49): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2041,65): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2041,68): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2041,73): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2041,81): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2043,1): error TS1127: Invalid character.
+../server/routes-broken.ts(2043,2): error TS1127: Invalid character.
+../server/routes-broken.ts(2043,4): error TS1005: ';' expected.
+../server/routes-broken.ts(2043,8): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2043,18): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2045,8): error TS1005: ';' expected.
+../server/routes-broken.ts(2045,19): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2045,28): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2045,37): error TS1005: '(' expected.
+../server/routes-broken.ts(2045,46): error TS1005: ')' expected.
+../server/routes-broken.ts(2046,8): error TS1005: ';' expected.
+../server/routes-broken.ts(2046,26): error TS1005: ';' expected.
+../server/routes-broken.ts(2046,37): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2046,41): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2046,46): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2046,57): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2046,61): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2047,8): error TS1005: ';' expected.
+../server/routes-broken.ts(2047,20): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2047,31): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2047,37): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2047,41): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2047,43): error TS1435: Unknown keyword or identifier. Did you mean 'string'?
+../server/routes-broken.ts(2049,1): error TS1127: Invalid character.
+../server/routes-broken.ts(2049,2): error TS1127: Invalid character.
+../server/routes-broken.ts(2049,4): error TS1005: ';' expected.
+../server/routes-broken.ts(2051,12): error TS1005: ';' expected.
+../server/routes-broken.ts(2052,15): error TS1005: ';' expected.
+../server/routes-broken.ts(2052,46): error TS1005: ';' expected.
+../server/routes-broken.ts(2052,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2052,68): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2052,71): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2053,14): error TS1005: ';' expected.
+../server/routes-broken.ts(2053,25): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2053,32): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2053,40): error TS1435: Unknown keyword or identifier. Did you mean 'for mal'?
+../server/routes-broken.ts(2053,47): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2053,56): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2053,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2054,13): error TS1005: ';' expected.
+../server/routes-broken.ts(2054,18): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2054,27): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2054,34): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2054,63): error TS1005: ';' expected.
+../server/routes-broken.ts(2054,74): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2056,14): error TS1005: ';' expected.
+../server/routes-broken.ts(2057,10): error TS1005: ';' expected.
+../server/routes-broken.ts(2057,10): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2057,92): error TS1002: Unterminated string literal.
+../server/routes-broken.ts(2058,11): error TS1005: ';' expected.
+../server/routes-broken.ts(2058,45): error TS1005: ';' expected.
+../server/routes-broken.ts(2059,13): error TS1005: ';' expected.
+../server/routes-broken.ts(2059,22): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2059,34): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2059,38): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2059,45): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2059,48): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2059,54): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2061,19): error TS1005: ';' expected.
+../server/routes-broken.ts(2062,13): error TS1005: ';' expected.
+../server/routes-broken.ts(2062,15): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2062,24): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2062,51): error TS1005: ',' expected.
+../server/routes-broken.ts(2062,71): error TS1002: Unterminated string literal.
+../server/routes-broken.ts(2063,12): error TS1005: ';' expected.
+../server/routes-broken.ts(2063,17): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2063,27): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2063,35): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2063,46): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2063,55): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2063,58): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2063,67): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2064,15): error TS1005: ';' expected.
+../server/routes-broken.ts(2064,20): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2064,46): error TS1005: ',' expected.
+../server/routes-broken.ts(2064,65): error TS1002: Unterminated string literal.
+../server/routes-broken.ts(2066,1): error TS1127: Invalid character.
+../server/routes-broken.ts(2066,2): error TS1127: Invalid character.
+../server/routes-broken.ts(2066,4): error TS1005: ';' expected.
+../server/routes-broken.ts(2068,4): error TS1005: ';' expected.
+../server/routes-broken.ts(2068,11): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2068,16): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2068,28): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2068,38): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2068,41): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2068,51): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2068,56): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2068,61): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2069,4): error TS1005: ';' expected.
+../server/routes-broken.ts(2069,8): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2069,15): error TS1005: ';' expected.
+../server/routes-broken.ts(2069,29): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2069,45): error TS1005: '(' expected.
+../server/routes-broken.ts(2069,68): error TS1005: ')' expected.
+../server/routes-broken.ts(2069,72): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2070,4): error TS1005: ';' expected.
+../server/routes-broken.ts(2070,13): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2070,17): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2070,23): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2070,27): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2070,50): error TS1005: ';' expected.
+../server/routes-broken.ts(2070,59): error TS1435: Unknown keyword or identifier. Did you mean 'with'?
+../server/routes-broken.ts(2070,66): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2070,70): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2071,4): error TS1005: ';' expected.
+../server/routes-broken.ts(2071,13): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2071,21): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2071,30): error TS1005: '(' expected.
+../server/routes-broken.ts(2071,40): error TS1005: ';' expected.
+../server/routes-broken.ts(2071,51): error TS1005: ';' expected.
+../server/routes-broken.ts(2071,57): error TS1005: ')' expected.
+../server/routes-broken.ts(2071,57): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2071,84): error TS1002: Unterminated string literal.
+../server/routes-broken.ts(2073,12): error TS1005: ';' expected.
+../server/routes-broken.ts(2073,26): error TS1443: Module declaration names may only use ' or " quoted strings.
+../server/routes-broken.ts(2274,22): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2275,19): error TS1005: ';' expected.
+../server/routes-broken.ts(2339,15): error TS1127: Invalid character.
+../server/routes-broken.ts(2339,17): error TS1005: ';' expected.
+../server/routes-broken.ts(2339,28): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2339,41): error TS1005: '(' expected.
+../server/routes-broken.ts(2339,42): error TS1005: ';' expected.
+../server/routes-broken.ts(2339,53): error TS1005: ';' expected.
+../server/routes-broken.ts(2341,1): error TS1127: Invalid character.
+../server/routes-broken.ts(2341,2): error TS1127: Invalid character.
+../server/routes-broken.ts(2341,4): error TS1005: ';' expected.
+../server/routes-broken.ts(2343,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2343,10): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2343,12): error TS1435: Unknown keyword or identifier. Did you mean 'string'?
+../server/routes-broken.ts(2343,19): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2343,47): error TS1005: ';' expected.
+../server/routes-broken.ts(2343,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2343,68): error TS1228: A type predicate is only allowed in return type position for functions and methods.
+../server/routes-broken.ts(2343,71): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2343,83): error TS1005: '(' expected.
+../server/routes-broken.ts(2343,84): error TS1005: ';' expected.
+../server/routes-broken.ts(2343,99): error TS1005: ';' expected.
+../server/routes-broken.ts(2343,205): error TS1002: Unterminated string literal.
+../server/routes-broken.ts(2345,1): error TS1127: Invalid character.
+../server/routes-broken.ts(2345,2): error TS1127: Invalid character.
+../server/routes-broken.ts(2345,4): error TS1005: ';' expected.
+../server/routes-broken.ts(2345,8): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2347,24): error TS1005: ';' expected.
+../server/routes-broken.ts(2348,11): error TS1005: ';' expected.
+../server/routes-broken.ts(2348,23): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2348,36): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2348,40): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2349,13): error TS1005: ';' expected.
+../server/routes-broken.ts(2349,19): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2349,27): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2349,31): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2350,28): error TS1005: ';' expected.
+../server/routes-broken.ts(2350,40): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2350,45): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2350,55): error TS1005: ';' expected.
+../server/routes-broken.ts(2350,80): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2350,83): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2352,14): error TS1005: ';' expected.
+../server/routes-broken.ts(2353,14): error TS1005: ';' expected.
+../server/routes-broken.ts(2353,16): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2353,20): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2353,28): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2353,41): error TS1005: '(' expected.
+../server/routes-broken.ts(2353,42): error TS1005: ';' expected.
+../server/routes-broken.ts(2353,53): error TS1005: ';' expected.
+../server/routes-broken.ts(2354,13): error TS1005: ')' expected.
+../server/routes-broken.ts(2354,15): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2354,22): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2354,31): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2354,39): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2354,43): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2354,48): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2355,17): error TS1005: ';' expected.
+../server/routes-broken.ts(2355,103): error TS1002: Unterminated string literal.
+../server/routes-broken.ts(2358,13): error TS1005: ';' expected.
+../server/routes-broken.ts(2358,22): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2358,30): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2358,34): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2359,16): error TS1005: ';' expected.
+../server/routes-broken.ts(2359,20): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2359,29): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2359,37): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2359,40): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2360,17): error TS1005: ';' expected.
+../server/routes-broken.ts(2360,24): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2360,41): error TS1005: '(' expected.
+../server/routes-broken.ts(2360,42): error TS1005: ';' expected.
+../server/routes-broken.ts(2360,50): error TS1005: ',' expected.
+../server/routes-broken.ts(2362,1): error TS1127: Invalid character.
+../server/routes-broken.ts(2362,2): error TS1127: Invalid character.
+../server/routes-broken.ts(2362,4): error TS1005: ';' expected.
+../server/routes-broken.ts(2364,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2364,6): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2364,15): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2364,19): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2364,39): error TS1109: Expression expected.
+../server/routes-broken.ts(2364,43): error TS1005: '{' expected.
+../server/routes-broken.ts(2366,1): error TS17006: An unary expression with the '-' operator is not allowed in the left-hand side of an exponentiation expression. Consider enclosing the expression in parentheses.
+../server/routes-broken.ts(2366,3): error TS1109: Expression expected.
+../server/routes-broken.ts(2366,18): error TS1109: Expression expected.
+../server/routes-broken.ts(2368,3): error TS1109: Expression expected.
+../server/routes-broken.ts(2368,12): error TS1005: ';' expected.
+../server/routes-broken.ts(2368,22): error TS1109: Expression expected.
+../server/routes-broken.ts(2370,3): error TS1109: Expression expected.
+../server/routes-broken.ts(2370,14): error TS1005: ';' expected.
+../server/routes-broken.ts(2370,23): error TS1109: Expression expected.
+../server/routes-broken.ts(2372,1): error TS1127: Invalid character.
+../server/routes-broken.ts(2372,2): error TS1127: Invalid character.
+../server/routes-broken.ts(2372,4): error TS1005: ';' expected.
+../server/routes-broken.ts(2372,13): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2372,18): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2374,16): error TS1005: ';' expected.
+../server/routes-broken.ts(2374,30): error TS1005: ',' expected.
+../server/routes-broken.ts(2374,32): error TS1005: ',' expected.
+../server/routes-broken.ts(2375,13): error TS1005: ';' expected.
+../server/routes-broken.ts(2375,18): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2375,30): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2375,40): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2375,43): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2375,53): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2375,62): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2375,69): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2376,14): error TS1005: ';' expected.
+../server/routes-broken.ts(2376,19): error TS1005: '(' expected.
+../server/routes-broken.ts(2376,22): error TS1005: ')' expected.
+../server/routes-broken.ts(2376,44): error TS1005: ';' expected.
+../server/routes-broken.ts(2377,11): error TS1005: ';' expected.
+../server/routes-broken.ts(2377,13): error TS1005: ';' expected.
+../server/routes-broken.ts(2377,31): error TS1005: ';' expected.
+../server/routes-broken.ts(2377,38): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2377,41): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2377,50): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2379,17): error TS1005: ';' expected.
+../server/routes-broken.ts(2379,28): error TS1005: ',' expected.
+../server/routes-broken.ts(2380,15): error TS1005: ';' expected.
+../server/routes-broken.ts(2380,19): error TS1005: ';' expected.
+../server/routes-broken.ts(2380,33): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2380,44): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2381,13): error TS1005: ';' expected.
+../server/routes-broken.ts(2381,16): error TS1435: Unknown keyword or identifier. Did you mean 'let'?
+../server/routes-broken.ts(2381,22): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2381,26): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2381,47): error TS1005: ';' expected.
+../server/routes-broken.ts(2382,12): error TS1005: ';' expected.
+../server/routes-broken.ts(2382,21): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2382,29): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2382,33): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2382,42): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2382,45): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2382,55): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2382,60): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2384,16): error TS1005: ';' expected.
+../server/routes-broken.ts(2384,30): error TS1005: ',' expected.
+../server/routes-broken.ts(2385,12): error TS1005: ';' expected.
+../server/routes-broken.ts(2385,14): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2385,19): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2385,27): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2385,42): error TS1005: ';' expected.
+../server/routes-broken.ts(2385,62): error TS1005: ';' expected.
+../server/routes-broken.ts(2386,17): error TS1005: ';' expected.
+../server/routes-broken.ts(2386,30): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2386,33): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2387,15): error TS1005: ';' expected.
+../server/routes-broken.ts(2387,20): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2387,28): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2387,40): error TS1005: '(' expected.
+../server/routes-broken.ts(2387,50): error TS1005: ';' expected.
+../server/routes-broken.ts(2387,54): error TS1005: ';' expected.
+../server/routes-broken.ts(2389,1): error TS1127: Invalid character.
+../server/routes-broken.ts(2389,2): error TS1127: Invalid character.
+../server/routes-broken.ts(2389,4): error TS1005: ';' expected.
+../server/routes-broken.ts(2389,15): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2391,3): error TS1109: Expression expected.
+../server/routes-broken.ts(2391,15): error TS1005: ';' expected.
+../server/routes-broken.ts(2391,25): error TS1109: Expression expected.
+../server/routes-broken.ts(2391,27): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2391,34): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2391,39): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2391,51): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2391,61): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2391,64): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2391,74): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2391,79): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2391,91): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2391,101): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2391,105): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2391,111): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2391,115): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2391,118): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2393,1): error TS1003: Identifier expected.
+../server/routes-broken.ts(2393,3): error TS1109: Expression expected.
+../server/routes-broken.ts(2393,11): error TS1005: ';' expected.
+../server/routes-broken.ts(2393,20): error TS1109: Expression expected.
+../server/routes-broken.ts(2393,22): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2393,26): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2393,41): error TS1005: ';' expected.
+../server/routes-broken.ts(2393,52): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2393,57): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2393,60): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2393,69): error TS1435: Unknown keyword or identifier. Did you mean 'static'?
+../server/routes-broken.ts(2393,79): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2393,91): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2393,97): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2393,100): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2393,105): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2393,115): error TS1005: '(' expected.
+../server/routes-broken.ts(2393,116): error TS1005: ';' expected.
+../server/routes-broken.ts(2395,1): error TS1003: Identifier expected.
+../server/routes-broken.ts(2395,3): error TS1109: Expression expected.
+../server/routes-broken.ts(2395,14): error TS1005: ';' expected.
+../server/routes-broken.ts(2395,23): error TS1109: Expression expected.
+../server/routes-broken.ts(2395,25): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2395,28): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2395,32): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2395,37): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2395,67): error TS1005: ';' expected.
+../server/routes-broken.ts(2395,72): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2395,80): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2395,84): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2395,93): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2395,101): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2395,104): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2395,112): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2395,137): error TS1003: Identifier expected.
+../server/routes-broken.ts(2397,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2397,10): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2397,15): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2397,25): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2397,36): error TS1228: A type predicate is only allowed in return type position for functions and methods.
+../server/routes-broken.ts(2397,39): error TS1435: Unknown keyword or identifier. Did you mean 'out'?
+../server/routes-broken.ts(2397,45): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2397,54): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2397,81): error TS1005: ';' expected.
+../server/routes-broken.ts(2397,86): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2397,113): error TS1005: ';' expected.
+../server/routes-broken.ts(2397,116): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2397,120): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2397,124): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2397,128): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2397,136): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2397,142): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2397,157): error TS1005: ';' expected.
+../server/routes-broken.ts(2397,161): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2397,170): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2397,175): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2399,12): error TS1005: ';' expected.
+../server/routes-broken.ts(2416,23): error TS1109: Expression expected.
+../server/routes-broken.ts(2416,35): error TS1005: ';' expected.
+../server/routes-broken.ts(2416,42): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2416,54): error TS1005: '(' expected.
+../server/routes-broken.ts(2416,59): error TS1005: ';' expected.
+../server/routes-broken.ts(2416,60): error TS1005: ';' expected.
+../server/routes-broken.ts(2416,72): error TS1109: Expression expected.
+../server/routes-broken.ts(2417,20): error TS1005: ')' expected.
+../server/routes-broken.ts(2417,25): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2417,38): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2417,67): error TS1443: Module declaration names may only use ' or " quoted strings.
+../server/routes-broken.ts(2442,22): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2442,27): error TS1435: Unknown keyword or identifier. Did you mean 'for mat'?
+../server/routes-broken.ts(2442,45): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2465,26): error TS1005: ';' expected.
+../server/routes-broken.ts(2465,31): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2465,44): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2465,70): error TS1443: Module declaration names may only use ' or " quoted strings.
+../server/routes-broken.ts(2485,30): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2485,34): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2485,60): error TS1005: ';' expected.
+../server/routes-broken.ts(2485,62): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2490,32): error TS1005: ';' expected.
+../server/routes-broken.ts(2490,43): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2490,48): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2490,53): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2490,58): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2490,63): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2490,66): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2497,30): error TS1005: ';' expected.
+../server/routes-broken.ts(2497,35): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2497,66): error TS1005: ';' expected.
+../server/routes-broken.ts(2514,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2515,8): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2516,11): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2518,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2519,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2522,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2525,1): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2533,34): error TS1005: ';' expected.
+../server/routes-broken.ts(2533,38): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2533,57): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2542,28): error TS1005: ';' expected.
+../server/routes-broken.ts(2542,38): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2542,46): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2542,57): error TS1005: '(' expected.
+../server/routes-broken.ts(2542,60): error TS1005: ';' expected.
+../server/routes-broken.ts(2542,62): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2542,99): error TS1443: Module declaration names may only use ' or " quoted strings.
+../server/routes-broken.ts(2571,25): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2571,32): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2571,35): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2571,43): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2571,55): error TS1005: '(' expected.
+../server/routes-broken.ts(2571,61): error TS1005: ')' expected.
+../server/routes-broken.ts(2571,63): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2603,26): error TS1005: ';' expected.
+../server/routes-broken.ts(2603,33): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2603,48): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2614,22): error TS1005: ';' expected.
+../server/routes-broken.ts(2614,30): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2614,35): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2614,45): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2614,58): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2614,76): error TS1005: ';' expected.
+../server/routes-broken.ts(2615,22): error TS1005: ';' expected.
+../server/routes-broken.ts(2615,24): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2616,21): error TS1005: ';' expected.
+../server/routes-broken.ts(2616,23): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2617,17): error TS1005: ';' expected.
+../server/routes-broken.ts(2617,19): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2618,16): error TS1005: ';' expected.
+../server/routes-broken.ts(2618,18): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2619,19): error TS1005: ';' expected.
+../server/routes-broken.ts(2619,21): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2696,20): error TS1005: ';' expected.
+../server/routes-broken.ts(2696,31): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2696,41): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2696,49): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2696,58): error TS1005: '(' expected.
+../server/routes-broken.ts(2696,63): error TS1005: ';' expected.
+../server/routes-broken.ts(2696,64): error TS1005: ';' expected.
+../server/routes-broken.ts(2697,20): error TS1005: ')' expected.
+../server/routes-broken.ts(2697,30): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2697,72): error TS1005: ';' expected.
+../server/routes-broken.ts(2697,111): error TS1005: ';' expected.
+../server/routes-broken.ts(2697,139): error TS1443: Module declaration names may only use ' or " quoted strings.
+../server/routes-broken.ts(2709,24): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2709,29): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2709,42): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2709,62): error TS1005: ';' expected.
+../server/routes-broken.ts(2709,66): error TS1443: Module declaration names may only use ' or " quoted strings.
+../server/routes-broken.ts(2713,24): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2714,21): error TS1005: ';' expected.
+../server/routes-broken.ts(2740,24): error TS1146: Declaration expected.
+../server/routes-broken.ts(2740,32): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2740,62): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2740,71): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2740,87): error TS1443: Module declaration names may only use ' or " quoted strings.
+../server/routes-broken.ts(2749,24): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2749,32): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2749,61): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2749,70): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2749,85): error TS1443: Module declaration names may only use ' or " quoted strings.
+../server/routes-broken.ts(2758,24): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2758,32): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2758,57): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2758,72): error TS1443: Module declaration names may only use ' or " quoted strings.
+../server/routes-broken.ts(2784,22): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2784,28): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2784,61): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2784,77): error TS1443: Module declaration names may only use ' or " quoted strings.
+../server/routes-broken.ts(2798,22): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2798,28): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2798,60): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2798,75): error TS1443: Module declaration names may only use ' or " quoted strings.
+../server/routes-broken.ts(2812,22): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2812,28): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2842,23): error TS1109: Expression expected.
+../server/routes-broken.ts(2842,35): error TS1005: ';' expected.
+../server/routes-broken.ts(2842,44): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2842,52): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2842,64): error TS1005: '(' expected.
+../server/routes-broken.ts(2842,69): error TS1005: ';' expected.
+../server/routes-broken.ts(2842,70): error TS1005: ';' expected.
+../server/routes-broken.ts(2842,82): error TS1109: Expression expected.
+../server/routes-broken.ts(2843,20): error TS1005: ')' expected.
+../server/routes-broken.ts(2843,33): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2865,24): error TS1005: ';' expected.
+../server/routes-broken.ts(2865,33): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2865,48): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2876,20): error TS1005: ';' expected.
+../server/routes-broken.ts(2876,28): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2876,33): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2876,62): error TS1005: ';' expected.
+../server/routes-broken.ts(2877,20): error TS1005: ';' expected.
+../server/routes-broken.ts(2877,22): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2878,19): error TS1005: ';' expected.
+../server/routes-broken.ts(2878,21): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2879,15): error TS1005: ';' expected.
+../server/routes-broken.ts(2879,17): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2880,14): error TS1005: ';' expected.
+../server/routes-broken.ts(2880,16): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2881,17): error TS1005: ';' expected.
+../server/routes-broken.ts(2881,19): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2922,20): error TS1005: ';' expected.
+../server/routes-broken.ts(2922,29): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2922,38): error TS1005: '(' expected.
+../server/routes-broken.ts(2922,45): error TS1005: ';' expected.
+../server/routes-broken.ts(2922,57): error TS1005: ';' expected.
+../server/routes-broken.ts(2923,20): error TS1005: ';' expected.
+../server/routes-broken.ts(2923,22): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2924,19): error TS1005: ';' expected.
+../server/routes-broken.ts(2924,21): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2925,15): error TS1005: ';' expected.
+../server/routes-broken.ts(2925,17): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2958,20): error TS1005: ';' expected.
+../server/routes-broken.ts(2958,26): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2958,38): error TS1005: '(' expected.
+../server/routes-broken.ts(2958,43): error TS1005: ';' expected.
+../server/routes-broken.ts(2958,45): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2998,20): error TS1005: ';' expected.
+../server/routes-broken.ts(2998,26): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2998,39): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(2998,52): error TS1005: '(' expected.
+../server/routes-broken.ts(2998,57): error TS1005: ')' expected.
+../server/routes-broken.ts(2998,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3036,24): error TS1005: ';' expected.
+../server/routes-broken.ts(3036,32): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3036,38): error TS1435: Unknown keyword or identifier. Did you mean 'set'?
+../server/routes-broken.ts(3036,43): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3036,46): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3063,20): error TS1005: ';' expected.
+../server/routes-broken.ts(3063,30): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3063,43): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3063,53): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3114,20): error TS1005: ';' expected.
+../server/routes-broken.ts(3114,45): error TS1005: ';' expected.
+../server/routes-broken.ts(3114,55): error TS1005: '(' expected.
+../server/routes-broken.ts(3114,60): error TS1005: ';' expected.
+../server/routes-broken.ts(3114,61): error TS1005: ';' expected.
+../server/routes-broken.ts(3114,68): error TS1005: ')' expected.
+../server/routes-broken.ts(3114,70): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3149,20): error TS1005: ';' expected.
+../server/routes-broken.ts(3149,28): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3149,36): error TS1005: '(' expected.
+../server/routes-broken.ts(3149,42): error TS1005: ';' expected.
+../server/routes-broken.ts(3149,48): error TS1005: ';' expected.
+../server/routes-broken.ts(3149,50): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3162,20): error TS1005: ';' expected.
+../server/routes-broken.ts(3162,35): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3162,41): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(3162,43): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3162,55): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3170,20): error TS1005: ';' expected.
+../server/routes-broken.ts(3170,24): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3174,20): error TS1005: ';' expected.
+../server/routes-broken.ts(3174,24): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3174,38): error TS1005: '(' expected.
+../server/routes-broken.ts(3174,39): error TS1005: ';' expected.
+../server/routes-broken.ts(3174,52): error TS1005: ';' expected.
+../server/routes-broken.ts(3174,54): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3192,20): error TS1005: ';' expected.
+../server/routes-broken.ts(3192,30): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3192,38): error TS1005: '(' expected.
+../server/routes-broken.ts(3192,39): error TS1005: ';' expected.
+../server/routes-broken.ts(3192,52): error TS1005: ';' expected.
+../server/routes-broken.ts(3192,54): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3219,22): error TS1005: ';' expected.
+../server/routes-broken.ts(3220,19): error TS1005: ';' expected.
+../server/routes-broken.ts(3257,20): error TS1146: Declaration expected.
+../server/routes-broken.ts(3257,32): error TS1109: Expression expected.
+../server/routes-broken.ts(3257,51): error TS1005: ';' expected.
+../server/routes-broken.ts(3257,63): error TS1005: '(' expected.
+../server/routes-broken.ts(3257,73): error TS1005: ';' expected.
+../server/routes-broken.ts(3257,78): error TS1005: '(' expected.
+../server/routes-broken.ts(3257,84): error TS1005: ')' expected.
+../server/routes-broken.ts(3257,86): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3265,34): error TS1109: Expression expected.
+../server/routes-broken.ts(3265,51): error TS1005: ';' expected.
+../server/routes-broken.ts(3265,53): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3265,60): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3265,68): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3265,71): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3265,74): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3265,76): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3265,90): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3270,36): error TS1109: Expression expected.
+../server/routes-broken.ts(3270,53): error TS1005: ';' expected.
+../server/routes-broken.ts(3270,55): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3270,58): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3270,63): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3270,74): error TS1005: '(' expected.
+../server/routes-broken.ts(3270,83): error TS1005: ')' expected.
+../server/routes-broken.ts(3270,88): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3274,34): error TS1109: Expression expected.
+../server/routes-broken.ts(3274,51): error TS1005: ';' expected.
+../server/routes-broken.ts(3274,53): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3274,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3274,69): error TS1005: '(' expected.
+../server/routes-broken.ts(3274,71): error TS1005: ')' expected.
+../server/routes-broken.ts(3274,73): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3274,88): error TS1005: '(' expected.
+../server/routes-broken.ts(3274,97): error TS1005: ';' expected.
+../server/routes-broken.ts(3274,100): error TS1005: ';' expected.
+../server/routes-broken.ts(3274,102): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3281,36): error TS1109: Expression expected.
+../server/routes-broken.ts(3281,53): error TS1005: ';' expected.
+../server/routes-broken.ts(3281,55): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3281,58): error TS1228: A type predicate is only allowed in return type position for functions and methods.
+../server/routes-broken.ts(3281,61): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3281,65): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3281,67): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3281,73): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3281,85): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3285,34): error TS1109: Expression expected.
+../server/routes-broken.ts(3285,51): error TS1005: ';' expected.
+../server/routes-broken.ts(3285,53): error TS1435: Unknown keyword or identifier. Did you mean 'using'?
+../server/routes-broken.ts(3285,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3285,75): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3291,34): error TS1109: Expression expected.
+../server/routes-broken.ts(3291,51): error TS1005: ';' expected.
+../server/routes-broken.ts(3291,53): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3291,56): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3291,66): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3291,76): error TS1005: '(' expected.
+../server/routes-broken.ts(3291,82): error TS1005: ';' expected.
+../server/routes-broken.ts(3291,84): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3295,32): error TS1109: Expression expected.
+../server/routes-broken.ts(3295,49): error TS1005: ';' expected.
+../server/routes-broken.ts(3295,51): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3305,39): error TS1005: ';' expected.
+../server/routes-broken.ts(3305,48): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3305,63): error TS1005: '(' expected.
+../server/routes-broken.ts(3305,67): error TS1005: ')' expected.
+../server/routes-broken.ts(3309,41): error TS1005: ';' expected.
+../server/routes-broken.ts(3309,50): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3309,72): error TS1005: ';' expected.
+../server/routes-broken.ts(3309,74): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3315,43): error TS1005: ';' expected.
+../server/routes-broken.ts(3315,49): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3315,58): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3315,68): error TS1005: '(' expected.
+../server/routes-broken.ts(3315,70): error TS1005: ')' expected.
+../server/routes-broken.ts(3315,72): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3319,43): error TS1005: ';' expected.
+../server/routes-broken.ts(3319,46): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3319,55): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3319,60): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3319,70): error TS1005: '(' expected.
+../server/routes-broken.ts(3319,79): error TS1005: ';' expected.
+../server/routes-broken.ts(3319,82): error TS1005: ';' expected.
+../server/routes-broken.ts(3319,84): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3327,41): error TS1005: ';' expected.
+../server/routes-broken.ts(3327,46): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3327,54): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3327,58): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3327,80): error TS1005: ';' expected.
+../server/routes-broken.ts(3327,88): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3333,39): error TS1005: ';' expected.
+../server/routes-broken.ts(3333,55): error TS1005: '(' expected.
+../server/routes-broken.ts(3333,61): error TS1005: ')' expected.
+../server/routes-broken.ts(3333,63): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3336,39): error TS1005: ';' expected.
+../server/routes-broken.ts(3336,47): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3336,62): error TS1005: '(' expected.
+../server/routes-broken.ts(3336,64): error TS1005: ')' expected.
+../server/routes-broken.ts(3336,66): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3340,43): error TS1005: ';' expected.
+../server/routes-broken.ts(3343,43): error TS1005: ';' expected.
+../server/routes-broken.ts(3357,37): error TS1109: Expression expected.
+../server/routes-broken.ts(3357,38): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3357,40): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(3357,42): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3357,51): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3357,66): error TS1005: '(' expected.
+../server/routes-broken.ts(3357,68): error TS1005: ')' expected.
+../server/routes-broken.ts(3357,70): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3366,37): error TS1109: Expression expected.
+../server/routes-broken.ts(3366,38): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3366,40): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(3366,42): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3366,55): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3382,40): error TS1109: Expression expected.
+../server/routes-broken.ts(3382,41): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3382,43): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(3382,45): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3382,54): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3382,69): error TS1005: '(' expected.
+../server/routes-broken.ts(3382,71): error TS1005: ')' expected.
+../server/routes-broken.ts(3382,73): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3390,40): error TS1109: Expression expected.
+../server/routes-broken.ts(3390,41): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3390,43): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(3390,45): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3390,58): error TS1435: Unknown keyword or identifier. Did you mean 'delete'?
+../server/routes-broken.ts(3390,66): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3390,81): error TS1005: '(' expected.
+../server/routes-broken.ts(3390,83): error TS1005: ')' expected.
+../server/routes-broken.ts(3390,85): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3402,32): error TS1109: Expression expected.
+../server/routes-broken.ts(3402,48): error TS1005: ';' expected.
+../server/routes-broken.ts(3402,50): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3402,62): error TS1005: '(' expected.
+../server/routes-broken.ts(3402,71): error TS1005: ';' expected.
+../server/routes-broken.ts(3402,76): error TS1005: '(' expected.
+../server/routes-broken.ts(3402,82): error TS1005: ')' expected.
+../server/routes-broken.ts(3402,84): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3410,34): error TS1109: Expression expected.
+../server/routes-broken.ts(3410,50): error TS1005: ';' expected.
+../server/routes-broken.ts(3410,52): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3410,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3410,67): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3410,70): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3410,73): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3410,75): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3410,89): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3414,36): error TS1109: Expression expected.
+../server/routes-broken.ts(3414,52): error TS1005: ';' expected.
+../server/routes-broken.ts(3414,54): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3414,57): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3414,62): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3414,73): error TS1005: '(' expected.
+../server/routes-broken.ts(3414,82): error TS1005: ')' expected.
+../server/routes-broken.ts(3414,87): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3418,34): error TS1109: Expression expected.
+../server/routes-broken.ts(3418,50): error TS1005: ';' expected.
+../server/routes-broken.ts(3418,52): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3418,58): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3418,68): error TS1005: '(' expected.
+../server/routes-broken.ts(3418,70): error TS1005: ')' expected.
+../server/routes-broken.ts(3418,72): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3418,87): error TS1005: '(' expected.
+../server/routes-broken.ts(3418,96): error TS1005: ';' expected.
+../server/routes-broken.ts(3418,99): error TS1005: ';' expected.
+../server/routes-broken.ts(3418,101): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3425,36): error TS1109: Expression expected.
+../server/routes-broken.ts(3425,52): error TS1005: ';' expected.
+../server/routes-broken.ts(3425,54): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3425,57): error TS1228: A type predicate is only allowed in return type position for functions and methods.
+../server/routes-broken.ts(3425,60): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3425,64): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3425,66): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3425,72): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3425,84): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3429,34): error TS1109: Expression expected.
+../server/routes-broken.ts(3429,50): error TS1005: ';' expected.
+../server/routes-broken.ts(3429,52): error TS1435: Unknown keyword or identifier. Did you mean 'using'?
+../server/routes-broken.ts(3429,58): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3429,74): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3433,32): error TS1109: Expression expected.
+../server/routes-broken.ts(3433,48): error TS1005: ';' expected.
+../server/routes-broken.ts(3433,50): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3433,56): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3433,75): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3433,88): error TS1005: '(' expected.
+../server/routes-broken.ts(3433,94): error TS1005: ';' expected.
+../server/routes-broken.ts(3433,96): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3443,37): error TS1005: ';' expected.
+../server/routes-broken.ts(3443,46): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3443,59): error TS1005: '(' expected.
+../server/routes-broken.ts(3443,63): error TS1005: ')' expected.
+../server/routes-broken.ts(3447,39): error TS1005: ';' expected.
+../server/routes-broken.ts(3447,48): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3447,70): error TS1005: ';' expected.
+../server/routes-broken.ts(3447,72): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3453,41): error TS1005: ';' expected.
+../server/routes-broken.ts(3453,47): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3453,56): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3453,66): error TS1005: '(' expected.
+../server/routes-broken.ts(3453,68): error TS1005: ')' expected.
+../server/routes-broken.ts(3453,70): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3457,41): error TS1005: ';' expected.
+../server/routes-broken.ts(3457,44): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3457,53): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3457,58): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3457,68): error TS1005: '(' expected.
+../server/routes-broken.ts(3457,77): error TS1005: ';' expected.
+../server/routes-broken.ts(3457,80): error TS1005: ';' expected.
+../server/routes-broken.ts(3457,82): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3462,37): error TS1005: ';' expected.
+../server/routes-broken.ts(3462,53): error TS1005: '(' expected.
+../server/routes-broken.ts(3462,59): error TS1005: ')' expected.
+../server/routes-broken.ts(3462,61): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3465,37): error TS1005: ';' expected.
+../server/routes-broken.ts(3465,45): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3465,58): error TS1005: '(' expected.
+../server/routes-broken.ts(3465,60): error TS1005: ')' expected.
+../server/routes-broken.ts(3465,62): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3469,41): error TS1005: ';' expected.
+../server/routes-broken.ts(3472,41): error TS1005: ';' expected.
+../server/routes-broken.ts(3486,35): error TS1109: Expression expected.
+../server/routes-broken.ts(3486,36): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3486,38): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(3486,40): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3486,49): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3486,62): error TS1005: '(' expected.
+../server/routes-broken.ts(3486,64): error TS1005: ')' expected.
+../server/routes-broken.ts(3486,66): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3495,35): error TS1109: Expression expected.
+../server/routes-broken.ts(3495,36): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3495,38): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(3495,40): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3495,53): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3511,38): error TS1109: Expression expected.
+../server/routes-broken.ts(3511,39): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3511,41): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(3511,43): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3511,52): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3511,65): error TS1005: '(' expected.
+../server/routes-broken.ts(3511,67): error TS1005: ')' expected.
+../server/routes-broken.ts(3511,69): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3519,38): error TS1109: Expression expected.
+../server/routes-broken.ts(3519,39): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3519,41): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(3519,43): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3519,56): error TS1435: Unknown keyword or identifier. Did you mean 'delete'?
+../server/routes-broken.ts(3519,64): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3519,77): error TS1005: '(' expected.
+../server/routes-broken.ts(3519,79): error TS1005: ')' expected.
+../server/routes-broken.ts(3519,81): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3530,36): error TS1005: ';' expected.
+../server/routes-broken.ts(3530,45): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3532,36): error TS1005: ';' expected.
+../server/routes-broken.ts(3532,42): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3548,35): error TS1109: Expression expected.
+../server/routes-broken.ts(3548,36): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3548,45): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(3548,47): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3548,56): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3548,69): error TS1005: '(' expected.
+../server/routes-broken.ts(3548,72): error TS1005: ')' expected.
+../server/routes-broken.ts(3552,37): error TS1109: Expression expected.
+../server/routes-broken.ts(3552,38): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3552,47): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(3552,49): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3552,57): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3552,68): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3571,33): error TS1109: Expression expected.
+../server/routes-broken.ts(3571,50): error TS1005: ';' expected.
+../server/routes-broken.ts(3571,52): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3571,61): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3571,74): error TS1005: '(' expected.
+../server/routes-broken.ts(3571,80): error TS1005: ';' expected.
+../server/routes-broken.ts(3571,81): error TS1005: ';' expected.
+../server/routes-broken.ts(3573,33): error TS1109: Expression expected.
+../server/routes-broken.ts(3573,50): error TS1005: ';' expected.
+../server/routes-broken.ts(3573,52): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3573,58): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3573,77): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3573,90): error TS1005: '(' expected.
+../server/routes-broken.ts(3573,96): error TS1005: ';' expected.
+../server/routes-broken.ts(3573,97): error TS1005: ';' expected.
+../server/routes-broken.ts(3588,36): error TS1109: Expression expected.
+../server/routes-broken.ts(3588,53): error TS1005: ';' expected.
+../server/routes-broken.ts(3588,55): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3588,65): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3588,73): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3588,90): error TS1005: '(' expected.
+../server/routes-broken.ts(3588,95): error TS1005: ';' expected.
+../server/routes-broken.ts(3588,96): error TS1005: ';' expected.
+../server/routes-broken.ts(3601,38): error TS1109: Expression expected.
+../server/routes-broken.ts(3601,55): error TS1005: ';' expected.
+../server/routes-broken.ts(3601,57): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3601,66): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3601,88): error TS1005: ';' expected.
+../server/routes-broken.ts(3601,90): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3606,40): error TS1109: Expression expected.
+../server/routes-broken.ts(3606,57): error TS1005: ';' expected.
+../server/routes-broken.ts(3606,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3606,65): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3606,74): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3606,84): error TS1005: '(' expected.
+../server/routes-broken.ts(3606,86): error TS1005: ')' expected.
+../server/routes-broken.ts(3606,88): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3608,40): error TS1109: Expression expected.
+../server/routes-broken.ts(3608,57): error TS1005: ';' expected.
+../server/routes-broken.ts(3608,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3608,62): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3608,71): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3608,76): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3608,86): error TS1005: '(' expected.
+../server/routes-broken.ts(3608,95): error TS1005: ';' expected.
+../server/routes-broken.ts(3608,98): error TS1005: ';' expected.
+../server/routes-broken.ts(3608,100): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3616,38): error TS1109: Expression expected.
+../server/routes-broken.ts(3616,55): error TS1005: ';' expected.
+../server/routes-broken.ts(3616,57): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3616,65): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3616,76): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3622,36): error TS1109: Expression expected.
+../server/routes-broken.ts(3622,53): error TS1005: ';' expected.
+../server/routes-broken.ts(3622,55): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3622,63): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3622,84): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3636,38): error TS1109: Expression expected.
+../server/routes-broken.ts(3636,55): error TS1005: ';' expected.
+../server/routes-broken.ts(3636,57): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3636,69): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3636,77): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3636,94): error TS1005: '(' expected.
+../server/routes-broken.ts(3636,99): error TS1005: ';' expected.
+../server/routes-broken.ts(3636,100): error TS1005: ';' expected.
+../server/routes-broken.ts(3645,40): error TS1109: Expression expected.
+../server/routes-broken.ts(3645,57): error TS1005: ';' expected.
+../server/routes-broken.ts(3645,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3645,67): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3645,78): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3653,40): error TS1109: Expression expected.
+../server/routes-broken.ts(3653,57): error TS1005: ';' expected.
+../server/routes-broken.ts(3653,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3653,72): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3653,83): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3653,91): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3653,108): error TS1005: '(' expected.
+../server/routes-broken.ts(3653,113): error TS1005: ';' expected.
+../server/routes-broken.ts(3653,114): error TS1005: ';' expected.
+../server/routes-broken.ts(3656,40): error TS1109: Expression expected.
+../server/routes-broken.ts(3656,57): error TS1005: ';' expected.
+../server/routes-broken.ts(3656,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3656,66): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3656,79): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3656,83): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3656,93): error TS1005: '(' expected.
+../server/routes-broken.ts(3656,98): error TS1005: ';' expected.
+../server/routes-broken.ts(3656,99): error TS1005: ';' expected.
+../server/routes-broken.ts(3656,108): error TS1005: ')' expected.
+../server/routes-broken.ts(3656,112): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3656,120): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3670,32): error TS1109: Expression expected.
+../server/routes-broken.ts(3670,57): error TS1005: ';' expected.
+../server/routes-broken.ts(3670,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3670,67): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3670,76): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3670,89): error TS1005: '(' expected.
+../server/routes-broken.ts(3670,94): error TS1005: ';' expected.
+../server/routes-broken.ts(3670,95): error TS1005: ';' expected.
+../server/routes-broken.ts(3674,34): error TS1109: Expression expected.
+../server/routes-broken.ts(3674,59): error TS1005: ';' expected.
+../server/routes-broken.ts(3674,61): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3674,64): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3674,72): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3674,75): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3674,78): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3674,80): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3674,94): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3678,36): error TS1109: Expression expected.
+../server/routes-broken.ts(3678,61): error TS1005: ';' expected.
+../server/routes-broken.ts(3678,63): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3678,66): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3678,71): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3678,82): error TS1005: '(' expected.
+../server/routes-broken.ts(3678,91): error TS1005: ')' expected.
+../server/routes-broken.ts(3678,96): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3683,34): error TS1109: Expression expected.
+../server/routes-broken.ts(3683,59): error TS1005: ';' expected.
+../server/routes-broken.ts(3683,61): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3683,67): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3683,77): error TS1005: '(' expected.
+../server/routes-broken.ts(3683,85): error TS1005: ')' expected.
+../server/routes-broken.ts(3683,89): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3688,36): error TS1109: Expression expected.
+../server/routes-broken.ts(3688,61): error TS1005: ';' expected.
+../server/routes-broken.ts(3688,63): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3688,66): error TS1228: A type predicate is only allowed in return type position for functions and methods.
+../server/routes-broken.ts(3688,69): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3688,73): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3688,75): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3688,81): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3688,93): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3695,32): error TS1109: Expression expected.
+../server/routes-broken.ts(3695,57): error TS1005: ';' expected.
+../server/routes-broken.ts(3695,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3695,65): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3695,84): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3695,93): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3695,106): error TS1005: '(' expected.
+../server/routes-broken.ts(3695,111): error TS1005: ';' expected.
+../server/routes-broken.ts(3695,112): error TS1005: ';' expected.
+../server/routes-broken.ts(3709,35): error TS1109: Expression expected.
+../server/routes-broken.ts(3709,58): error TS1109: Expression expected.
+../server/routes-broken.ts(3709,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3709,65): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(3709,67): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3709,79): error TS1005: '(' expected.
+../server/routes-broken.ts(3709,84): error TS1005: ')' expected.
+../server/routes-broken.ts(3709,94): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3709,102): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3709,110): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3730,32): error TS1109: Expression expected.
+../server/routes-broken.ts(3730,52): error TS1005: ';' expected.
+../server/routes-broken.ts(3730,54): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3730,62): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3730,73): error TS1005: '(' expected.
+../server/routes-broken.ts(3730,82): error TS1005: ';' expected.
+../server/routes-broken.ts(3730,91): error TS1005: ';' expected.
+../server/routes-broken.ts(3730,94): error TS1005: ')' expected.
+../server/routes-broken.ts(3730,99): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3734,34): error TS1109: Expression expected.
+../server/routes-broken.ts(3734,54): error TS1005: ';' expected.
+../server/routes-broken.ts(3734,56): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3734,59): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3734,67): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3734,70): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3734,73): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3734,75): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3734,89): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3738,36): error TS1109: Expression expected.
+../server/routes-broken.ts(3738,56): error TS1005: ';' expected.
+../server/routes-broken.ts(3738,58): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3738,61): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3738,66): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3738,77): error TS1005: '(' expected.
+../server/routes-broken.ts(3738,86): error TS1005: ')' expected.
+../server/routes-broken.ts(3738,91): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3743,34): error TS1109: Expression expected.
+../server/routes-broken.ts(3743,54): error TS1005: ';' expected.
+../server/routes-broken.ts(3743,56): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3743,62): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3743,72): error TS1005: '(' expected.
+../server/routes-broken.ts(3743,80): error TS1005: ')' expected.
+../server/routes-broken.ts(3743,84): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3748,36): error TS1109: Expression expected.
+../server/routes-broken.ts(3748,56): error TS1005: ';' expected.
+../server/routes-broken.ts(3748,58): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3748,61): error TS1228: A type predicate is only allowed in return type position for functions and methods.
+../server/routes-broken.ts(3748,64): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3748,68): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3748,70): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3748,76): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3748,88): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3755,32): error TS1109: Expression expected.
+../server/routes-broken.ts(3755,52): error TS1005: ';' expected.
+../server/routes-broken.ts(3755,54): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3755,60): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3755,77): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3755,88): error TS1005: '(' expected.
+../server/routes-broken.ts(3755,97): error TS1005: ';' expected.
+../server/routes-broken.ts(3755,106): error TS1005: ';' expected.
+../server/routes-broken.ts(3755,109): error TS1005: ')' expected.
+../server/routes-broken.ts(3755,114): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(3774,29): error TS1005: ';' expected.
+../server/routes-broken.ts(3774,56): error TS1005: ';' expected.
+../server/routes-broken.ts(3774,58): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(4279,44): error TS1005: ';' expected.
+../server/routes-broken.ts(4279,53): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(4279,67): error TS1005: '(' expected.
+../server/routes-broken.ts(4279,71): error TS1005: ')' expected.
+../server/routes-broken.ts(4292,21): error TS1005: ';' expected.
+../server/routes-broken.ts(4292,21): error TS1434: Unexpected keyword or identifier.
+../server/routes-broken.ts(4292,114): error TS1002: Unterminated string literal.
+../server/routes-broken.ts(4294,10): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(4295,7): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(4338,5): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(4338,7): error TS1005: 'try' expected.
+../server/routes-broken.ts(4347,3): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(4347,4): error TS1128: Declaration or statement expected.
+../server/routes-broken.ts(4577,1): error TS1128: Declaration or statement expected.
+../server/services/social-quest-activity-templates.ts(125,88): error TS1005: ',' expected.
+../server/services/social-quest-activity-templates.ts(125,90): error TS1005: ',' expected.
+../server/services/social-quest-activity-templates.ts(125,95): error TS1005: ',' expected.
+../server/services/social-quest-activity-templates.ts(125,98): error TS1005: ',' expected.
+../server/services/social-quest-activity-templates.ts(125,102): error TS1005: ',' expected.
+../server/services/social-quest-activity-templates.ts(125,106): error TS1005: ',' expected.
+../server/services/social-quest-activity-templates.ts(125,109): error TS1005: ',' expected.
+../server/services/social-quest-activity-templates.ts(125,112): error TS1005: ',' expected.
+../server/services/social-quest-activity-templates.ts(125,119): error TS1005: ',' expected.
+../server/services/social-quest-activity-templates.ts(125,120): error TS1003: Identifier expected.
+../server/services/social-quest-activity-templates.ts(125,123): error TS1002: Unterminated string literal.
+../server/services/social-quest-activity-templates.ts(126,5): error TS1005: ':' expected.
+../server/services/social-quest-activity-templates.ts(126,13): error TS1005: ',' expected.
+../server/services/social-quest-activity-templates.ts(126,17): error TS1005: ':' expected.

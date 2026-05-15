@@ -170,7 +170,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex flex-col w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
         <div className="p-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
-          <h1 className="text-xl font-bold">Brandentifier Admin</h1>
+          <h1 className="text-xl font-bold">Brandentify Admin</h1>
         </div>
         
         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
@@ -229,7 +229,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             </Button>
           </SheetTrigger>
           
-          <h1 className="text-lg font-bold">Brandentifier Admin</h1>
+          <h1 className="text-lg font-bold">Brandentify Admin</h1>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -257,7 +257,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         
         <SheetContent side="left" className="w-64 p-0 bg-white dark:bg-gray-800">
           <div className="p-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
-            <h1 className="text-xl font-bold">Brandentifier Admin</h1>
+            <h1 className="text-xl font-bold">Brandentify Admin</h1>
             <SheetClose asChild>
               <Button variant="ghost" size="icon">
                 <X className="h-5 w-5" />

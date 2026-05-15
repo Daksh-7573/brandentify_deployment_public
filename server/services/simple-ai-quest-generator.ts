@@ -85,7 +85,7 @@ export class SimpleAIQuestGenerator {
         difficulty: 'intermediate'
       });
 
-      // Brandentifier pulse quest
+      // Brandentify pulse quest
       const pulseContent = await careerQuestPersonalizationService.getPersonalizedQuestContent(
         'pulse_creation',
         'create_pulse',
@@ -94,10 +94,10 @@ export class SimpleAIQuestGenerator {
 
       quests.push({
         title: pulseContent.title || 'Share Industry Insights',
-        description: pulseContent.description || `Create a Brandentifier pulse sharing your insights on ${userProfile.industry}`,
+        description: pulseContent.description || `Create a Brandentify pulse sharing your insights on ${userProfile.industry}`,
         type: 'pulse_creation',
         targetAction: 'create_pulse',
-        mediaSpecific: 'Brandentifier',
+        mediaSpecific: 'Brandentify',
         xpReward: 40,
         priority: 'medium',
         difficulty: 'beginner'
@@ -132,3 +132,4 @@ export class SimpleAIQuestGenerator {
 }
 
 export const simpleAIQuestGenerator = new SimpleAIQuestGenerator();
+

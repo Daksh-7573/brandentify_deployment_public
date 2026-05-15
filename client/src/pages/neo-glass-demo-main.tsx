@@ -82,7 +82,7 @@ const NeoGlassDemoMain: React.FC = () => {
       {/* Header */}
       <NeoGlassHeader className="flex justify-between items-center mb-6">
         <div className="flex items-center">
-          <h1 className="text-2xl font-bold">Brandentifier</h1>
+          <h1 className="text-2xl font-bold">Brandentify</h1>
         </div>
         <div className="flex items-center gap-4">
           <button className="p-2 rounded-full hover:bg-white/10">

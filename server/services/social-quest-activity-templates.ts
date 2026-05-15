@@ -1,7 +1,7 @@
 /**
  * Social Quest Activity Templates
  * Comprehensive quest templates for all platforms and activity types
- * NO BRANDENTIFIER - External platforms only
+ * NO BRANDENTIFY - External platforms only
  */
 
 export interface QuestActivityTemplate {
@@ -361,3 +361,4 @@ export function getProfileTemplates(): QuestActivityTemplate[] {
 export function getRepeatableTemplates(): QuestActivityTemplate[] {
   return SOCIAL_QUEST_TEMPLATES.filter(t => t.canRepeat);
 }
+

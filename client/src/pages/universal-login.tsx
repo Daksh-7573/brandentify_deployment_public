@@ -113,7 +113,7 @@ const UniversalLoginPage: React.FC = () => {
 
   const handleDemoUser = () => {
     // Set the demo credentials first
-    setEmail("demo@brandentifier.com");
+    setEmail("demo@brandentify.com");
     setName("Demo User");
     
     // Then immediately try logging in with these credentials
@@ -134,7 +134,7 @@ const UniversalLoginPage: React.FC = () => {
          }}>
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-white mb-2">Brandentifier</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">Brandentify</h1>
           <p className="text-gray-300 mb-8">Access your professional profile</p>
         </div>
         

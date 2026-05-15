@@ -99,7 +99,7 @@ function generateContextualLinks(pulseContent: string, industry?: string): Array
 }
 
 // Initialize FREE Local AI Service (uses VPS Ollama)
-const localAI = new LocalAIService();
+const localAI = LocalAIService.getInstance();
 
 interface UserContext {
   id: number;
@@ -346,7 +346,7 @@ Platform user insights:
     `;
 
     const prompt = `
-You are Musk, an expert AI career assistant for Brandentifier, a professional networking platform.
+You are Musk, an expert AI career assistant for Brandentify, a professional networking platform.
 
 Generate a ${options.timeOfDay} news pulse focused on industry updates and professional news.
 
@@ -358,7 +358,7 @@ Requirements:
 - Address trending hashtags and topics mentioned above
 - Be professional yet engaging with a personal touch
 - Include 2-3 relevant hashtags from the trending list when applicable
-- Encourage use of Brandentifier features for portfolio building and networking
+- Encourage use of Brandentify features for portfolio building and networking
 - DO NOT include reference links in your response - they will be added automatically when relevant
 
 ${timePrompts[options.timeOfDay]}
@@ -398,7 +398,7 @@ Respond with JSON format:
       console.error('[MuskPulseGenerator] Error generating content:', error);
       
       // Fallback content without links
-      const fallbackContent = `Stay updated with the latest industry news. Connect with professionals and share insights on Brandentifier.`;
+      const fallbackContent = `Stay updated with the latest industry news. Connect with professionals and share insights on Brandentify.`;
 
       return {
         title: `${options.timeOfDay.charAt(0).toUpperCase() + options.timeOfDay.slice(1)} Professional Update`,
@@ -419,7 +419,7 @@ Respond with JSON format:
   ): Promise<{ title: string; content: string; industry: string; hashtags: string[]; referenceLinks: Array<{title: string; url: string; source: string}> }> {
     
     const prompt = `
-You are Musk, an expert AI career assistant for Brandentifier.
+You are Musk, an expert AI career assistant for Brandentify.
 
 Generate a news pulse about this industry event:
 Event: ${eventDescription}
@@ -431,7 +431,7 @@ Requirements:
 - Explains the career implications of this event
 - Provides actionable advice for professionals in ${industry}
 - Suggests relevant skills to develop
-- Encourages use of Brandentifier features (portfolio updates, networking)
+- Encourages use of Brandentify features (portfolio updates, networking)
 - Includes 2-3 relevant hashtags
 - DO NOT include reference links in your response - they will be added automatically when relevant
 

@@ -226,7 +226,7 @@ export function BrandGoalsSelector() {
 
   if (isLoading) {
     return (
-      <div className="p-6 text-center text-white/60">
+      <div className="p-6 text-center text-gray-400">
         Loading your brand goals...
       </div>
     );
@@ -236,10 +236,10 @@ export function BrandGoalsSelector() {
     <div className="p-6 space-y-6">
       <div className="space-y-2">
         <h2 className="text-2xl font-bold text-white">🎯 Choose Your Brand Goals</h2>
-        <p className="text-white/70">
+        <p className="text-gray-400">
           Select up to 3 goals total (pre-defined + custom). Your daily Brand Quests will be personalized based on these goals.
         </p>
-        <div className="text-sm text-white/60">
+        <div className="text-sm text-gray-400">
           {totalSelected}/3 selected ({selectedGoals.length} pre-defined + {customGoals.length} custom)
         </div>
       </div>
@@ -258,7 +258,7 @@ export function BrandGoalsSelector() {
               <AccordionTrigger className="px-4 py-3 hover:bg-white/5">
                 <div className="flex flex-col items-start text-left">
                   <div className="text-lg font-semibold text-white">{category.title}</div>
-                  <div className="text-sm text-white/60">{category.description}</div>
+                  <div className="text-sm text-gray-400">{category.description}</div>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4">
@@ -333,14 +333,14 @@ export function BrandGoalsSelector() {
         </div>
 
         {customGoalInput.length > 0 && (
-          <div className="text-xs text-white/50">
+          <div className="text-xs text-gray-400">
             {customGoalInput.length}/200 characters
           </div>
         )}
 
         {customGoals.length > 0 && (
           <div className="space-y-2 mt-4">
-            <div className="text-sm font-medium text-white/80">Your Custom Goals:</div>
+            <div className="text-sm font-medium text-gray-400">Your Custom Goals:</div>
             {customGoals.map((goal, index) => (
               <div
                 key={index}
@@ -381,7 +381,7 @@ export function BrandGoalsSelector() {
                       onClick={() => handleEditCustomGoal(index)}
                       size="sm"
                       variant="ghost"
-                      className="text-white/70 hover:text-white px-2"
+                      className="text-gray-400 hover:text-white px-2"
                       data-testid={`button-edit-custom-goal-${index}`}
                     >
                       <Edit2 className="w-4 h-4" />

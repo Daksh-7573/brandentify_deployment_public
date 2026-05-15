@@ -26,7 +26,7 @@ export default function AuthSuccessPage() {
           const hasBasicProfile = user.profileCompleted >= 40;
           
           toast({
-            title: isNewUser ? 'Welcome to Brandentifier!' : 'Welcome back!',
+            title: isNewUser ? 'Welcome to Brandentify!' : 'Welcome back!',
             description: `Signed in as ${user.name}`
           });
 

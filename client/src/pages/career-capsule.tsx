@@ -1,6 +1,5 @@
 import { useState, FormEvent, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import { useFeatureAccess } from "@/hooks/use-feature-access";
 import { useCareerCapsule, CareerGoal, GoalType } from "@/hooks/use-career-capsule";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,8 +10,10 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, CheckCircle, CheckCircle2, AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { queryClient } from "@/lib/queryClient";
-import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { CareerCapsulePageSkeleton } from "@/components/ui/page-skeletons/career-capsule-skeleton";
+import { CareerCapsuleSEO } from '@/components/seo/career-capsule-seo';
+import { CareerCapsuleStructuredData } from '@/components/seo/career-capsule-structured-data';
+import { CareerCapsuleFAQSection } from '@/components/seo/career-capsule-faq';
 
 // Utility function to format dates
 const formatDate = (dateString: string) => {
@@ -52,27 +53,30 @@ const getStatusColor = (status: string | null) => {
 };
 
 export default function CareerCapsulePage() {
-  const { user } = useAuth();
-  const { isPremium, canCreateCareerCapsule } = useFeatureAccess();
-  const userId = user?.id || 1; // Default to user ID 1 for demo if not logged in
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const userId = user?.id || 0;
   
-  const { 
-    useGoals, 
-    useGoalDetails,
+  const {
+    useGoals,
     useCreateGoal,
-    useGenerateMilestones,
     useDeleteCapsule,
-    useToggleTaskCompletion,
-    useUpdateTask
+    useGenerateMilestones,
+    useGoalDetails
   } = useCareerCapsule(userId);
   
-  const { data: goals, isLoading, refetch: refetchGoals, error } = useGoals();
+  const { data: goals, isLoading, refetch: refetchGoals } = useGoals();
+  const createGoalMutation = useCreateGoal();
+  const deleteCapsuleMutation = useDeleteCapsule();
   
-  // Debug logging to understand the data structure
-  console.log('Career Goals Data Structure:', JSON.stringify(goals, null, 2));
+  // State for dialogs
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+  const [selectedGoalId, setSelectedGoalId] = useState<number | null>(null);
+  
+  const { data: goalDetailsWithRelated, isLoading: isLoadingDetails, refetch: getGoalDetails } = useGoalDetails(selectedGoalId || 0);
+  const goalDetails = goalDetailsWithRelated?.goal;
   
   // Form state
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [goalTitle, setGoalTitle] = useState("");
   const [goalType, setGoalType] = useState<GoalType>("position_change");
   const [timeframe, setTimeframe] = useState("3");
@@ -80,40 +84,11 @@ export default function CareerCapsulePage() {
   const [targetDate, setTargetDate] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Selected goal for details view
-  const [selectedGoalId, setSelectedGoalId] = useState<number | null>(null);
-  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
-  const { data: goalDetails, isLoading: isLoadingDetails } = useGoalDetails(selectedGoalId || 0);
-  const createGoalMutation = useCreateGoal();
-  const deleteCapsuleMutation = useDeleteCapsule();
-  
-  // Debug logging
-  console.log("Career Goals API Response:", { goals, isLoading, error });
-  
-  // Debug goal details when they change
-  useEffect(() => {
-    if (selectedGoalId) {
-      console.log("Goal Details API Response:", { 
-        goalDetails, 
-        isLoadingDetails,
-        hasMilestones: goalDetails && goalDetails.milestones && goalDetails.milestones.length > 0,
-        selectedGoalId
-      });
-    }
-  }, [goalDetails, isLoadingDetails, selectedGoalId]);
-  
   // Delete confirmation dialog
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [capsuleToDelete, setCapsuleToDelete] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   
-  // Milestone generation
-  const generateMilestones = useGenerateMilestones(selectedGoalId || 0);
-  const [showMilestoneGenerationDialog, setShowMilestoneGenerationDialog] = useState(false);
-  
-  // Task completion toggling
-  const toggleTaskCompletion = useToggleTaskCompletion(selectedGoalId || 0);
-
   // State for tracking milestone generation
   const [createdGoalId, setCreatedGoalId] = useState<number | null>(null);
   const [milestoneGenerating, setMilestoneGenerating] = useState(false);
@@ -238,8 +213,6 @@ export default function CareerCapsulePage() {
     setCapsuleToDelete(capsuleId);
     setShowDeleteDialog(true);
   };
-  
-  // Regenerate Milestone function has been removed as requested
 
   const handleDeleteCapsule = async () => {
     if (!capsuleToDelete) return;
@@ -247,9 +220,6 @@ export default function CareerCapsulePage() {
     console.log(`Starting deletion of capsule with ID ${capsuleToDelete}...`);
     setIsDeleting(true);
     try {
-      // Log before sending the API request
-      console.log(`Calling API to delete capsule ID ${capsuleToDelete}...`);
-      
       // Call the API to delete the capsule
       const response = await deleteCapsuleMutation.mutateAsync(capsuleToDelete);
       console.log(`Delete API response:`, response);
@@ -266,9 +236,9 @@ export default function CareerCapsulePage() {
       }
       
       // Force a strong refresh by invalidating all goal-related queries
-      console.log(`Invalidating queries for user ${userId}...`);
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-capsule`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-goals`] });
+      console.log(`Invalidating queries for user ${user?.id}...`);
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/career-capsule`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.id}/career-goals`] });
       
       toast({
         title: "Career capsule deleted",
@@ -298,599 +268,106 @@ export default function CareerCapsulePage() {
     }
   };
 
+  // Load goal details when dialog opens
+  useEffect(() => {
+    if (showDetailsDialog && selectedGoalId) {
+      getGoalDetails();
+    }
+  }, [showDetailsDialog, selectedGoalId, getGoalDetails]);
+
   return (
-    <NeoGlassLayout className="mt-3 mx-3 sm:mx-6 pt-16">
-      <div className="flex-1 max-w-5xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 sm:gap-0">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">Career Capsule</h1>
-          <button 
-            onClick={() => setShowCreateDialog(true)}
-            className="neo-glass-button flex items-center gap-2 py-2 px-3 sm:px-4 text-sm sm:text-base w-full sm:w-auto justify-center"
-          >
-            <span>Create New Goal</span>
-          </button>
+    <>
+      <CareerCapsuleSEO />
+      <CareerCapsuleStructuredData />
+      <div className="min-h-screen text-white selection:bg-white/20 font-['Outfit'] overflow-x-hidden relative">
+        {/* Dynamic Background - Premium Dark Theme */}
+        <div className="fixed inset-0 z-0 pointer-events-none">
+          <div className="absolute top-[20%] left-[-20%] w-[50%] h-[50%] bg-white/5 blur-[120px] rounded-full" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-white/3 blur-[120px] rounded-full" />
+          <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60" />
         </div>
-        
-        {isLoading ? (
-          <CareerCapsulePageSkeleton />
-        ) : goals ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 w-full">
-            {/* Display all goals as an array - our backend now always returns an array */}
-            {Array.isArray(goals) && goals.length > 0 ? (
-              goals.map((goal: CareerGoal) => (
-                <NeoGlassSection key={goal.id} className="hover:transform hover:translate-y-[-2px] sm:hover:translate-y-[-5px] transition-all duration-300">
-                  <div className="p-3 sm:p-4">
-                    <div className="flex flex-col sm:flex-row justify-between items-start mb-3 gap-2 sm:gap-0">
-                      <h3 className="text-lg sm:text-xl font-semibold text-white leading-tight">{goal.title}</h3>
-                      <Badge 
-                        className={`${getStatusColor(goal.status || "not_started")} neo-glass-badge text-xs shrink-0`}
-                      >
-                        {goal.status === "in_progress" ? "In Progress" : 
-                         goal.status === "completed" ? "Completed" : 
-                         goal.status === "abandoned" ? "Abandoned" : "Not Started"}
-                      </Badge>
-                    </div>
-                    <div className="text-gray-300 mb-3">
-                      <div className="flex flex-col gap-1 mt-1">
-                        <span className="text-xs sm:text-sm">{getGoalTypeText(goal.goalType as GoalType)}</span>
-                        <span className="text-xs sm:text-sm">Target: {formatDate(String(goal.targetDate || ""))}</span>
+        <main className="relative z-10 container mx-auto px-6 py-8">
+          <div className="max-w-5xl mx-auto bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 sm:gap-0">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white">Career Capsule</h1>
+              <button 
+                onClick={() => setShowCreateDialog(true)}
+                className="neo-glass-button flex items-center gap-2 py-2 px-3 sm:px-4 text-sm sm:text-base w-full sm:w-auto justify-center"
+              >
+                <span>Create New Goal</span>
+              </button>
+            </div>
+            
+            {isLoading ? (
+              <CareerCapsulePageSkeleton />
+            ) : Array.isArray(goals) && goals.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 w-full">
+                {/* Display all goals as an array - our backend now always returns an array */}
+                {goals.map((goal: CareerGoal) => (
+                    <div key={goal.id} className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 md:p-6 hover:transform hover:translate-y-[-2px] sm:hover:translate-y-[-5px] transition-all duration-300">
+                      <div className="flex flex-col sm:flex-row justify-between items-start mb-3 gap-2 sm:gap-0">
+                        <h3 className="text-lg sm:text-xl font-semibold text-white leading-tight">{goal.title}</h3>
+                        <Badge 
+                          className={`${getStatusColor(goal.status || "not_started")} neo-glass-badge text-xs shrink-0`}
+                        >
+                          {goal.status === "in_progress" ? "In Progress" : 
+                           goal.status === "completed" ? "Completed" : 
+                           goal.status === "abandoned" ? "Abandoned" : "Not Started"}
+                        </Badge>
                       </div>
-                    </div>
-                    <div className="mb-3">
-                      <div className="relative">
-                        <div className="w-full bg-white/10 rounded-full h-1.5 sm:h-2 backdrop-blur-sm border border-white/20">
-                          <div 
-                            className="bg-gradient-to-r from-blue-400 to-purple-500 h-1.5 sm:h-2 rounded-full transition-all duration-500 shadow-lg shadow-blue-500/20"
-                            style={{ width: `${goal.overallProgress || 0}%` }}
-                          ></div>
+                      <div className="text-gray-300 mb-3">
+                        <div className="flex flex-col gap-1 mt-1">
+                          <span className="text-xs sm:text-sm">{getGoalTypeText(goal.goalType as GoalType)}</span>
+                          <span className="text-xs sm:text-sm">Target: {formatDate(String(goal.targetDate || ""))}</span>
                         </div>
-                        <span className="text-xs text-gray-300 mt-1 sm:mt-2 block font-medium">
-                          {goal.overallProgress || 0}% complete
-                        </span>
                       </div>
-                    </div>
-                    <p className="line-clamp-2 text-xs sm:text-sm text-gray-300 mb-3 sm:mb-4">{goal.description || "No description provided"}</p>
-                    <div className="pt-2 sm:pt-3 border-t border-white/10">
-                      <button 
-                        className="neo-glass-button w-full py-2 sm:py-2.5 px-3 sm:px-4 text-xs sm:text-sm font-medium text-white transition-all duration-300 hover:scale-[1.01] sm:hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/20"
-                        onClick={() => handleViewDetails(goal.id)}
-                      >
-                        <span>View Details</span>
-                      </button>
-                    </div>
-                  </div>
-                </NeoGlassSection>
-              ))
-            ) : (
-              <div className="col-span-full text-center py-6 sm:py-8">
-                <p className="text-gray-300 text-sm sm:text-base">No career goals found. Create your first career goal to get started.</p>
-              </div>
-            )}
-          </div>
-        ) : (
-          <NeoGlassSection className="text-center space-y-3 sm:space-y-4 py-12 sm:py-16">
-            <h2 className="text-lg sm:text-xl font-semibold text-white">No career goals yet</h2>
-            <p className="text-gray-300 max-w-md mx-auto text-sm sm:text-base px-4 sm:px-0">
-              Set 1-5 year career goals and get AI-generated milestones to help you achieve them.
-              Track your progress and stay focused on your career development journey.
-            </p>
-            <button 
-              className="neo-glass-button flex items-center gap-2 py-2 px-3 sm:px-4 mt-4 sm:mt-6 text-sm sm:text-base"
-              onClick={() => setShowCreateDialog(true)}
-            >
-              <span>Get Started</span>
-            </button>
-          </NeoGlassSection>
-        )}
-
-        {/* Dialog for Create Goal */}
-      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="sm:max-w-[500px] max-w-[95vw] max-h-[90vh] overflow-y-auto bg-white/10 backdrop-blur-md border border-white/20 shadow-xl mx-3 sm:mx-auto">
-          <DialogHeader>
-            <DialogTitle className="text-white text-lg sm:text-xl">Create New Career Goal</DialogTitle>
-            <DialogDescription className="text-gray-300 text-sm sm:text-base">
-              Set your career goals with a 1-5 year timeframe and get AI-generated milestones.
-            </DialogDescription>
-          </DialogHeader>
-          <form className="flex flex-col py-3 sm:py-4 space-y-3 sm:space-y-4" onSubmit={handleSubmit}>
-            <div className="space-y-1 sm:space-y-2">
-              <label htmlFor="goal-title" className="text-xs sm:text-sm font-medium text-white">
-                Goal Title
-              </label>
-              <input
-                id="goal-title"
-                value={goalTitle}
-                onChange={(e) => setGoalTitle(e.target.value)}
-                placeholder="e.g. Become a Product Manager"
-                className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-9 sm:h-10 text-sm sm:text-base"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="goal-type" className="text-sm font-medium text-white">
-                Goal Type
-              </label>
-              <div className="relative">
-                <select
-                  id="goal-type"
-                  value={goalType}
-                  onChange={(e) => setGoalType(e.target.value as GoalType)}
-                  className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-12 py-3 px-3 pr-10 appearance-none cursor-pointer"
-                >
-                  <option value="position_change">Position Change</option>
-                  <option value="skill_acquisition">Skill Acquisition</option>
-                  <option value="promotion">Promotion</option>
-                  <option value="industry_switch">Industry Switch</option>
-                  <option value="entrepreneurship">Entrepreneurship</option>
-                  <option value="certification">Certification</option>
-                  <option value="education">Education</option>
-                  <option value="custom">Custom</option>
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="timeframe" className="text-sm font-medium text-white">
-                Timeframe (years)
-              </label>
-              <div className="relative">
-                <select
-                  id="timeframe"
-                  value={timeframe}
-                  onChange={(e) => setTimeframe(e.target.value)}
-                  className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-12 py-3 px-3 pr-10 appearance-none cursor-pointer"
-                >
-                  <option value="1">1 year</option>
-                  <option value="2">2 years</option>
-                  <option value="3">3 years</option>
-                  <option value="4">4 years</option>
-                  <option value="5">5 years</option>
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="description" className="text-sm font-medium text-white">
-                Description
-              </label>
-              <textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe your career goal in detail..."
-                className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 min-h-[80px] px-3 py-3 resize-none"
-              />
-            </div>
-            
-            <div className="mt-2 p-3 rounded-md neo-glass-highlight">
-              <p className="text-sm text-white">
-                <span className="font-medium text-white">Note:</span> AI milestones will be automatically generated for your goal based on its type and timeframe.
-              </p>
-            </div>
-            
-            <DialogFooter className="flex space-x-2 justify-end pt-4">
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => setShowCreateDialog(false)}
-                className="neo-glass-button flex items-center gap-2 py-2 px-4"
-              >
-                Cancel
-              </Button>
-              <Button 
-                type="submit" 
-                disabled={isSubmitting}
-                className="neo-glass-button flex items-center gap-2 py-2 px-4"
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                    <span>Creating...</span>
-                  </>
-                ) : (
-                  <span>Create Goal</span>
-                )}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Success Dialog after goal and milestone creation */}
-      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <DialogContent className="sm:max-w-[500px] bg-white/10 backdrop-blur-md border border-white/20 shadow-xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center text-white">
-              <CheckCircle className="mr-2 h-6 w-6" />
-              Career Goal Created Successfully
-            </DialogTitle>
-            <DialogDescription className="text-gray-300">
-              Musk AI has crafted a personalized roadmap for your career goal.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="py-6">
-            <div className="neo-glass-highlight p-4 rounded-md mb-4">
-              <h3 className="font-medium mb-2 text-white">What happens next?</h3>
-              <ul className="space-y-2 text-sm text-gray-200">
-                <li className="flex items-start">
-                  <CheckCircle2 className="mr-2 h-4 w-4 text-white mt-0.5" />
-                  <span>Your goal has been added to your Career Capsule</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="mr-2 h-4 w-4 text-white mt-0.5" />
-                  <span>AI-generated milestones have been created to guide your journey</span>
-                </li>
-                <li className="flex items-start">
-                  <CheckCircle2 className="mr-2 h-4 w-4 text-white mt-0.5" />
-                  <span>You can track your progress and update milestones as you complete them</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-          
-          <DialogFooter>
-            <Button 
-              onClick={() => {
-                setShowSuccessDialog(false);
-                if (createdGoalId) {
-                  setSelectedGoalId(createdGoalId);
-                  setShowDetailsDialog(true);
-                }
-              }}
-              className="neo-glass-button"
-            >
-              View Goal Details
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Details Dialog */}
-      <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
-        <DialogContent className="sm:max-w-[700px] w-[95vw] sm:w-full max-h-[95vh] bg-white/10 backdrop-blur-md border border-white/20 shadow-xl">
-          <DialogHeader>
-            <DialogTitle className="text-white">
-              {goalDetails?.goal?.title || "Goal Details"}
-            </DialogTitle>
-            <DialogDescription className="text-gray-300">
-              {goalDetails?.goal?.description || "Loading goal details..."}
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="overflow-y-auto max-h-[calc(95vh-200px)] pr-2">
-            {isLoadingDetails ? (
-              <div className="flex flex-col items-center justify-center h-40 space-y-3">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
-                <p className="text-gray-300 text-sm">Loading goal details...</p>
-              </div>
-            ) : goalDetails ? (
-              <div className="space-y-6 py-4">
-              <div className="flex flex-col md:flex-row md:justify-between gap-4 p-4 neo-glass-highlight rounded-lg mb-2">
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-white">Goal Type</p>
-                  <p className="text-sm text-gray-300">
-                    {goalDetails?.goal?.goalType ? getGoalTypeText(goalDetails.goal.goalType) : "N/A"}
-                  </p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-white">Target Date</p>
-                  <p className="text-sm text-gray-300">
-                    {goalDetails?.goal?.targetDate ? formatDate(goalDetails.goal.targetDate.toString()) : "N/A"}
-                  </p>
-                </div>
-                {/* Progress bar removed */}
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-lg font-medium text-white">Milestones</h3>
-                  {(!goalDetails?.milestones || goalDetails.milestones.length === 0) && (
-                    <Button 
-                      size="sm" 
-                      className="neo-glass-button"
-                      onClick={() => {
-                        if (selectedGoalId && goalDetails) {
-                          console.log("Generating milestones for goal:", selectedGoalId);
-                          console.log("Goal details:", goalDetails);
-                          if (goalDetails?.goal) {
-                            generateMilestones.mutate({
-                              goalType: goalDetails.goal.goalType,
-                              description: goalDetails.goal.description || '',
-                              timeframe: goalDetails.goal.timeframe || 1,
-                            });
-                          }
-                        }
-                      }}
-                      disabled={generateMilestones.isPending}
-                    >
-                      {generateMilestones.isPending ? (
-                        <span className="flex items-center">
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Generating...
-                        </span>
-                      ) : (
-                        "Generate AI Milestones"
-                      )}
-                    </Button>
-                  )}
-                </div>
-                
-                {generateMilestones.isPending && (
-                  <div className="mb-3 p-4 rounded-lg neo-glass-loading">
-                    <div className="flex items-center text-white font-medium mb-1">
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Musk AI is generating your career milestones
-                    </div>
-                    <p className="text-sm text-gray-300">
-                      This may take a moment as Musk analyzes your goal, profile, and current market trends to create personalized milestones.
-                    </p>
-                  </div>
-                )}
-                
-                {/* Debug info about milestones data */}
-                {(() => {
-                  if (goalDetails) {
-                    console.log('Milestone debug info:', { 
-                      hasGoalDetails: !!goalDetails,
-                      hasMilestonesProperty: goalDetails && 'milestones' in goalDetails,
-                      milestonesType: goalDetails && goalDetails.milestones ? typeof goalDetails.milestones : 'undefined',
-                      milestonesIsArray: goalDetails && goalDetails.milestones && Array.isArray(goalDetails.milestones),
-                      milestonesLength: goalDetails && goalDetails.milestones && Array.isArray(goalDetails.milestones) ? goalDetails.milestones.length : 0,
-                      firstMilestone: goalDetails && goalDetails.milestones && Array.isArray(goalDetails.milestones) && goalDetails.milestones.length > 0 ? 
-                        { 
-                          ...goalDetails.milestones[0], 
-                          hasTasks: !!goalDetails.milestones[0].tasks, 
-                          tasksLength: goalDetails.milestones[0].tasks ? goalDetails.milestones[0].tasks.length : 0 
-                        } : 'none'
-                    });
-                  }
-                  return null;
-                })()}
-                
-                {goalDetails && goalDetails.milestones && goalDetails.milestones.length > 0 ? (
-                  <div className="space-y-4">
-                    {goalDetails.milestones.map((milestone, index) => {
-                      console.log(`Rendering milestone ${index}: id=${milestone.id}, title=${milestone.title}`);
-                      console.log(`Milestone ${index} has ${milestone.tasks ? milestone.tasks.length : 0} tasks`);
-                      
-                      return (
-                        <div key={milestone.id} className={`neo-glass-highlight rounded-lg p-4 ${
-                          milestone.status === "completed" ? 'border-l-2 border-green-500/50' : ''
-                        }`}>
-                          <div className="flex justify-between items-start">
-                            <div className="flex items-center gap-2">
-                              <h4 className="font-medium text-white">{milestone.title}</h4>
-                              {milestone.status === "completed" && (
-                                <CheckCircle2 className="h-4 w-4 text-green-400" />
-                              )}
-                            </div>
-                            <Badge 
-                              className={`${getStatusColor(milestone.status)} neo-glass-badge`}
-                            >
-                              {milestone.status === "in_progress" ? "In Progress" : 
-                               milestone.status === "completed" ? "Completed" : 
-                               milestone.status === "abandoned" ? "Abandoned" : "Not Started"}
-                            </Badge>
+                      <div className="mb-3">
+                        <div className="relative">
+                          <div className="w-full bg-white/10 rounded-full h-1.5 sm:h-2 backdrop-blur-sm border border-white/20">
+                            <div 
+                              className="bg-gradient-to-r from-blue-400 to-purple-500 h-1.5 sm:h-2 rounded-full transition-all duration-500 shadow-lg shadow-blue-500/20"
+                              style={{ width: `${goal.overallProgress || 0}%` }}
+                            ></div>
                           </div>
-                          <p className="text-sm mt-1 text-gray-300">{milestone.description}</p>
-                          {milestone.targetDate && (
-                            <p className="text-xs text-gray-400 mt-2">
-                              Due: {formatDate(milestone.targetDate instanceof Date ? milestone.targetDate.toISOString() : String(milestone.targetDate))}
-                            </p>
-                          )}
-                          
-                          {/* Task progress calculation */}
-                          {milestone.tasks && milestone.tasks.length > 0 && (
-                            <>
-                              <div className="mt-3">
-                                {/* Calculate milestone progress */}
-                                {(() => {
-                                  const totalTasks = milestone.tasks.length;
-                                  const completedTasks = milestone.tasks.filter(t => t.isCompleted).length;
-                                  const progressPercentage = Math.round((completedTasks / totalTasks) * 100);
-                                  
-                                  return (
-                                    <>
-                                      <div className="flex justify-between text-xs mb-1">
-                                        <span className="text-gray-300">{completedTasks} of {totalTasks} tasks completed</span>
-                                        <span className="font-medium text-white">{progressPercentage}%</span>
-                                      </div>
-                                      <div className="w-full bg-gray-800/50 h-2 rounded-full overflow-hidden mb-3 backdrop-blur-sm border border-gray-700/30">
-                                        <div 
-                                          className="h-full bg-gradient-to-r from-white/20 to-white/40 transition-all duration-500 ease-in-out" 
-                                          style={{ width: `${progressPercentage}%` }}
-                                        />
-                                      </div>
-                                    </>
-                                  );
-                                })()}
-                              </div>
-                            </>
-                          )}
-                          
-                          {/* Display tasks for this milestone */}
-                          {milestone.tasks && milestone.tasks.length > 0 ? (
-                            <div className="mt-3">
-                              <h5 className="text-sm font-medium mb-2 text-white">Tasks:</h5>
-                              <div className="space-y-2">
-                                {milestone.tasks.map((task, taskIndex) => {
-                                  console.log(`Rendering task ${taskIndex} for milestone ${index}: id=${task.id}, title=${task.title}`);
-                                  
-                                  // Handler for toggling task completion
-                                  const handleToggleTask = () => {
-                                    if (toggleTaskCompletion.isPending) {
-                                      console.log('Task toggle mutation is already pending');
-                                      return;
-                                    }
-                                    
-                                    console.log(`Toggling task completion for task ${task.id}, current status: ${task.isCompleted ? 'Completed' : 'Not Completed'}`);
-                                    toggleTaskCompletion.mutate(task.id);
-                                  };
-                                  
-                                  const isBeingToggled = toggleTaskCompletion.isPending && toggleTaskCompletion.variables === task.id;
-                                  
-                                  return (
-                                    <div 
-                                      key={task.id} 
-                                      className={`bg-gray-800/30 backdrop-blur-[5px] p-3 rounded-lg transition-all duration-300 border border-gray-700/40 ${
-                                        isBeingToggled ? 'scale-[1.02] shadow-md' : ''
-                                      } ${
-                                        task.isCompleted ? 'border-l-2 border-green-500/50' : ''
-                                      }`}
-                                    >
-                                      <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                          <Button 
-                                            size="icon" 
-                                            variant="ghost" 
-                                            className={`h-6 w-6 rounded-full transition-colors backdrop-blur-[3px] ${
-                                              task.isCompleted ? 'text-green-400 bg-green-500/5' : 'text-gray-300 hover:bg-gray-700/30'
-                                            } ${
-                                              isBeingToggled ? 'bg-gray-700/50' : ''
-                                            }`}
-                                            onClick={handleToggleTask}
-                                            disabled={toggleTaskCompletion.isPending}
-                                          >
-                                            {isBeingToggled ? (
-                                              <Loader2 className="h-4 w-4 animate-spin" />
-                                            ) : task.isCompleted ? (
-                                              <CheckCircle2 className="h-5 w-5" />
-                                            ) : (
-                                              <div className="h-5 w-5 rounded-full border-2 border-current" />
-                                            )}
-                                          </Button>
-                                          <span className={`font-medium text-sm transition-all ${
-                                            task.isCompleted ? 'line-through text-gray-400' : 'text-white'
-                                          }`}>
-                                            {task.title}
-                                          </span>
-                                        </div>
-                                        <Badge 
-                                          variant="outline"
-                                          className={`transition-colors neo-glass-badge ${
-                                            task.isCompleted ? "bg-green-500/10 text-green-300 border-green-500/30" : "text-gray-300 border-gray-700"
-                                          }`}
-                                        >
-                                          {task.isCompleted ? "Completed" : "Pending"}
-                                        </Badge>
-                                      </div>
-                                      <div className={`text-xs mt-1 ml-8 whitespace-pre-line transition-colors ${
-                                        task.isCompleted ? 'text-gray-400' : 'text-gray-300'
-                                      }`}>
-                                        {task.description}
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          ) : (
-                            <p className="text-xs italic mt-2 text-gray-400">No tasks defined for this milestone</p>
-                          )}
+                          <span className="text-xs text-gray-300 mt-1 sm:mt-2 block font-medium">
+                            {goal.overallProgress || 0}% complete
+                          </span>
                         </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-300 p-3 bg-gray-800/30 backdrop-blur-sm rounded-lg">
-                    {generateMilestones.isPending 
-                      ? "Generating milestones..." 
-                      : "No milestones yet. Click the button above to have Musk AI generate personalized milestones for your career goal."}
-                  </p>
-                )}
-              </div>
-              
-
-              
-                {/* Progress Log section removed as requested */}
+                      </div>
+                      <p className="line-clamp-2 text-xs sm:text-sm text-gray-300 mb-3 sm:mb-4">{goal.description || "No description provided"}</p>
+                      <div className="pt-2 sm:pt-3 border-t border-white/10">
+                        <button 
+                          className="neo-glass-button w-full py-2 sm:py-2.5 px-3 sm:px-4 text-xs sm:text-sm font-medium text-white transition-all duration-300 hover:scale-[1.01] sm:hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/20"
+                          onClick={() => handleViewDetails(goal.id)}
+                        >
+                          <span>View Details</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
               </div>
             ) : (
-              <p className="text-center py-4 text-gray-300">Failed to load goal details.</p>
+              <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 text-center space-y-3 sm:space-y-4 py-12 sm:py-16">
+                <h2 className="text-lg sm:text-xl font-semibold text-white">No career goals yet</h2>
+                <p className="text-gray-400 max-w-md mx-auto text-sm sm:text-base px-4 sm:px-0">
+                  Set 1-5 year career goals and get AI-generated milestones to help you achieve them.
+                  Track your progress and stay focused on your career development journey.
+                </p>
+                <button
+                  onClick={() => setShowCreateDialog(true)}
+                  className="neo-glass-button inline-flex items-center gap-2 py-2.5 px-5 text-sm sm:text-base mt-2"
+                >
+                  <span>Get Started</span>
+                </button>
+              </div>
             )}
           </div>
-          
-          <DialogFooter className="flex justify-between items-center">
-            <div className="flex gap-2">
-              <Button 
-                variant="destructive" 
-                className="hover:bg-red-700/70 border-red-700/30 bg-red-800/30 text-red-200"
-                onClick={() => handleOpenDeleteDialog(selectedGoalId || 0)}
-              >
-                Delete Career Capsule
-              </Button>
-            </div>
-            <Button 
-              onClick={() => setShowDetailsDialog(false)}
-              className="neo-glass-button"
-            >
-              Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="sm:max-w-[425px] bg-white/10 backdrop-blur-md border border-white/20 shadow-xl">
-          <DialogHeader>
-            <DialogTitle className="text-white">Delete Career Capsule</DialogTitle>
-            <DialogDescription className="text-gray-300">
-              Are you sure you want to delete this career capsule? This action cannot be undone, and all associated milestones and skills will be permanently removed.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <div className="p-4 border border-red-600/40 bg-red-500/10 rounded-lg">
-              <h4 className="font-medium flex items-center text-red-300">
-                <AlertTriangle className="mr-2 h-4 w-4" />
-                Warning
-              </h4>
-              <p className="text-sm text-gray-300 mt-1">
-                Deleting this career capsule will remove all your progress tracking for this goal.
-              </p>
-            </div>
-          </div>
-          <DialogFooter className="flex gap-2 justify-end">
-            <Button 
-              variant="outline" 
-              className="neo-glass-button-outline"
-              onClick={() => {
-                setShowDeleteDialog(false);
-                setCapsuleToDelete(null);
-              }}
-              disabled={isDeleting}
-            >
-              Cancel
-            </Button>
-            <Button 
-              variant="destructive" 
-              className="hover:bg-red-700/70 border-red-700/30 bg-red-800/30 text-red-200"
-              onClick={handleDeleteCapsule}
-              disabled={isDeleting}
-            >
-              {isDeleting ? (
-                <span className="flex items-center">
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Deleting...
-                </span>
-              ) : (
-                "Delete"
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        {/* FAQ Section for AEO (Answer Engine Optimization) */}
+        <CareerCapsuleFAQSection />
+        </main>
       </div>
-    </NeoGlassLayout>
+    </>
   );
 }

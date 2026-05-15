@@ -11,7 +11,7 @@ import { Request, Response, NextFunction } from 'express';
 import { LocalAIService } from './services/local-ai-service';
 
 // Initialize local AI service for content moderation
-const localAI = new LocalAIService();
+const localAI = LocalAIService.getInstance();
 
 // Regular expressions for detecting potential prompt injection attacks
 const PROMPT_INJECTION_PATTERNS = [

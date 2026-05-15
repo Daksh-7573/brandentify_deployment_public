@@ -4,7 +4,7 @@ export default function PitchDeckDownload() {
   const downloadPitchDeck = () => {
     const link = document.createElement('a');
     link.href = '/pitch-deck.html';
-    link.download = 'Brandentifier-Pitch-Deck.html';
+    link.download = 'Brandentify-Pitch-Deck.html';
     link.click();
   };
 
@@ -35,7 +35,7 @@ export default function PitchDeckDownload() {
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text'
         }}>
-          Brandentifier Pitch Deck
+          Brandentify Pitch Deck
         </h1>
         
         <p style={{

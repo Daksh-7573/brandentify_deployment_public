@@ -65,12 +65,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useAuth } from "@/hooks/use-auth";
 import { useFeatureAccess } from "@/hooks/use-feature-access";
-import { FREE_PORTFOLIO_TEMPLATES } from "@/lib/feature-access";
 // Removed Sidebar import, using top navigation only
 import { apiRequest } from "@/lib/queryClient";
 // Removed ProfileSkeleton, SectionSkeleton - using FeedSkeleton instead
-import { ShareModal } from "@/components/referral/share-modal";
-import { useReferralStatus } from "@/hooks/use-referral";
+ 
 
 // Define AuthUser type to match Firebase user structure
 type AuthUser = {
@@ -85,7 +83,7 @@ import { ProfileImage } from "@/components/ui/profile-image";
 import { 
   Loader2, Eye, ChevronRight, Check, Bot, 
   Mail, Linkedin, Instagram, Briefcase, Award, User,
-  Code, Github, Terminal, Lock, Gift
+  Code, Github, Terminal
 } from "lucide-react";
 import Header from "@/components/layout/header";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
@@ -172,12 +170,8 @@ export default function PortfolioBuilder() {
   const { isPremium, canAccessPortfolioTemplate } = useFeatureAccess();
   const { toast } = useToast();
   
-  // Get referral-based unlock status
-  const { data: referralStatus, isLoading: isLoadingReferral } = useReferralStatus();
-  
   // DEBUG: Log premium status
   console.log('[PortfolioBuilder] isPremium:', isPremium);
-  console.log('[PortfolioBuilder] referralStatus:', referralStatus);
   const [location, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const [currentStep, setCurrentStep] = useState(STEPS.SELECT_LAYOUT);
@@ -185,17 +179,7 @@ export default function PortfolioBuilder() {
   const [isAnalyzingProfile, setIsAnalyzingProfile] = useState(false);
   const [generationComplete, setGenerationComplete] = useState(false);
   const [portfolioPreviewData, setPortfolioPreviewData] = useState<any>(null);
-  const [showShareModal, setShowShareModal] = useState(false);
-  
-  // Check template access based on referral unlock status
-  // SECURITY: Default to blocked if referral data is loading/unavailable to prevent bypass
-  const checkTemplateAccess = (layout: string): boolean => {
-    if (isLoadingReferral || !referralStatus?.portfolios) return false; // Block access while loading
-    const portfolio = referralStatus.portfolios.find(p => p.id === layout);
-    // If not found in referral list, allow access (for legacy templates)
-    if (!portfolio) return true;
-    return !portfolio.locked;
-  };
+  const [hasCreatedPortfolio, setHasCreatedPortfolio] = useState(false);
 
   // Show all templates (Corporate Executive & Scholar always available)
   const getVisibleTemplates = () => {
@@ -254,6 +238,7 @@ export default function PortfolioBuilder() {
   console.log("Portfolio Builder Debug - userData:", userData);
   console.log("Portfolio Builder Debug - userNumericId:", userNumericId);
   console.log("Portfolio Builder Debug - user?.id:", user?.id);
+
   
   // State for whatIOffer value - placed at component top level to avoid hook rule violations
   const [whatIOfferValue, setWhatIOfferValue] = useState(userData?.whatIOffer || '');
@@ -299,6 +284,10 @@ export default function PortfolioBuilder() {
     retryDelay: 1000,
     // If portfolio not found, we'll create one in the portfolioMutation
   });
+
+  const hasQuantum = Boolean(userData?.visitingCardType);
+  const hasPortfolio = Boolean(portfolio) || hasCreatedPortfolio;
+  const isUnlocked = hasQuantum && hasPortfolio;
   
   // Define types for experiences, skills, and projects
   type WorkExperience = {
@@ -542,6 +531,9 @@ export default function PortfolioBuilder() {
       });
       
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userNumericId}/portfolio`] });
+      if (!portfolio) {
+        setHasCreatedPortfolio(true);
+      }
       setCurrentStep(STEPS.PUBLISH);
     },
     onError: (error) => {
@@ -553,15 +545,6 @@ export default function PortfolioBuilder() {
     }
   });
 
-  // Check if layout is locked based on referral unlock status
-  // SECURITY: Default to locked if referral data is loading/unavailable to prevent bypass
-  const isLayoutLocked = (layoutId: string): boolean => {
-    if (isLoadingReferral || !referralStatus?.portfolios) return true; // Block access while loading
-    const portfolio = referralStatus.portfolios.find(p => p.id === layoutId);
-    // If not found in referral list, allow access (for legacy templates)
-    if (!portfolio) return false;
-    return portfolio.locked;
-  };
 
   // Layout templates
   const layoutOptions = [
@@ -923,6 +906,41 @@ export default function PortfolioBuilder() {
     portfolioMutation.mutate(portfolioData);
   };
 
+  const handleCopyPortfolioLink = async () => {
+    const publicUrl = form.getValues().publicUrl;
+    if (!publicUrl) return;
+
+    const shareUrl = `${window.location.origin}/${publicUrl}`;
+
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = shareUrl;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+
+      toast({
+        title: "Link copied",
+        description: "Your portfolio link is ready to share.",
+      });
+    } catch (error) {
+      toast({
+        title: "Copy failed",
+        description: "Please copy the link manually from the portfolio URL.",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Authentication check
   if (!user) {
     return (
@@ -965,17 +983,8 @@ export default function PortfolioBuilder() {
                         form.watch("layout") === layout.id 
                           ? "ring-1 ring-white/20 border border-white/15 bg-black/70" 
                           : "border border-white/10 bg-black/60"
-                      } ${isLayoutLocked(layout.id) ? "opacity-60" : ""}`}
+                      }`}
                       onClick={() => {
-                        if (isLayoutLocked(layout.id)) {
-                          setShowShareModal(true);
-                          toast({
-                            title: "Template Locked",
-                            description: "Share with friends to unlock more portfolio templates!",
-                            variant: "default",
-                          });
-                          return;
-                        }
                         form.setValue("layout", layout.id as any);
                       }}
                       data-testid={`portfolio-card-${layout.id}`}
@@ -983,7 +992,6 @@ export default function PortfolioBuilder() {
                       <div className="flex flex-col h-full">
                         <div className="pb-2 flex items-center justify-between">
                           <h3 className="text-base sm:text-lg font-medium text-white flex items-center gap-2">
-                            {isLayoutLocked(layout.id) && <Lock className="h-4 w-4 text-white/60" />}
                             {layout.name}
                           </h3>
                         </div>
@@ -1011,14 +1019,12 @@ export default function PortfolioBuilder() {
                 })}
               </div>
               
+              {!isUnlocked && (
+                <div className="mb-4 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/80">
+                  Create 1 Quantum Card and 1 Portfolio to unlock.
+                </div>
+              )}
               <div className="flex flex-col sm:flex-row justify-center sm:justify-end gap-3 mt-6">
-                <button 
-                  onClick={() => setShowShareModal(true)}
-                  className="neo-glass-button flex items-center gap-2 py-2 px-4 text-sm sm:text-base whitespace-nowrap w-full sm:w-auto justify-center"
-                >
-                  <Gift className="h-4 w-4" />
-                  <span>Unlock More Templates</span>
-                </button>
                 <button 
                   onClick={handleCreatePortfolio}
                   className="neo-glass-button flex items-center gap-2 py-2 px-4 text-sm sm:text-base whitespace-nowrap w-full sm:w-auto justify-center"
@@ -1165,7 +1171,17 @@ export default function PortfolioBuilder() {
                 {form.watch("publicUrl") && (
                   <div>
                     <h3 className="font-semibold text-white">Portfolio URL</h3>
-                    <p className="text-primary">brandentifier.com/{form.watch("publicUrl")}</p>
+                    <div className="mt-2 flex flex-col sm:flex-row sm:items-center gap-2">
+                      <p className="text-primary break-all">brandentify.com/{form.watch("publicUrl")}</p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleCopyPortfolioLink}
+                        className="bg-black/70 text-white border-white/20 hover:bg-black/80 hover:border-white/30"
+                      >
+                        Copy Link
+                      </Button>
+                    </div>
                   </div>
                 )}
               </CardContent>
@@ -1281,7 +1297,6 @@ export default function PortfolioBuilder() {
         </NeoGlassLayout>
       </div>
       
-      <ShareModal open={showShareModal} onClose={() => setShowShareModal(false)} />
     </div>
   );
 }

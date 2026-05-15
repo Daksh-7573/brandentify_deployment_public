@@ -4,3 +4,28 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+
+# Secrets & local env
+.env
+.env.*
+!.env.example
+
+# Local / runtime
+tmp/
+logs/
+private_uploads/
+.local/
+.config/
+*.log
+build.log
+output.log
+
+# Uploads & caches
+public/uploads/
+uploads/
+
+# IDE & OS
+.idea/
+.vscode/
+*.swp
+Thumbs.db

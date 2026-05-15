@@ -1,7 +1,7 @@
 import { LocalAIService } from "./local-ai-service";
 
 // Initialize local AI service
-const localAI = new LocalAIService();
+const localAI = LocalAIService.getInstance();
 
 /**
  * Generate career advice based on user profile information

@@ -18,8 +18,8 @@ export function SocialShareButtons({ pulseId, pulseContent, pulseAuthor }: Socia
   
   // Create share text
   const shareText = pulseAuthor 
-    ? `Check out this pulse from ${pulseAuthor} on Brandentifier` 
-    : "Check out this pulse on Brandentifier";
+    ? `Check out this pulse from ${pulseAuthor} on Brandentify` 
+    : "Check out this pulse on Brandentify";
 
   const handleCopyLink = async () => {
     try {
@@ -112,3 +112,4 @@ export function SocialShareButtons({ pulseId, pulseContent, pulseAuthor }: Socia
     </div>
   );
 }
+

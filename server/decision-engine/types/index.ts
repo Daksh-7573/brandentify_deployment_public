@@ -1,5 +1,5 @@
 /**
- * Type definitions for the Brandentifier Decision Engine
+ * Type definitions for the Brandentify Decision Engine
  */
 
 // Define interfaces for our schema without directly importing

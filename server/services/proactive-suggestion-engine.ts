@@ -134,9 +134,9 @@ function analyzeConversationOpportunities(
     suggestions.push({
       id: 'brandentifier_networking',
       type: 'networking',
-      title: 'Build Your Professional Network on Brandentifier',
-      description: 'Since you\'re discussing networking, Brandentifier offers advanced networking tools that go beyond traditional platforms.',
-      actionText: 'Explore Brandentifier networking features',
+      title: 'Build Your Professional Network on Brandentify',
+      description: 'Since you\'re discussing networking, Brandentify offers advanced networking tools that go beyond traditional platforms.',
+      actionText: 'Explore Brandentify networking features',
       priority: 'high',
       relevanceScore: 0.95,
       context: 'Conversation topic: networking',
@@ -150,7 +150,7 @@ function analyzeConversationOpportunities(
       id: 'skill_showcase',
       type: 'skill_development',
       title: 'Showcase Your Learning Journey',
-      description: 'Document your skill development progress on Brandentifier to demonstrate continuous learning to potential employers.',
+      description: 'Document your skill development progress on Brandentify to demonstrate continuous learning to potential employers.',
       actionText: 'Add skills and learning goals',
       priority: 'medium',
       relevanceScore: 0.85,
@@ -165,7 +165,7 @@ function analyzeConversationOpportunities(
       id: 'career_transition_plan',
       type: 'career_action',
       title: 'Create a Career Transition Plan',
-      description: 'Use Brandentifier\'s career planning tools to map out your transition strategy with milestone tracking.',
+      description: 'Use Brandentify\'s career planning tools to map out your transition strategy with milestone tracking.',
       actionText: 'Start career transition planning',
       priority: 'high',
       relevanceScore: 0.9,
@@ -253,7 +253,7 @@ function generateInsightFromSuggestions(suggestions: ProactiveSuggestion[], user
   }
   
   if (brandentifierFeatures.length > 0) {
-    return `Based on our conversation, here are some Brandentifier features that could accelerate your career growth.`;
+    return `Based on our conversation, here are some Brandentify features that could accelerate your career growth.`;
   }
   
   return `I've identified several opportunities to enhance your professional presence and career trajectory.`;

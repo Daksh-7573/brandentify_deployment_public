@@ -92,8 +92,10 @@ export function AppShell({ children, hideHeader = false, className = "" }: AppSh
           </>
         )}
         
-        <main className={`flex-1 ${className}`}>
-          {children}
+        <main className={`flex-1 w-full pt-20 ${className}`}>
+          <div className="w-full h-full">
+            {children}
+          </div>
         </main>
       </div>
 
@@ -108,3 +110,4 @@ export function AppShell({ children, hideHeader = false, className = "" }: AppSh
 }
 
 export default AppShell;
+

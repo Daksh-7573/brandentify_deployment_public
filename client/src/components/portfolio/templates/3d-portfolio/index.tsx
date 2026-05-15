@@ -36,7 +36,7 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
     ].filter(Boolean) as string[],
     contact: {
       profileUrl: userInfo.brandName 
-        ? `brandentifier.com/@${userInfo.brandName.toLowerCase().replace(/\s+/g, '-')}`
+        ? `brandentify.com/@${userInfo.brandName.toLowerCase().replace(/\s+/g, '-')}`
         : undefined
     }
   }), [userInfo]);
@@ -117,7 +117,7 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
     phone: (userInfo as any).phoneNumber || undefined,
     location: userInfo.location || undefined,
     profileUrl: userInfo.brandName 
-      ? `brandentifier.com/@${userInfo.brandName.toLowerCase().replace(/\s+/g, '-')}`
+      ? `brandentify.com/@${userInfo.brandName.toLowerCase().replace(/\s+/g, '-')}`
       : undefined
   }), [userInfo]);
 
@@ -248,7 +248,7 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
         }}
       >
         <p className="text-sm" style={{ color: COLORS.coolGray }}>
-          Built with <span style={{ color: COLORS.electricBlue }}>Brandentifier</span> &middot; {new Date().getFullYear()}
+          Built with <span style={{ color: COLORS.electricBlue }}>Brandentify</span> &middot; {new Date().getFullYear()}
         </p>
       </footer>
     </div>
@@ -256,3 +256,4 @@ const ThreeDPortfolio: React.FC<ThreeDPortfolioProps> = ({
 };
 
 export default ThreeDPortfolio;
+

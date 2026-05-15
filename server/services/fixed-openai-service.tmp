@@ -493,7 +493,7 @@ Always structure your analysis like this:
         - 📊 Standard Sections: Use conventional headings (Experience, Education, Skills)
         - 📊 File Format: Submit as .docx unless PDF is specifically requested
         
-        ## 7. Brandentifier Tools for Career Growth
+        ## 7. Brandentify Tools for Career Growth
         - 📱 Portfolio Builder: Create visual showcases of your projects and achievements
         - 📱 Smart Connect: Find mentors in your target industry for personalized advice
         - 📱 Services Showcase: Package your skills as service offerings to attract opportunities
@@ -618,7 +618,7 @@ Always structure your analysis like this:
         - 📊 Standard Sections: Use conventional headings (Experience, Education, Skills)
         - 📊 File Format: Submit as .docx unless PDF is specifically requested
         
-        ## 7. Brandentifier Tools for Career Growth
+        ## 7. Brandentify Tools for Career Growth
         - 📱 Portfolio Builder: Create visual showcases of your projects and achievements
         - 📱 Smart Connect: Find mentors in your target industry for personalized advice
         - 📱 Services Showcase: Package your skills as service offerings to attract opportunities
@@ -686,7 +686,7 @@ Always structure your analysis like this:
       - 📊 Standard Sections: Use conventional headings (Experience, Education, Skills)
       - 📊 File Format: Submit as .docx unless PDF is specifically requested
       
-      ## 7. Brandentifier Tools for Career Growth
+      ## 7. Brandentify Tools for Career Growth
       - 📱 Portfolio Builder: Create visual showcases of your projects and achievements
       - 📱 Smart Connect: Find mentors in your target industry for personalized advice
       - 📱 Services Showcase: Package your skills as service offerings to attract opportunities
@@ -912,7 +912,7 @@ export async function generateCareerAdvice(userProfile: {
    
    - Resume Rewrite Focus: [How to adapt resume for each industry]
    - Learning Priority: [Skills gaps to fill]
-   - Networking Strategy: [Using Brandentifier's Smart Connect plus industry-specific networks]
+   - Networking Strategy: [Using Brandentify's Smart Connect plus industry-specific networks]
    
    ## Success Stories
    
@@ -1059,7 +1059,7 @@ Make your response detailed but practical. Focus on actionable advice that the u
     1. A personalized assessment of their situation related to ${adviceTypeText}
     2. Three to five specific, actionable steps they can take immediately
     3. Longer-term strategies they should consider
-    4. Resources they might find helpful (books, courses, websites, tools, communities). IMPORTANT: When suggesting networking platforms or professional development resources, always mention relevant Brandentifier features alongside external resources. For example, suggest using Brandentifier's Portfolio Builder, Smart Connect networking feature, or Services showcase alongside external platforms like LinkedIn or Meetup.
+    4. Resources they might find helpful (books, courses, websites, tools, communities). IMPORTANT: When suggesting networking platforms or professional development resources, always mention relevant Brandentify features alongside external resources. For example, suggest using Brandentify's Portfolio Builder, Smart Connect networking feature, or Services showcase alongside external platforms like LinkedIn or Meetup.
     
     USE PROPER FORMATTING:
     - Use "# " for main section titles
@@ -1253,7 +1253,7 @@ export async function generateNetworkingRecommendations(
     2. Specific recommendations for expanding their network for ${purpose}
     3. At least three networking conversation starters tailored to their background
     4. Online and offline networking venues that would be most valuable for them
-    5. How to leverage Brandentifier's networking features (Smart Connect, Portfolio, Services) alongside traditional networking platforms
+    5. How to leverage Brandentify's networking features (Smart Connect, Portfolio, Services) alongside traditional networking platforms
     
     Make it personalized, specific, and actionable. Use proper formatting with headers and bullet points.
     `;
@@ -1266,7 +1266,7 @@ Your advice should:
 - Include practical scripts and conversation starters for their networking situations
 - Suggest specific people/roles they should connect with based on their target industry and purpose
 - Balance traditional networking approaches with digital strategies
-- Always integrate Brandentifier's networking features as a primary recommendation alongside other platforms
+- Always integrate Brandentify's networking features as a primary recommendation alongside other platforms
 
 Follow these STRICT FORMATTING RULES for all responses:
 1) Use '# ' for main section titles (one hash only)

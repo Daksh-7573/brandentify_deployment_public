@@ -1,7 +1,7 @@
 /**
- * Engagement Quest Templates for Brandentifier Platform
+ * Engagement Quest Templates for Brandentify Platform
  * 
- * These quests encourage users to engage with the Brandentifier community
+ * These quests encourage users to engage with the Brandentify community
  * through reactions, comments, shares, and discussions.
  */
 
@@ -202,3 +202,4 @@ export function getEngagementQuestsByAction(action: string): EngagementQuestTemp
 export function getQuickEngagementQuests(): EngagementQuestTemplate[] {
   return engagementQuestTemplates.filter(quest => quest.estimatedTimeMinutes <= 10);
 }
+

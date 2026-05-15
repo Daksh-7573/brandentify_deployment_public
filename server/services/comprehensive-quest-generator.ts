@@ -103,7 +103,7 @@ export class ComprehensiveQuestGenerator {
         estimatedTimeMinutes: aiQuest.estimatedTime,
         targetAction: 'create_pulse',
         xpReward: 60,
-        platform: 'Brandentifier',
+        platform: 'Brandentify',
         category: 'career',
         difficultyLevel: 'intermediate'
       };
@@ -114,17 +114,17 @@ export class ComprehensiveQuestGenerator {
       return {
         type: 'pulse_creation',
         title: `Share ${location} ${industry} Success Story with Data`,
-        description: `Create a Brandentifier pulse sharing a recent ${domain} success story from your work in ${location}. Include specific metrics, before/after results, and lessons learned.`,
+        description: `Create a Brandentify pulse sharing a recent ${domain} success story from your work in ${location}. Include specific metrics, before/after results, and lessons learned.`,
         muskTip: `The best pulses show receipts, not claims. Lead with "${location} ${domain} project: [BIG METRIC]" in your opening line.`,
         deliverableFormat: `1 pulse post with 3 professional images (800×600px each)`,
         quantityValue: 3,
         quantityType: "images",
-        platformConstraints: `Brandentifier pulse format with actual project data`,
+        platformConstraints: `Brandentify pulse format with actual project data`,
         guidanceSnippet: `Structure: Hook → Challenge → Solution → Results → Learning`,
         estimatedTimeMinutes: 35,
         targetAction: 'create_pulse',
         xpReward: 60,
-        platform: 'Brandentifier',
+        platform: 'Brandentify',
         category: 'career',
         difficultyLevel: 'intermediate'
       };
@@ -175,7 +175,7 @@ export class ComprehensiveQuestGenerator {
         estimatedTimeMinutes: aiQuest.estimatedTime,
         targetAction: 'create_portfolio',
         xpReward: 80,
-        platform: 'Brandentifier',
+        platform: 'Brandentify',
         category: 'career',
         difficultyLevel: 'advanced'
       };
@@ -195,7 +195,7 @@ export class ComprehensiveQuestGenerator {
         estimatedTimeMinutes: 45,
         targetAction: 'create_portfolio',
         xpReward: 80,
-        platform: 'Brandentifier',
+        platform: 'Brandentify',
         category: 'career',
         difficultyLevel: 'advanced'
       };
@@ -246,7 +246,7 @@ export class ComprehensiveQuestGenerator {
         estimatedTimeMinutes: aiQuest.estimatedTime,
         targetAction: 'update_resume',
         xpReward: 50,
-        platform: 'Brandentifier',
+        platform: 'Brandentify',
         category: 'career',
         difficultyLevel: 'intermediate'
       };
@@ -266,7 +266,7 @@ export class ComprehensiveQuestGenerator {
         estimatedTimeMinutes: 25,
         targetAction: 'update_resume',
         xpReward: 50,
-        platform: 'Brandentifier',
+        platform: 'Brandentify',
         category: 'career',
         difficultyLevel: 'intermediate'
       };
@@ -317,7 +317,7 @@ export class ComprehensiveQuestGenerator {
         estimatedTimeMinutes: aiQuest.estimatedTime,
         targetAction: 'trend_research',
         xpReward: 40,
-        platform: 'Brandentifier',
+        platform: 'Brandentify',
         category: 'career',
         difficultyLevel: 'intermediate'
       };
@@ -337,7 +337,7 @@ export class ComprehensiveQuestGenerator {
         estimatedTimeMinutes: 30,
         targetAction: 'trend_research',
         xpReward: 40,
-        platform: 'Brandentifier',
+        platform: 'Brandentify',
         category: 'career',
         difficultyLevel: 'intermediate'
       };
@@ -394,3 +394,4 @@ export class ComprehensiveQuestGenerator {
 }
 
 export const comprehensiveQuestGenerator = new ComprehensiveQuestGenerator();
+

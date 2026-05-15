@@ -17,7 +17,7 @@
 import { LocalAIService } from './local-ai-service';
 import { pool } from '../db';
 
-const localAI = new LocalAIService();
+const localAI = LocalAIService.getInstance();
 
 export interface QuestTemplate {
   id: number;
@@ -118,7 +118,7 @@ export class AIQuestPersonalizer {
     const goalsList = user.brandGoals?.join(', ') || 'professional growth';
     const skillsList = user.topSkills?.slice(0, 3).join(', ') || 'their expertise';
     
-    return `You are Musk, an AI digital marketing expert and career strategist on Brandentifier.
+    return `You are Musk, an AI digital marketing expert and career strategist on Brandentify.
 
 Your task: Personalize a quest for ${user.name} using marketing psychology and brand-building expertise.
 
@@ -278,3 +278,4 @@ RESPOND WITH VALID JSON (no markdown, no extra text):
 }
 
 export const aiQuestPersonalizer = new AIQuestPersonalizer();
+

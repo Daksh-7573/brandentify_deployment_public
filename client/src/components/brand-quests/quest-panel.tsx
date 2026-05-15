@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -9,11 +9,13 @@ import {
   useUserSocialQuestsByBucket,
   useCareerQuestBucketCounts,
   useSocialQuestBucketCounts,
-  useInstantQuests
+  useInstantQuests,
+  useAssignDailyQuests
 } from '@/hooks/use-career-quests';
 import { QuestCard } from './quest-card';
 import { InstantQuestCard } from './instant-quest-card';
 import { cn } from '@/lib/utils';
+import { WeeklyQuestCalendar } from '@/components/WeeklyQuestCalendar';
 
 interface QuestPanelProps {
   userId?: number;
@@ -25,6 +27,10 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   const [tabValue, setTabValue] = useState('career');
   const [careerSubTab, setCareerSubTab] = useState('daily');
   const [socialSubTab, setSocialSubTab] = useState('daily');
+  const hasAttemptedAssignment = useRef(false);
+  
+  // Quest assignment mutations
+  const assignDailyQuests = useAssignDailyQuests();
   
   // Bucket-based quest hooks for Career quests
   const { 
@@ -41,6 +47,40 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   // Fetch bucket counts for all tabs upfront
   const { counts: careerCounts } = useCareerQuestBucketCounts(userId);
   const { counts: socialCounts } = useSocialQuestBucketCounts(userId);
+  
+  // Auto-assign or backfill daily quests through the unified scheduler route.
+  useEffect(() => {
+    if (!userId || hasAttemptedAssignment.current) return;
+    
+    const needsQuestBackfill = 
+      careerSubTab === 'daily' && 
+      (currentCareerQuests.length === 0 || currentSocialQuests.length === 0) &&
+      !isLoadingCurrentCareer && 
+      !isLoadingCurrentSocial;
+    
+    if (needsQuestBackfill && !assignDailyQuests.isPending) {
+      console.log(`[QUEST PANEL] Backfilling daily quests for user ${userId}`);
+      hasAttemptedAssignment.current = true;
+
+      assignDailyQuests.mutate({ userId, force: true }, {
+        onSuccess: (data) => {
+          const totalQuests = Array.isArray(data) ? data.length : 0;
+          toast({
+            title: "Daily Quests Assigned!",
+            description: totalQuests > 0 ? `${totalQuests} quests were refreshed for today` : 'Your quest list was refreshed',
+          });
+        },
+        onError: (error) => {
+          console.error(`[QUEST PANEL] Failed to assign quests:`, error);
+          toast({
+            title: "Quest Assignment Failed",
+            description: error instanceof Error ? error.message : "Could not load your daily quests",
+            variant: "destructive"
+          });
+        }
+      });
+    }
+  }, [userId, currentCareerQuests, currentSocialQuests, isLoadingCurrentCareer, isLoadingCurrentSocial, careerSubTab, assignDailyQuests, toast]);
 
   // Fetch instant quests (trending opportunities) by type
   // DISABLED: Instant quests temporarily disabled for improvements - will re-enable in future
@@ -123,7 +163,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
       return (
         <div className="text-center py-8">
           <h3 className="text-lg font-medium text-white">No quests available</h3>
-          <p className="text-white/70 mt-2">
+          <p className="text-gray-400 mt-2">
             Check back later for new brand quests.
           </p>
         </div>
@@ -143,9 +183,13 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
 
   return (
     <div className={cn("w-full", className)}>
-      <div className="mb-3 sm:mb-4">
-        <h2 className="text-lg sm:text-xl font-semibold text-white">Brand Quests</h2>
-        <p className="text-white/70 text-xs sm:text-sm">Complete quests to increase your professional influence</p>
+      <div className="mb-4">
+        <h2 className="text-xl font-semibold text-white">Brand Quests</h2>
+        <p className="text-gray-400 text-sm">Complete quests to increase your professional influence</p>
+      </div>
+
+      <div className="mb-4">
+        <WeeklyQuestCalendar userId={userId} />
       </div>
       
       {/* Quest Tabs */}
@@ -157,14 +201,14 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
         </div>
       ) : (
         <Tabs defaultValue="career" value={tabValue} onValueChange={setTabValue}>
-          <TabsList className="grid grid-cols-2 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
-            <TabsTrigger value="career" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
-              <span className="text-center">Career Quests</span>
-              <span className="text-xs">({careerCounts.daily + careerCounts.completed + careerCounts.missed})</span>
+          <TabsList className="grid grid-cols-2 mb-4 bg-white/5 border border-white/10 rounded-xl p-1.5 h-14 w-full">
+            <TabsTrigger value="career" className="rounded-lg data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-white/5 h-full font-bold text-gray-400 transition-all flex items-center gap-2 text-sm">
+              <span>Career Quests</span>
+              <span className="text-xs opacity-70">({careerCounts.daily + careerCounts.completed + careerCounts.missed})</span>
             </TabsTrigger>
-            <TabsTrigger value="social" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
-              <span className="text-center">Social Quests</span>
-              <span className="text-xs">({socialCounts.daily + socialCounts.completed + socialCounts.missed})</span>
+            <TabsTrigger value="social" className="rounded-lg data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-white/5 h-full font-bold text-gray-400 transition-all flex items-center gap-2 text-sm">
+              <span>Social Quests</span>
+              <span className="text-xs opacity-70">({socialCounts.daily + socialCounts.completed + socialCounts.missed})</span>
             </TabsTrigger>
           </TabsList>
           
@@ -175,23 +219,23 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
             
             {/* Career Quest Sub-tabs for Daily/Completed/Missed */}
             <Tabs value={careerSubTab} onValueChange={setCareerSubTab} className="w-full">
-              <TabsList className="grid grid-cols-3 mb-2 dark-tabs-list border border-white/5 w-full h-auto">
-                <TabsTrigger value="daily" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 py-1 px-2 text-xs">
+              <TabsList className="grid grid-cols-3 mb-3 bg-white/5 border border-white/10 rounded-xl p-1.5 h-12 w-full">
+                <TabsTrigger value="daily" className="rounded-lg data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-white/5 h-full font-bold text-gray-400 transition-all text-xs flex items-center gap-1">
                   <span>Daily</span>
-                  <span className="text-xs">({careerCounts.daily})</span>
+                  <span className="opacity-70">({careerCounts.daily})</span>
                 </TabsTrigger>
-                <TabsTrigger value="completed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 py-1 px-2 text-xs">
+                <TabsTrigger value="completed" className="rounded-lg data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-white/5 h-full font-bold text-gray-400 transition-all text-xs flex items-center gap-1">
                   <span>Completed</span>
-                  <span className="text-xs">({careerCounts.completed})</span>
+                  <span className="opacity-70">({careerCounts.completed})</span>
                 </TabsTrigger>
-                <TabsTrigger value="missed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 py-1 px-2 text-xs">
+                <TabsTrigger value="missed" className="rounded-lg data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-white/5 h-full font-bold text-gray-400 transition-all text-xs flex items-center gap-1">
                   <span>Missed</span>
-                  <span className="text-xs">({careerCounts.missed})</span>
+                  <span className="opacity-70">({careerCounts.missed})</span>
                 </TabsTrigger>
               </TabsList>
               
               <TabsContent value="daily">
-                <div className="text-xs text-white/60 mb-2">
+                <div className="text-xs text-gray-400 mb-3">
                   {new Date().toLocaleDateString()} - Today's career quests
                 </div>
                 

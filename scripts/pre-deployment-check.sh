@@ -54,7 +54,7 @@ section() {
 
 echo ""
 echo "╔════════════════════════════════════════════════════════════════╗"
-echo "║      BRANDENTIFIER PRE-DEPLOYMENT CHECKLIST                   ║"
+echo "║      BRANDENTIFY PRE-DEPLOYMENT CHECKLIST                   ║"
 echo "║      $(date '+%Y-%m-%d %H:%M:%S')                                    ║"
 echo "╚════════════════════════════════════════════════════════════════╝"
 echo ""
@@ -314,3 +314,4 @@ else
   echo ""
   exit 0
 fi
+

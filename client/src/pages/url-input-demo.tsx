@@ -56,7 +56,7 @@ export default function URLInputDemo() {
         border: "1px solid rgba(255, 255, 255, 0.1)"
       }}>
         <h1 style={{ color: "white", marginBottom: "10px" }}>
-          Brandentifier - URL Input Demo
+          Brandentify - URL Input Demo
         </h1>
         <p style={{ color: "#ccc", marginBottom: "30px" }}>
           This is the missing URL input functionality you requested!

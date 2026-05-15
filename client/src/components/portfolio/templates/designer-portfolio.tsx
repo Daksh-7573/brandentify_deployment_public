@@ -1123,7 +1123,7 @@ export default function DesignerPortfolio({
                 className="text-xs uppercase tracking-widest"
                 style={{ color: 'rgba(255,255,255,0.4)' }}
               >
-                Designer Portfolio • Brandentifier
+                Designer Portfolio • Brandentify
               </p>
             </div>
           </div>
@@ -1228,3 +1228,4 @@ export default function DesignerPortfolio({
     </div>
   );
 }
+

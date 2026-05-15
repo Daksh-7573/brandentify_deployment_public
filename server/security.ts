@@ -1,5 +1,5 @@
 /**
- * Security Module for Brandentifier Application
+ * Security Module for Brandentify Application
  * 
  * Provides comprehensive security features:
  * - Encryption at Rest (AES-256)
@@ -38,9 +38,9 @@ const CSRF_SECRET = process.env.CSRF_SECRET || 'brandentifier-csrf-secret-key-20
 
 // Allowed CORS origins (in production, this should be configured properly)
 const ALLOWED_ORIGINS = [
-  'https://brandentifier.com',
-  'https://www.brandentifier.com',
-  'https://brandentifier.replit.app',
+  'https://brandentify.com',
+  'https://www.brandentify.com',
+  'https://brandentify.replit.app',
   'http://localhost:3000',
   'http://localhost:5000',
   'http://127.0.0.1:5000', // Add 127.0.0.1 variant

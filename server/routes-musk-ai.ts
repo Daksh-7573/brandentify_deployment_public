@@ -1,355 +1,80 @@
 import express from 'express';
-import { 
-  generateCareerAdvice, 
-  analyzeResume, 
-  generateNetworkingRecommendations,
-  suggestHashtags
-} from './services/openai-service';
-import { sanitizeResumeText } from './ai-security';
+
+const comingSoonResponse = {
+  success: false,
+  message: 'Musk AI features are temporarily unavailable. Coming soon.',
+};
 
 export const registerMuskAIRoutes = (app: express.Express) => {
-  // Career advice endpoint
-  app.post('/api/musk-ai/career-advice', async (req, res) => {
-    try {
-      const {
-        name,
-        title,
-        lookingFor,
-        industry,
-        domain,
-        location,
-        skills,
-        experiences,
-        educations,
-        projects,
-        adviceType
-      } = req.body;
-
-      // Validate required fields
-      if (!name) {
-        return res.status(400).json({ error: 'Name is required' });
-      }
-
-      const result = await generateCareerAdvice({
-        name,
-        title,
-        lookingFor,
-        industry,
-        domain,
-        location,
-        skills,
-        experiences,
-        educations,
-        projects,
-        adviceType
-      });
-
-      res.json(result);
-    } catch (error: unknown) {
-      console.error('Error in career advice endpoint:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      res.status(500).json({ error: errorMessage || 'Failed to generate career advice' });
-    }
+  app.post('/api/musk-ai/career-advice', (_req, res) => {
+    return res.status(200).json({
+      ...comingSoonResponse,
+      advice: 'Feature coming soon.',
+      nextSteps: [],
+    });
   });
 
-  // Resume analysis endpoint
-  app.post('/api/musk-ai/resume-analysis', async (req, res) => {
-    try {
-      const { resumeText } = req.body;
-
-      // Validate required fields
-      if (!resumeText) {
-        return res.status(400).json({ error: 'Resume text is required' });
-      }
-
-      const result = await analyzeResume({ resumeText });
-      res.json(result);
-    } catch (error: unknown) {
-      console.error('Error in resume analysis endpoint:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      res.status(500).json({ error: errorMessage || 'Failed to analyze resume' });
-    }
+  app.post('/api/musk-ai/resume-analysis', (_req, res) => {
+    return res.status(200).json({
+      ...comingSoonResponse,
+      analysis: null,
+      score: null,
+    });
   });
 
-  // Networking recommendations endpoint
-  app.post('/api/musk-ai/networking-recommendations', async (req, res) => {
-    try {
-      const {
-        name,
-        title,
-        industry,
-        domain,
-        location,
-        skills,
-        lookingFor,
-        targetIndustry,
-        purpose
-      } = req.body;
-
-      // Validate required fields
-      if (!name) {
-        return res.status(400).json({ error: 'Name is required' });
-      }
-
-      const result = await generateNetworkingRecommendations(
-        {
-          name,
-          title,
-          industry,
-          domain,
-          location,
-          skills,
-          lookingFor
-        },
-        targetIndustry,
-        purpose
-      );
-
-      res.json(result);
-    } catch (error: unknown) {
-      console.error('Error in networking recommendations endpoint:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      res.status(500).json({ error: errorMessage || 'Failed to generate networking recommendations' });
-    }
+  app.post('/api/musk-ai/networking-recommendations', (_req, res) => {
+    return res.status(200).json({
+      ...comingSoonResponse,
+      recommendations: [],
+    });
   });
 
-  // Example career advice demo endpoint with pre-filled data
-  app.get('/api/musk-ai/demo/career-advice/:type', async (req, res) => {
-    try {
-      const adviceType = req.params.type as 'career_growth' | 'industry_switch' | 'skill_development' | 'interview_prep' | 'networking';
-      
-      // Demo profile data
-      const demoProfile = {
-        name: "Alex Johnson",
-        title: "Senior Software Developer",
-        industry: "Technology",
-        domain: "Software Development",
-        location: "San Francisco, CA",
-        lookingFor: "Career advancement opportunities",
-        skills: [
-          { name: "JavaScript", proficiency: 90, level: "Expert" },
-          { name: "React", proficiency: 85, level: "Advanced" },
-          { name: "Node.js", proficiency: 80, level: "Advanced" },
-          { name: "TypeScript", proficiency: 75, level: "Intermediate" },
-          { name: "Python", proficiency: 60, level: "Intermediate" },
-          { name: "Project Management", proficiency: 70, level: "Intermediate" }
-        ],
-        experiences: [
-          {
-            title: "Senior Software Developer",
-            company: "TechCorp Inc.",
-            startDate: "2020-01-01",
-            domain: "Enterprise Software",
-            keyResponsibilities: [
-              "Led development of React-based front-end applications",
-              "Mentored junior developers on best practices",
-              "Implemented CI/CD pipelines for automated testing and deployment"
-            ]
-          },
-          {
-            title: "Software Developer",
-            company: "Innovate Solutions",
-            startDate: "2017-03-01",
-            endDate: "2019-12-31",
-            domain: "Financial Technology",
-            keyResponsibilities: [
-              "Developed and maintained web applications using JavaScript",
-              "Integrated third-party payment processing APIs",
-              "Implemented responsive design principles for mobile compatibility"
-            ]
-          }
-        ],
-        educations: [
-          {
-            degree: "Bachelor of Science",
-            fieldOfStudy: "Computer Science",
-            institution: "University of California",
-            startDate: "2013-09-01",
-            endDate: "2017-05-31"
-          }
-        ],
-        projects: [
-          {
-            title: "Enterprise Dashboard",
-            category: "Web Application",
-            startDate: "2021-02-01",
-            description: "Designed and implemented a real-time analytics dashboard using React, Node.js, and WebSockets"
-          }
-        ],
-        adviceType: adviceType
-      };
-
-      const result = await generateCareerAdvice(demoProfile);
-      res.json(result);
-    } catch (error: unknown) {
-      console.error('Error in demo career advice endpoint:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      res.status(500).json({ error: errorMessage || 'Failed to generate demo career advice' });
-    }
+  app.get('/api/musk-ai/demo/career-advice/:type', (_req, res) => {
+    return res.status(200).json({
+      ...comingSoonResponse,
+      advice: 'Feature coming soon.',
+      nextSteps: [],
+    });
   });
 
-  // Example resume analysis demo endpoint
-  app.get('/api/musk-ai/demo/resume-analysis', async (req, res) => {
-    try {
-      // Sample resume text for demo
-      const sampleResume = `
-ALEX JOHNSON
-San Francisco, CA | alex.johnson@email.com | (555) 123-4567 | linkedin.com/in/alexjohnson
-
-PROFESSIONAL SUMMARY
-Senior Software Developer with 6+ years of experience building scalable web applications. Expertise in JavaScript, React, and Node.js with a strong focus on user experience and performance optimization. Proven track record of leading development teams and delivering high-quality software solutions.
-
-SKILLS
-• Programming Languages: JavaScript, TypeScript, Python, HTML, CSS
-• Frontend: React, Redux, Angular, Vue.js
-• Backend: Node.js, Express, Django
-• Databases: MongoDB, PostgreSQL, MySQL
-• Tools: Git, Docker, Jenkins, Webpack, Jest
-• Methodologies: Agile, Scrum, TDD, CI/CD
-
-PROFESSIONAL EXPERIENCE
-
-TECHCORP INC.
-Senior Software Developer | Jan 2020 - Present
-• Led development of a React-based enterprise dashboard application that improved client reporting efficiency by 40%
-• Mentored 5 junior developers, implementing code review processes that reduced production bugs by 30%
-• Implemented CI/CD pipelines using Jenkins, reducing deployment time from days to hours
-• Optimized application performance, achieving a 25% reduction in load time
-• Collaborated with product managers to define and prioritize features based on user feedback
-
-INNOVATE SOLUTIONS
-Software Developer | Mar 2017 - Dec 2019
-• Developed responsive web applications using JavaScript, HTML, and CSS
-• Integrated multiple third-party payment processing APIs, ensuring PCI compliance
-• Implemented responsive design principles, increasing mobile user engagement by 35%
-• Collaborated in an Agile environment with 2-week sprint cycles
-• Participated in code reviews and maintained 90% test coverage
-
-EDUCATION
-University of California, Berkeley
-Bachelor of Science in Computer Science | Graduated May 2017
-• Coursework: Data Structures, Algorithms, Database Systems, Software Engineering
-• Senior Project: Developed a mobile application for campus event discovery
-
-PROJECTS
-Enterprise Analytics Dashboard | 2021
-• Created a real-time analytics dashboard using React, Node.js, and WebSockets
-• Implemented data visualization components that processed over 1M data points
-• Deployed on AWS using Docker containers and auto-scaling groups
-
-Open Source Contribution | 2019-Present
-• Active contributor to React ecosystem libraries
-• Published npm packages with 10k+ monthly downloads
-• Presented at local JavaScript meetups on component design patterns
-`;
-
-      const result = await analyzeResume(sampleResume);
-      res.json(result);
-    } catch (error: unknown) {
-      console.error('Error in demo resume analysis endpoint:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      res.status(500).json({ error: errorMessage || 'Failed to generate demo resume analysis' });
-    }
+  app.get('/api/musk-ai/demo/resume-analysis', (_req, res) => {
+    return res.status(200).json({
+      ...comingSoonResponse,
+      analysis: null,
+      score: null,
+    });
   });
 
-  // Hashtag suggestions endpoint
-  app.post('/api/musk-ai/suggest-hashtags', async (req, res) => {
-    try {
-      const {
-        industry,
-        domain,
-        followedHashtags,
-        previouslyUsedHashtags,
-        contentContext,
-        count
-      } = req.body;
-
-      // No strict validation needed as all fields are optional
-      // But we should have at least some context to work with
-      if (!industry && !domain && !contentContext) {
-        return res.status(400).json({ 
-          error: 'Provide at least one context field (industry, domain, or contentContext)' 
-        });
-      }
-
-      const result = await suggestHashtags({
-        industry,
-        domain,
-        followedHashtags,
-        previouslyUsedHashtags,
-        contentContext,
-        count
-      });
-
-      res.json(result);
-    } catch (error: unknown) {
-      console.error('Error in hashtag suggestions endpoint:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      res.status(500).json({ error: errorMessage || 'Failed to generate hashtag suggestions' });
-    }
+  app.post('/api/musk-ai/suggest-hashtags', (_req, res) => {
+    return res.status(200).json({
+      ...comingSoonResponse,
+      hashtags: [],
+    });
   });
 
-  // Example hashtag suggestions demo endpoint
-  app.get('/api/musk-ai/demo/suggest-hashtags/:industry', async (req, res) => {
-    try {
-      const industry = req.params.industry;
-      const domain = req.query.domain as string || undefined;
-      
-      // Sample previously used hashtags based on industry
-      const industryHashtagMap: Record<string, string[]> = {
-        'technology': ['#TechTrends', '#Innovation', '#Programming'],
-        'healthcare': ['#HealthTech', '#MedicalInnovation', '#PatientCare'],
-        'finance': ['#FinTech', '#Investment', '#Banking'],
-        'education': ['#EdTech', '#Learning', '#TeachingTips'],
-        'marketing': ['#DigitalMarketing', '#ContentStrategy', '#BrandBuilding']
-      };
-      
-      const previouslyUsedHashtags = industryHashtagMap[industry.toLowerCase()] || [];
-      
-      const result = await suggestHashtags({
-        industry,
-        domain,
-        previouslyUsedHashtags,
-        contentContext: `Professional discussing trends and innovations in the ${industry} industry${domain ? ` specifically in ${domain}` : ''}.`
-      });
-      
-      res.json(result);
-    } catch (error: unknown) {
-      console.error('Error in demo hashtag suggestions endpoint:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      res.status(500).json({ error: errorMessage || 'Failed to generate demo hashtag suggestions' });
-    }
+  app.get('/api/musk-ai/demo/suggest-hashtags/:industry', (_req, res) => {
+    return res.status(200).json({
+      ...comingSoonResponse,
+      hashtags: [],
+    });
   });
 
-  // Test endpoints for AI security 
-  app.post('/api/musk/test-security', async (req, res) => {
-    console.log("[TEST] AI Security test endpoint called with prompt:", req.body.prompt?.substring(0, 50));
-    return res.json({ success: true, message: "AI Security test passed - prompt accepted" });
-  });
-  
-  app.post('/api/resume-analysis/test-security', async (req, res) => {
-    try {
-      console.log("[TEST] Resume analysis security test endpoint called");
-      const { resumeText } = req.body;
-      
-      // Process the resume text to remove any sensitive information
-      const sanitizedText = sanitizeResumeText(resumeText);
-      
-      return res.json({ 
-        success: true, 
-        originalText: resumeText,
-        sanitizedText: sanitizedText,
-        message: "Resume security test passed - text properly sanitized" 
-      });
-    } catch (error) {
-      console.error("[TEST] Resume security test error:", error);
-      return res.status(500).json({ 
-        success: false, 
-        message: "Resume security test failed", 
-        error: error instanceof Error ? error.message : "Unknown error" 
-      });
-    }
+  app.post('/api/musk/test-security', (_req, res) => {
+    return res.status(200).json({
+      success: true,
+      message: 'Musk AI security test endpoint is in stub mode.',
+    });
   });
 
-  console.log('Musk AI Career Assistant routes loaded');
+  app.post('/api/resume-analysis/test-security', (req, res) => {
+    const resumeText = typeof req.body?.resumeText === 'string' ? req.body.resumeText : '';
+    return res.status(200).json({
+      success: true,
+      originalText: resumeText,
+      sanitizedText: resumeText,
+      message: 'Resume security test endpoint is in stub mode.',
+    });
+  });
+
+  console.log('Musk AI routes loaded in stub mode');
 };

@@ -15,7 +15,7 @@ import { LocalAIService } from '../local-ai-service';
 import { pool } from '../../db';
 import { jobMatches, type InsertJobMatch } from '@shared/schema';
 
-const localAI = new LocalAIService();
+const localAI = LocalAIService.getInstance();
 
 export interface JobRequirements {
   requiredSkills: string[];

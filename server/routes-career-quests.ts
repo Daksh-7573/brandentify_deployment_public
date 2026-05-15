@@ -16,6 +16,47 @@ function getWeekNumber(date: Date): number {
   return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
 }
 
+function getISOWeekStartDate(year: number, weekNumber: number): Date {
+  const jan4 = new Date(Date.UTC(year, 0, 4));
+  const jan4Day = jan4.getUTCDay() || 7;
+  const weekOneMonday = new Date(jan4);
+  weekOneMonday.setUTCDate(jan4.getUTCDate() - jan4Day + 1);
+
+  const weekStart = new Date(weekOneMonday);
+  weekStart.setUTCDate(weekOneMonday.getUTCDate() + (weekNumber - 1) * 7);
+  return weekStart;
+}
+
+function dateToISODateString(date: Date): string {
+  return date.toISOString().split('T')[0];
+}
+
+function normalizeQuestDate(value: unknown): string | null {
+  if (!value) {
+    return null;
+  }
+
+  if (value instanceof Date) {
+    return dateToISODateString(value);
+  }
+
+  const stringValue = String(value).trim();
+  if (!stringValue) {
+    return null;
+  }
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(stringValue)) {
+    return stringValue;
+  }
+
+  const parsed = new Date(stringValue);
+  if (!Number.isNaN(parsed.getTime())) {
+    return dateToISODateString(parsed);
+  }
+
+  return null;
+}
+
 // Import the service function instead of duplicating code
 import { updateQuestProgress as serviceUpdateQuestProgress } from './services/quest-progress-service';
 
@@ -27,6 +68,15 @@ function isCareerQuest(quest: any): boolean {
   const socialPlatforms = ['linkedin', 'instagram', 'twitter', 'facebook', 'youtube', 'tiktok', 'medium', 'pinterest'];
   const questType = quest.type || quest.definition?.type;
   const platform = quest.platform || quest.definition?.platform;
+  const questCategory = (quest.questCategory || quest.quest_category || quest.definition?.questCategory || quest.definition?.quest_category || '').toLowerCase();
+
+  if (['career', 'profile', 'portfolio'].includes(questCategory)) {
+    return true;
+  }
+
+  if (questCategory === 'social') {
+    return false;
+  }
   
   // Exclude if it's explicitly a social_quest or social_post type
   if (questType === 'social_quest' || questType === 'social_post') {
@@ -38,7 +88,7 @@ function isCareerQuest(quest: any): boolean {
     return false;
   }
   
-  // Include all other Brandentifier platform activities
+  // Include all other Brandentify platform activities
   return true;
 }
 
@@ -46,6 +96,15 @@ function isSocialQuest(quest: any): boolean {
   const socialPlatforms = ['linkedin', 'instagram', 'twitter', 'facebook', 'youtube', 'tiktok', 'medium', 'pinterest'];
   const questType = quest.type || quest.definition?.type;
   const platform = quest.platform || quest.definition?.platform;
+  const questCategory = (quest.questCategory || quest.quest_category || quest.definition?.questCategory || quest.definition?.quest_category || '').toLowerCase();
+
+  if (questCategory === 'social') {
+    return true;
+  }
+
+  if (['career', 'profile', 'portfolio', 'networking'].includes(questCategory)) {
+    return false;
+  }
   
   // Include if it's explicitly a social_quest or social_post type
   if (questType === 'social_quest' || questType === 'social_post') {
@@ -792,10 +851,371 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
     }
   });
 
+  // Compatibility endpoint for weekly query shape: /api/quests?week=current&userId=...
+  apiRouter.get('/quests', async (req, res) => {
+    try {
+      const week = String(req.query.week || '').toLowerCase();
+      if (week !== 'current') {
+        return res.status(400).json({ message: 'Unsupported query. Use week=current.' });
+      }
+
+      const userId = parseInt(String(req.query.userId));
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Valid userId is required' });
+      }
+
+      return res.redirect(307, `/api/quests/weekly?userId=${userId}`);
+    } catch (error) {
+      console.error('[GET /quests] Error:', error);
+      return res.status(500).json({ message: 'Failed to resolve weekly quests route' });
+    }
+  });
+
+  // Weekly calendar endpoint (grouped by day) for additive migration from daily views.
+  apiRouter.get('/quests/weekly', async (req, res) => {
+    try {
+      const userId = parseInt(String(req.query.userId || ''));
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid or missing userId query parameter' });
+      }
+
+      const now = new Date();
+      const requestedWeekNumber = parseInt(String(req.query.weekNumber || getWeekNumber(now)));
+      const requestedYear = parseInt(String(req.query.year || now.getUTCFullYear()));
+      const fallbackToLatest = String(req.query.fallbackToLatest || 'true').toLowerCase() !== 'false';
+
+      if (isNaN(requestedWeekNumber) || isNaN(requestedYear)) {
+        return res.status(400).json({ message: 'Invalid weekNumber or year query parameter' });
+      }
+
+      let weekNumber = requestedWeekNumber;
+      let year = requestedYear;
+
+      // Keep status accurate for calendar dots without changing completed quests.
+      await db.execute(sql`
+        UPDATE user_quests
+        SET status = 'expired'
+        WHERE user_id = ${userId}
+          AND status = 'active'
+          AND assigned_date < CURRENT_DATE
+          AND progress < (
+            SELECT target_count
+            FROM quest_definitions
+            WHERE id = user_quests.quest_definition_id
+          )
+      `);
+
+      const fetchWeeklyRows = async (targetWeekNumber: number, targetYear: number) => {
+        return db.execute(sql`
+          SELECT
+            uq.id,
+            uq.user_id as "userId",
+            uq.quest_definition_id as "questDefinitionId",
+            uq.status,
+            uq.progress,
+            uq.assigned_at as "assignedAt",
+            uq.completed_at as "completedAt",
+            uq.xp_earned as "xpEarned",
+            uq.badge_earned as "badgeEarned",
+            uq.assigned_date as "assignedDate",
+            uq.scheduled_date as "scheduledDate",
+            uq.week_number as "weekNumber",
+            uq.year,
+            qd.title,
+            qd.description,
+            qd.type,
+            qd.target_count as "targetCount",
+            qd.target_action as "targetAction",
+            qd.xp_reward as "xpReward",
+            qd.badge_reward as "badgeReward",
+            qd.platform,
+            qd.quest_category as "questCategory",
+            qd.musk_tip as "muskTip",
+            qd.deliverable_format as "deliverableFormat",
+            qd.quantity_value as "quantityValue",
+            qd.quantity_type as "quantityType",
+            qd.platform_constraints as "platformConstraints",
+            qd.guidance_snippet as "guidanceSnippet"
+          FROM user_quests uq
+          JOIN quest_definitions qd ON qd.id = uq.quest_definition_id
+          WHERE uq.user_id = ${userId}
+            AND uq.week_number = ${targetWeekNumber}
+            AND uq.year = ${targetYear}
+          ORDER BY uq.assigned_date ASC, uq.assigned_at ASC
+        `);
+      };
+
+      let rowsResult = await fetchWeeklyRows(weekNumber, year);
+
+      // Self-heal only for current week: generate missing week quests for this user, then refetch.
+      const currentWeekNow = getWeekNumber(now);
+      const currentYearNow = now.getUTCFullYear();
+      if (rowsResult.rows.length === 0 && weekNumber === currentWeekNow && year === currentYearNow) {
+        const { ensureWeeklyQuestsForUser } = await import('./services/weekly-quest-recovery');
+        await ensureWeeklyQuestsForUser(userId);
+        rowsResult = await fetchWeeklyRows(weekNumber, year);
+      }
+
+      // Visibility fallback: if requested week is empty, return latest week with quests for this user.
+      if (rowsResult.rows.length === 0 && fallbackToLatest) {
+        const latestWeekResult = await db.execute(sql`
+          SELECT week_number as "weekNumber", year
+          FROM user_quests
+          WHERE user_id = ${userId}
+          ORDER BY year DESC, week_number DESC
+          LIMIT 1
+        `);
+
+        if (latestWeekResult.rows.length > 0) {
+          const latest = latestWeekResult.rows[0] as any;
+          weekNumber = Number(latest.weekNumber);
+          year = Number(latest.year);
+          rowsResult = await fetchWeeklyRows(weekNumber, year);
+        }
+      }
+
+      const weekStart = getISOWeekStartDate(year, weekNumber);
+      const weekDays = Array.from({ length: 7 }).map((_, index) => {
+        const date = new Date(weekStart);
+        date.setUTCDate(weekStart.getUTCDate() + index);
+        const dateString = dateToISODateString(date);
+        return {
+          date: dateString,
+          dayName: date.toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' }),
+          quests: [] as any[],
+        };
+      });
+
+      const dayMap = new Map<string, { date: string; dayName: string; quests: any[] }>();
+      for (const day of weekDays) {
+        dayMap.set(day.date, day);
+      }
+
+      const flattenedQuests: any[] = [];
+
+      for (const row of rowsResult.rows as any[]) {
+        const assignedDate = normalizeQuestDate(row.scheduledDate ?? row.assignedDate);
+        if (!assignedDate) {
+          continue;
+        }
+
+        const statusLabel = row.status === 'completed'
+          ? 'completed'
+          : row.status === 'expired'
+            ? 'missed'
+            : 'pending';
+
+        const apiStatus = row.status === 'completed'
+          ? 'completed'
+          : row.status === 'active'
+            ? 'in_progress'
+            : 'pending';
+
+        const mappedQuest = {
+          id: row.id,
+          userId: row.userId,
+          questDefinitionId: row.questDefinitionId,
+          status: row.status,
+          progress: row.progress,
+          assignedAt: row.assignedAt,
+          completedAt: row.completedAt,
+          xpEarned: row.xpEarned,
+          badgeEarned: row.badgeEarned,
+          assignedDate,
+          scheduled_date: assignedDate,
+          weekNumber: row.weekNumber,
+          year: row.year,
+          calendarStatus: statusLabel,
+          title: row.title,
+          description: row.description,
+          type: row.type,
+          platform: row.platform,
+          questCategory: row.questCategory,
+          definition: {
+            id: row.questDefinitionId,
+            title: row.title,
+            description: row.description,
+            type: row.type,
+            targetCount: row.targetCount,
+            targetAction: row.targetAction,
+            xpReward: row.xpReward,
+            badgeReward: row.badgeReward,
+            platform: row.platform,
+            muskTip: row.muskTip,
+            deliverableFormat: row.deliverableFormat,
+            quantityValue: row.quantityValue,
+            quantityType: row.quantityType,
+            platformConstraints: row.platformConstraints,
+            guidanceSnippet: row.guidanceSnippet,
+          }
+        };
+
+        flattenedQuests.push({
+          id: row.id,
+          title: row.title,
+          status: apiStatus,
+          scheduled_date: assignedDate,
+        });
+
+        const dayEntry = dayMap.get(assignedDate);
+        if (dayEntry) {
+          dayEntry.quests.push(mappedQuest);
+        }
+      }
+
+      const days = weekDays.map((day) => {
+        const hasCompleted = day.quests.some((quest) => quest.calendarStatus === 'completed');
+        const hasQuests = day.quests.length > 0;
+        const allMissed = hasQuests && day.quests.every((quest) => quest.calendarStatus === 'missed');
+
+        const status = hasCompleted ? 'completed' : allMissed ? 'missed' : 'pending';
+        return {
+          ...day,
+          status,
+        };
+      });
+
+      const summary = {
+        totalQuests: rowsResult.rows.length,
+        completed: rowsResult.rows.filter((row: any) => row.status === 'completed').length,
+        missed: rowsResult.rows.filter((row: any) => row.status === 'expired').length,
+        pending: rowsResult.rows.filter((row: any) => row.status === 'active').length,
+      };
+
+      res.json({
+        userId,
+        weekNumber,
+        year,
+        requestedWeekNumber,
+        requestedYear,
+        weekStartDate: dateToISODateString(weekStart),
+        weekEndDate: dateToISODateString(new Date(weekStart.getTime() + (6 * 86400000))),
+        summary,
+        quests: flattenedQuests,
+        days,
+      });
+    } catch (error) {
+      console.error('[GET /quests/weekly] Error:', error);
+      res.status(500).json({ message: 'Failed to fetch weekly calendar quests' });
+    }
+  });
+
+  // Admin force generation endpoint for weekly quest rollout/recovery.
+  apiRouter.post('/admin/generate-weekly-quests', async (req, res) => {
+    try {
+      const userId = req.body?.userId ? parseInt(String(req.body.userId)) : undefined;
+      const force = req.body?.force !== false;
+      const targetWeeklyQuests = req.body?.targetWeeklyQuests
+        ? parseInt(String(req.body.targetWeeklyQuests))
+        : undefined;
+
+      const { dailyQuestScheduler } = await import('./services/daily-quest-scheduler');
+
+      if (userId && !isNaN(userId)) {
+        const generated = await dailyQuestScheduler.triggerWeeklyAssignmentForUser(userId, {
+          force,
+          targetWeeklyQuests,
+        });
+
+        return res.json({
+          scope: 'single-user',
+          userId,
+          generatedCount: Array.isArray(generated) ? generated.length : 0,
+        });
+      }
+
+      const result = await dailyQuestScheduler.generateWeeklyQuestsForAllUsers({
+        force,
+        targetWeeklyQuests,
+      });
+
+      res.json({
+        scope: 'all-users',
+        ...result,
+      });
+    } catch (error) {
+      console.error('[POST /admin/generate-weekly-quests] Error:', error);
+      res.status(500).json({ message: 'Failed to force generate weekly quests' });
+    }
+  });
+
+  // Admin bulk generation endpoint: Fill ALL 7 days of the week for all users
+  // This is more aggressive than the weekly scheduler - ensures complete week coverage daily
+  apiRouter.post('/admin/generate-weekly-quests-bulk', async (req, res) => {
+    try {
+      const force = req.body?.force !== false;
+
+      const { weeklyQuestBulkGenerator } = await import('./services/weekly-quest-bulk-generator');
+
+      console.log('[POST /admin/generate-weekly-quests-bulk] Starting bulk weekly quest generation...');
+      const result = await weeklyQuestBulkGenerator.generateWeeklyQuestsForAllUsers(force);
+
+      res.json({
+        scope: 'all-users-all-days',
+        force,
+        ...result,
+      });
+    } catch (error) {
+      console.error('[POST /admin/generate-weekly-quests-bulk] Error:', error);
+      res.status(500).json({ 
+        message: 'Failed to bulk generate weekly quests',
+        error: error.message 
+      });
+    }
+  });
+
+  // Admin smart recovery endpoint: Ensure all users have full week of quests
+  // Only generates MISSING days - never overwrites existing quests (intelligent gap-filling)
+  // Cases: No quests → generate 7 days | Partial → generate missing | Complete → skip
+  apiRouter.post('/admin/ensure-weekly-quests', async (req, res) => {
+    try {
+      const dryRun = req.body?.dryRun === true;
+
+      const { ensureWeeklyQuestsForAllUsers } = await import('./services/weekly-quest-recovery');
+
+      console.log(`[POST /admin/ensure-weekly-quests] Starting smart weekly quest recovery${dryRun ? ' [DRY-RUN]' : ''}...`);
+      const result = await ensureWeeklyQuestsForAllUsers({ dryRun });
+
+      res.json({
+        scope: 'smart-recovery',
+        dryRun,
+        ...result,
+      });
+    } catch (error) {
+      console.error('[POST /admin/ensure-weekly-quests] Error:', error);
+      res.status(500).json({ 
+        message: 'Failed to ensure weekly quests',
+        error: error.message 
+      });
+    }
+  });
+
+  // Admin compatibility alias for weekly quest recovery.
+  apiRouter.post('/admin/fix-weekly-quests', async (req, res) => {
+    try {
+      const dryRun = req.body?.dryRun === true;
+      const { ensureWeeklyQuestsForAllUsers } = await import('./services/weekly-quest-recovery');
+
+      const result = await ensureWeeklyQuestsForAllUsers({ dryRun });
+      res.json({
+        scope: 'smart-recovery',
+        dryRun,
+        ...result,
+      });
+    } catch (error) {
+      console.error('[POST /admin/fix-weekly-quests] Error:', error);
+      res.status(500).json({
+        message: 'Failed to fix weekly quests',
+        error: error.message,
+      });
+    }
+  });
+
   // Daily quest assignment route
   apiRouter.post("/users/:userId/quests/assign-daily", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
+      const force = req.query.force === 'true' || req.body?.force === true;
       if (isNaN(userId)) {
         return res.status(400).json({ message: 'Invalid user ID' });
       }
@@ -834,7 +1254,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         const { dailyQuestScheduler } = await import('./services/daily-quest-scheduler');
         
         // Trigger assignment for this specific user
-        await dailyQuestScheduler.triggerDailyAssignmentForUser(userId);
+        await dailyQuestScheduler.triggerDailyAssignmentForUser(userId, { force });
         
         // Return the newly assigned quests
         const assignedQuests = await storage.getCurrentDayUserQuests(userId);
@@ -899,6 +1319,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             qd.xp_reward as "xpReward",
             qd.badge_reward as "badgeReward",
             qd.platform,
+            qd.quest_category as "questCategory",
             COALESCE(gcq.personalized_musk_tip, gsq.personalized_musk_tip, qd.musk_tip) as "muskTip",
             COALESCE(gcq.deliverable_format, qd.deliverable_format) as "deliverableFormat",
             qd.quantity_value as "quantityValue",
@@ -962,6 +1383,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             qd.xp_reward as "xpReward",
             qd.badge_reward as "badgeReward",
             qd.platform,
+            qd.quest_category as "questCategory",
             COALESCE(gcq.personalized_musk_tip, gsq.personalized_musk_tip, qd.musk_tip) as "muskTip",
             COALESCE(gcq.deliverable_format, qd.deliverable_format) as "deliverableFormat",
             qd.quantity_value as "quantityValue",
@@ -1039,6 +1461,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             qd.xp_reward as "xpReward",
             qd.badge_reward as "badgeReward",
             qd.platform,
+            qd.quest_category as "questCategory",
             COALESCE(gcq.personalized_musk_tip, gsq.personalized_musk_tip, qd.musk_tip) as "muskTip",
             COALESCE(gcq.deliverable_format, qd.deliverable_format) as "deliverableFormat",
             qd.quantity_value as "quantityValue",
@@ -1093,8 +1516,20 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       }
 
       res.json(quests || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching bucket quests:', error);
+      
+      // Graceful error handling for Neon database cold start / unavailability
+      if (error.message?.includes('Database temporarily unavailable') || 
+          error.message?.includes('endpoint has been disabled') ||
+          error.message?.includes('endpoint is paused')) {
+        return res.status(503).json({ 
+          error: 'Database waking up',
+          message: 'System is warming up. Please refresh in a few seconds.',
+          retryAfter: 5
+        });
+      }
+      
       res.status(500).json({ error: 'Failed to fetch bucket quests' });
     }
   });
@@ -1146,6 +1581,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             qd.xp_reward as "xpReward",
             qd.badge_reward as "badgeReward",
             qd.platform,
+            qd.quest_category as "questCategory",
             COALESCE(gsq.personalized_musk_tip, gcq.personalized_musk_tip, qd.musk_tip) as "muskTip",
             COALESCE(gcq.deliverable_format, qd.deliverable_format) as "deliverableFormat",
             qd.quantity_value as "quantityValue",
@@ -1232,6 +1668,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             qd.xp_reward as "xpReward",
             qd.badge_reward as "badgeReward",
             qd.platform,
+            qd.quest_category as "questCategory",
             COALESCE(gcq.personalized_musk_tip, gsq.personalized_musk_tip, qd.musk_tip) as "muskTip",
             COALESCE(gcq.deliverable_format, qd.deliverable_format) as "deliverableFormat",
             qd.quantity_value as "quantityValue",
@@ -1316,6 +1753,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             qd.xp_reward as "xpReward",
             qd.badge_reward as "badgeReward",
             qd.platform,
+            qd.quest_category as "questCategory",
             COALESCE(gcq.personalized_musk_tip, gsq.personalized_musk_tip, qd.musk_tip) as "muskTip",
             COALESCE(gcq.deliverable_format, qd.deliverable_format) as "deliverableFormat",
             qd.quantity_value as "quantityValue",
@@ -1377,8 +1815,20 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       }
 
       res.json(quests || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching social bucket quests:', error);
+      
+      // Graceful error handling for Neon database cold start / unavailability
+      if (error.message?.includes('Database temporarily unavailable') || 
+          error.message?.includes('endpoint has been disabled') ||
+          error.message?.includes('endpoint is paused')) {
+        return res.status(503).json({ 
+          error: 'Database waking up',
+          message: 'System is warming up. Please refresh in a few seconds.',
+          retryAfter: 5
+        });
+      }
+      
       res.status(500).json({ error: 'Failed to fetch social bucket quests' });
     }
   });
@@ -2173,25 +2623,14 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       let errorCount = 0;
       const results = [];
       
+      const { dailyQuestScheduler } = await import('./services/daily-quest-scheduler');
+
       // Assign quests to each user
       for (const user of users) {
         try {
-          // Check if user already has quests for today
-          const existingQuests = await storage.getCurrentDayUserQuests(user.id);
-          const existingSocialQuests = await storage.getCurrentDaySocialQuests(user.id);
-          
-          let careerQuests = [];
-          let socialQuests = [];
-          
-          // Assign career quests if none exist
-          if (!existingQuests || existingQuests.length === 0) {
-            careerQuests = await storage.assignDailyQuestsToUser(user.id);
-          }
-          
-          // Assign social quests if none exist  
-          if (!existingSocialQuests || existingSocialQuests.length === 0) {
-            socialQuests = await storage.assignDailySocialQuests(user.id);
-          }
+          const assignedQuests = await dailyQuestScheduler.triggerDailyAssignmentForUser(user.id, { force: true });
+          const careerQuests = assignedQuests.filter(isCareerQuest);
+          const socialQuests = assignedQuests.filter(isSocialQuest);
           
           results.push({
             userId: user.id,

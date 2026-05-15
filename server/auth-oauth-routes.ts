@@ -22,8 +22,8 @@ const JWT_SECRET =
 
 // Allowed redirect URIs (whitelist for security) - Using API routes to avoid client route collision
 const ALLOWED_REDIRECT_URIS = [
-  "https://brandentifier.replit.app/api/auth/google/callback",
-  "https://brandentifier.com/api/auth/google/callback",
+  "https://brandentify.replit.app/api/auth/google/callback",
+  "https://brandentify.com/api/auth/google/callback",
   "http://localhost:5000/api/auth/google/callback",
   "http://127.0.0.1:5000/api/auth/google/callback",
   // Current Replit preview domain
@@ -32,7 +32,7 @@ const ALLOWED_REDIRECT_URIS = [
 
 // Improved domain pattern matching for Replit environments
 const REPLIT_DOMAIN_PATTERNS = [
-  /^[a-zA-Z0-9-]+\.replit\.app$/, // Published domains like brandentifier.replit.app
+  /^[a-zA-Z0-9-]+\.replit\.app$/, // Published domains like brandentify.replit.app
   /^[a-zA-Z0-9-]+\.replit\.dev$/, // Preview domains like simple.replit.dev
   /^[a-f0-9-]+\.picard\.replit\.dev$/, // Basic picard preview pattern
   /^[a-f0-9-]+-[a-f0-9-]+-[a-zA-Z0-9-]+\.picard\.replit\.dev$/, // Full picard subdomain pattern like 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
@@ -124,13 +124,13 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
     const isReplitDomain = REPLIT_DOMAIN_PATTERNS.some((pattern) =>
       pattern.test(host),
     );
-    const isBrandentifierCom = host.includes("brandentifier.com");
+    const isBrandentifyCom = host.includes("brandentify.com");
 
     console.log("🌐 [OAUTH-URL] Domain analysis:", {
       host,
       isDevelopment,
       isReplitDomain,
-      isBrandentifierCom,
+      isBrandentifyCom,
       matchedPattern: REPLIT_DOMAIN_PATTERNS.find((pattern) =>
         pattern.test(host),
       )?.toString(),
@@ -143,10 +143,10 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
 
     if (isDevelopment) {
       redirectUri = "http://localhost:5000/api/auth/google/callback";
-    } else if (isBrandentifierCom) {
-      redirectUri = "https://brandentifier.com/api/auth/google/callback";
+    } else if (isBrandentifyCom) {
+      redirectUri = "https://brandentify.com/api/auth/google/callback";
     } else if (isReplitDomain) {
-      // FIXED: For preview domains, use the current domain to avoid non-existent brandentifier.replit.app
+      // FIXED: For preview domains, use the current domain to avoid non-existent brandentify.replit.app
       // For published domains, still use stable redirect URI
       if (host.includes(".picard.replit.dev") || host.includes(".replit.dev")) {
         // Preview domain: use current domain
@@ -154,7 +154,7 @@ export async function createGoogleOAuthURLRoute(req: Request, res: Response) {
       } else {
         // Published domain: use stable redirect URI
         redirectUri =
-          "https://brandentifier.replit.app/api/auth/google/callback";
+          "https://brandentify.replit.app/api/auth/google/callback";
       }
     } else {
       // Fallback for unknown domains - use current host if HTTPS
@@ -387,13 +387,13 @@ export async function handleGoogleOAuthCallbackRoute(
     const isReplitDomain = REPLIT_DOMAIN_PATTERNS.some((pattern) =>
       pattern.test(host),
     );
-    const isBrandentifierCom = host.includes("brandentifier.com");
+    const isBrandentifyCom = host.includes("brandentify.com");
 
     console.log("🌐 [OAUTH-CALLBACK] Domain analysis for token exchange:", {
       host,
       isDevelopment,
       isReplitDomain,
-      isBrandentifierCom,
+      isBrandentifyCom,
       matchedPattern: REPLIT_DOMAIN_PATTERNS.find((pattern) =>
         pattern.test(host),
       )?.toString(),
@@ -404,10 +404,10 @@ export async function handleGoogleOAuthCallbackRoute(
 
     if (isDevelopment) {
       redirectUri = "http://localhost:5000/api/auth/google/callback";
-    } else if (isBrandentifierCom) {
-      redirectUri = "https://brandentifier.com/api/auth/google/callback";
+    } else if (isBrandentifyCom) {
+      redirectUri = "https://brandentify.com/api/auth/google/callback";
     } else if (isReplitDomain) {
-      // FIXED: For preview domains, use the current domain to avoid non-existent brandentifier.replit.app
+      // FIXED: For preview domains, use the current domain to avoid non-existent brandentify.replit.app
       // For published domains, still use stable redirect URI
       if (host.includes(".picard.replit.dev") || host.includes(".replit.dev")) {
         // Preview domain: use current domain
@@ -415,7 +415,7 @@ export async function handleGoogleOAuthCallbackRoute(
       } else {
         // Published domain: use stable redirect URI
         redirectUri =
-          "https://brandentifier.replit.app/api/auth/google/callback";
+          "https://brandentify.replit.app/api/auth/google/callback";
       }
     } else {
       // Fallback for unknown domains - use current host if HTTPS
@@ -543,9 +543,9 @@ export async function handleGoogleOAuthCallbackRoute(
         googleId: existingUser.googleId,
       });
 
-      // ONE-TIME SYNC: Preserve user's Brandentifier name and photo
+      // ONE-TIME SYNC: Preserve user's Brandentify name and photo
       // Google data only used on initial signup, not on subsequent logins
-      console.log("🔒 [ONE-TIME-SYNC] Preserving Brandentifier profile data (name and photo)");
+      console.log("🔒 [ONE-TIME-SYNC] Preserving Brandentify profile data (name and photo)");
 
       // Update only technical fields, preserve user's customized name and photo
       user = await storage.updateUser(existingUser.id, {
@@ -569,10 +569,10 @@ export async function handleGoogleOAuthCallbackRoute(
           "✅ [AUTH-FIX] Found legacy user by email, updating with Google ID",
         );
 
-        // ONE-TIME SYNC: Preserve user's Brandentifier name and photo for legacy users
+        // ONE-TIME SYNC: Preserve user's Brandentify name and photo for legacy users
         // Google data only used on initial signup, not on subsequent logins
         console.log(
-          "🔒 [ONE-TIME-SYNC] Preserving Brandentifier profile data for legacy user (name and photo)",
+          "🔒 [ONE-TIME-SYNC] Preserving Brandentify profile data for legacy user (name and photo)",
         );
 
         // Update legacy user with Google ID fields only, preserve name and photo
@@ -715,7 +715,7 @@ export async function handleGoogleOAuthCallbackRoute(
       const isSecure =
         currentHost.includes("replit.app") ||
         currentHost.includes("replit.dev") ||
-        currentHost.includes("brandentifier.com");
+        currentHost.includes("brandentify.com");
 
       const cookieOptions = {
         httpOnly: true,
@@ -929,7 +929,7 @@ export async function acceptSessionRoute(req: Request, res: Response) {
     const isSecure =
       currentHost.includes("replit.app") ||
       currentHost.includes("replit.dev") ||
-      currentHost.includes("brandentifier.com");
+      currentHost.includes("brandentify.com");
 
     const cookieOptions = {
       httpOnly: true,
@@ -1035,7 +1035,7 @@ export async function checkSessionRoute(req: Request, res: Response) {
       isReplitDomain: REPLIT_DOMAIN_PATTERNS.some((pattern) =>
         pattern.test(requestHost || ""),
       ),
-      isBrandentifierCom: requestHost?.includes("brandentifier.com"),
+      isBrandentifyCom: requestHost?.includes("brandentify.com"),
     });
 
     // Check if JWT session cookie exists
@@ -1233,7 +1233,7 @@ export async function setSessionFromTokenRoute(req: Request, res: Response) {
       const isSecure =
         currentHost.includes("replit.app") ||
         currentHost.includes("replit.dev") ||
-        currentHost.includes("brandentifier.com");
+        currentHost.includes("brandentify.com");
       
       const cookieOptions = {
         httpOnly: true,
@@ -1320,3 +1320,4 @@ export async function logoutRoute(req: Request, res: Response) {
     });
   }
 }
+

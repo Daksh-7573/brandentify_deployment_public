@@ -69,8 +69,8 @@ To strengthen your positioning for these career paths, consider:
 
 ## 🧭 Short-Term Strategy
 
-1. **Update your Brandentifier portfolio** to highlight achievements relevant to your target path
-2. **Leverage Brandentifier's Smart Connect** to identify and reach out to professionals in your target roles
+1. **Update your Brandentify portfolio** to highlight achievements relevant to your target path
+2. **Leverage Brandentify's Smart Connect** to identify and reach out to professionals in your target roles
 3. **Create tailored resumes** that emphasize transferable skills for each potential path
 4. **Apply the 70% rule** - pursue roles where you match at least 70% of requirements
 5. **Conduct 3-5 informational interviews** with professionals in your target fields
@@ -130,7 +130,7 @@ After conducting a comprehensive analysis of your professional profile, I've ide
 
 - Resume Rewrite Focus: Emphasize transferable skills like requirement gathering, stakeholder management, and product lifecycle management
 - Learning Priority: Industry-specific regulations and terminology for your top choice
-- Networking Strategy: Using Brandentifier's Smart Connect to find professionals who made similar transitions
+- Networking Strategy: Using Brandentify's Smart Connect to find professionals who made similar transitions
 
 ## Success Stories
 
@@ -187,7 +187,7 @@ UX Research Director | 82% | Your user-centered approach aligns with this leader
 - Shadow product sprints to learn Jira/Figma workflows as a side contributor
 - Set up Notion-based growth dashboards for side projects or current work initiatives
 - Join a cross-functional project outside your core expertise to build collaboration skills
-- Create a weekly learning routine with Brandentifier's portfolio updates to document your skill growth
+- Create a weekly learning routine with Brandentify's portfolio updates to document your skill growth
 
 Remember that consistent, deliberate practice of these skills is more important than trying to learn everything at once. Focus on one skill from each category (technical, strategic, and communication) for balanced growth.
 
@@ -236,17 +236,17 @@ Certification Name | Platform | Level | Why it's Relevant
 Month 1-2:
 - Complete Google Advanced Analytics (40 hours)
 - Start building an analytics portfolio with real campaign data
-- Use Brandentifier's Portfolio Builder to create a dedicated Certifications section
+- Use Brandentify's Portfolio Builder to create a dedicated Certifications section
 
 Month 3-4:
 - Pursue HubSpot Marketing Software certification
 - Apply new analytics skills to optimize current campaigns
-- Update your Brandentifier Digital Visiting Card with new credentials
+- Update your Brandentify Digital Visiting Card with new credentials
 
 Month 5-6:
 - Begin Prompt Engineering for Marketing
 - Experiment with AI tools in your current role
-- Connect with AI marketing specialists through Brandentifier's Smart Radar feature
+- Connect with AI marketing specialists through Brandentify's Smart Radar feature
 
 ## 💡 Career Impact
 
@@ -255,9 +255,9 @@ These certifications will position you for roles like:
 - Digital Strategy Director ($95k-130k)
 - AI Marketing Specialist ($90k-115k)
 
-## 📱 How Brandentifier Can Help Your Certification Journey
+## 📱 How Brandentify Can Help Your Certification Journey
 
-- **Portfolio Showcase**: Create a dedicated "Certifications & Skills" section in your Brandentifier portfolio to highlight your new credentials
+- **Portfolio Showcase**: Create a dedicated "Certifications & Skills" section in your Brandentify portfolio to highlight your new credentials
 - **Digital Visiting Card**: Update your card with each new certification to make networking more effective
 - **Learning Verification**: Use Pulse updates to document your learning milestones and get feedback from other professionals
 - **Smart Radar**: Connect with others who have completed these certifications to get study tips and career advice
@@ -310,16 +310,16 @@ Keep concise (20%) | Be clear about your role (10%) | Focus on YOUR contribution
 Week 1-2:
 - Research common interview questions for your target roles
 - Prepare and practice your "Tell me about yourself" response (limit to 2 minutes)
-- Update your Brandentifier portfolio with quantifiable achievements
+- Update your Brandentify portfolio with quantifiable achievements
 - Create your Digital Visiting Card with interview-optimized content
 
 Week 3-4:
 - Conduct 2-3 mock interviews with peers or mentors
 - Record yourself answering questions to improve delivery
 - Prepare 5-7 compelling stories using the STAR method
-- Use Brandentifier's Pulse feature to share industry insights that demonstrate expertise
+- Use Brandentify's Pulse feature to share industry insights that demonstrate expertise
 
-## 📱 How Brandentifier Enhances Your Interview Success
+## 📱 How Brandentify Enhances Your Interview Success
 
 - **Portfolio Showcase**: Update your portfolio to highlight projects most relevant to target positions
 - **Digital Visiting Card**: Create a card specifically optimized for recruiters and hiring managers
@@ -329,11 +329,11 @@ Week 3-4:
 ## 🔍 Post-Interview Strategy
 
 - Send a personalized thank-you note within 24 hours
-- Connect with interviewers on Brandentifier to continue the professional relationship
+- Connect with interviewers on Brandentify to continue the professional relationship
 - Conduct a self-assessment using the rubric above after each interview
 - Iterate and improve your approach based on feedback and experience
 
-Remember that interview excellence comes from thorough preparation, authentic delivery, and strategic follow-up. Your Brandentifier profile serves as both preparation tool and post-interview reinforcement of your professional brand.
+Remember that interview excellence comes from thorough preparation, authentic delivery, and strategic follow-up. Your Brandentify profile serves as both preparation tool and post-interview reinforcement of your professional brand.
 
 Musk, Your Career Partner`;
   }
@@ -361,21 +361,21 @@ Dimension | Your Profile
 - Conduct 30+ customer discovery interviews to validate assumptions
 - Build minimum viable product (MVP) focused on core functionality
 - Identify and engage with 3-5 potential early adopters
-- Create a Brandentifier portfolio showcasing your startup vision and progress
+- Create a Brandentify portfolio showcasing your startup vision and progress
 
 ### Phase 2: Foundation Building (3-6 Months)
 - Formalize business structure and legal foundations
 - Develop go-to-market strategy with defined customer acquisition channels
 - Build core team with complementary skills (technical, business, design)
 - Secure initial funding through appropriate channels (bootstrapping, friends/family, angel)
-- Use Brandentifier's Digital Visiting Card to represent your startup at networking events
+- Use Brandentify's Digital Visiting Card to represent your startup at networking events
 
 ### Phase 3: Launch & Initial Growth (6-12 Months)
 - Execute official product launch with targeted marketing campaign
 - Implement customer feedback loops for rapid iteration
 - Establish key metrics and performance tracking systems
 - Develop partnerships with strategic allies in your ecosystem
-- Leverage Brandentifier's Services feature to showcase your startup's offerings
+- Leverage Brandentify's Services feature to showcase your startup's offerings
 
 ## 💰 Funding Strategy Options
 
@@ -395,7 +395,7 @@ Approach | Fit for You | Key Requirements
 - **Marketing Foundation**: Brand identity, website, social presence
 - **Network Development**: Industry events, startup communities, mentor relationships
 
-## 📱 How Brandentifier Powers Your Startup Journey
+## 📱 How Brandentify Powers Your Startup Journey
 
 - **Founder Portfolio**: Create a compelling startup founder profile that attracts investors and partners
 - **Digital Visiting Card**: Design a custom card that professionally represents your venture
@@ -492,22 +492,22 @@ Role | Salary Range | Certification Impact
 **Chief Marketing Officer** | **$180,000-$250,000** | Builds credibility for executive consideration
 **Marketing Analytics Director** | **$130,000-$175,000** | Essential qualification for specialized leadership
 
-## 📱 How Brandentifier Showcases Your Growth
+## 📱 How Brandentify Showcases Your Growth
 
 - **Certification Showcase**: Display your credentials in a dedicated section of your portfolio
 - **Digital Visiting Card**: Feature your most impressive certifications on your professional card
-- **Skills Verification**: Brandentifier validates your certified skills to increase credibility
-- **Progress Tracking**: Document and share your learning journey through Brandentifier's Industry Pulse
+- **Skills Verification**: Brandentify validates your certified skills to increase credibility
+- **Progress Tracking**: Document and share your learning journey through Brandentify's Industry Pulse
 - **Expert Matching**: Connect with professionals who hold your target certifications through Smart Radar
 
 ## 🔥 Differentiation Strategy
 
 While certifications are valuable, combine them with practical application to truly stand out:
 
-1. **Apply new skills in current role** (document results in your Brandentifier portfolio)
+1. **Apply new skills in current role** (document results in your Brandentify portfolio)
 2. **Lead a pilot project** leveraging your certification knowledge
 3. **Mentor colleagues** on newly acquired technical skills
-4. **Share industry insights** through Brandentifier's Industry Pulse feature
+4. **Share industry insights** through Brandentify's Industry Pulse feature
 5. **Develop case studies** demonstrating certification application to real challenges
 
 Remember that certifications are most valuable when integrated into a comprehensive career development strategy that combines credentials, experience, and strategic networking.
@@ -560,19 +560,19 @@ Skill | Why It Matters | Learning Resources
 1. **Foundation Phase (1-3 months)**
    - Complete Python fundamentals course with marketing-specific applications
    - Obtain basic marketing automation certification (HubSpot/Marketo)
-   - Update your Brandentifier portfolio to showcase these new skills
+   - Update your Brandentify portfolio to showcase these new skills
 
 2. **Application Phase (3-6 months)**
    - Implement 2-3 Python-based analyses on real marketing datasets
    - Develop automated workflows for key marketing processes
-   - Create a Brandentifier Service offering that highlights your new automation expertise
+   - Create a Brandentify Service offering that highlights your new automation expertise
 
 3. **Integration Phase (6-12 months)**
    - Combine technical and strategic skills in cross-functional projects
    - Implement financial impact models for marketing initiatives
-   - Showcase your strategic case studies through Brandentifier's Industry Pulse
+   - Showcase your strategic case studies through Brandentify's Industry Pulse
 
-## 📱 How Brandentifier Enhances Your Skill Development
+## 📱 How Brandentify Enhances Your Skill Development
 
 - **Portfolio Updates**: Add new skill certifications and project examples as you progress
 - **Digital Visiting Card**: Update to highlight your emerging technical + strategic skillset
@@ -585,7 +585,7 @@ Skill | Why It Matters | Learning Resources
 1. **Marketing Channel Optimization Model**:
    - Build a Python-based attribution model
    - Visualize results in interactive dashboard
-   - Document the process on your Brandentifier portfolio
+   - Document the process on your Brandentify portfolio
 
 2. **Automated Customer Journey Analysis**:
    - Implement a marketing automation workflow
@@ -595,7 +595,7 @@ Skill | Why It Matters | Learning Resources
 3. **Revenue Impact Forecast**:
    - Develop a financial model connecting marketing KPIs to revenue
    - Present findings in executive-friendly format
-   - Share insights through a Brandentifier Pulse
+   - Share insights through a Brandentify Pulse
 
 By systematically developing these complementary skills, you'll create a unique professional profile that combines technical depth, domain expertise, and strategic thinking—positioning you for accelerated career advancement.
 
@@ -631,12 +631,12 @@ Country | Match Level | Opportunity Overview
 
 ### Immediate Steps (1-3 Months)
 - Restructure your resume in international format (focus on achievements vs. responsibilities)
-- Update your Brandentifier portfolio with globally relevant projects and metrics
+- Update your Brandentify portfolio with globally relevant projects and metrics
 - Research visa requirements and qualification recognition for top target countries
 - Create a country-specific Digital Visiting Card for each primary target market
 
 ### Short-Term Actions (3-6 Months)
-- Build connections with professionals in target countries through Brandentifier's Smart Radar
+- Build connections with professionals in target countries through Brandentify's Smart Radar
 - Begin language learning if required (focus on business vocabulary)
 - Research cost of living and salary expectations in target locations
 - Identify target companies with global mobility programs
@@ -657,7 +657,7 @@ Country | Main Visa Path | Processing Time | Key Requirements
 **Australia** | Skilled Migration | 8-14 months | Points system, occupation on skills list
 **Netherlands** | Highly Skilled Migrant | 2-4 weeks | Salary threshold, recognized sponsor
 
-## 📱 How Brandentifier Supports Your Global Career
+## 📱 How Brandentify Supports Your Global Career
 
 - **International Portfolio**: Create country-specific portfolio versions highlighting relevant achievements
 - **Digital Visiting Card**: Design cards tailored to each target market's business culture
@@ -668,7 +668,7 @@ Country | Main Visa Path | Processing Time | Key Requirements
 ## 🌟 Success Stories: Your Potential Path
 
 Consider Sarah's journey: A marketing manager who relocated from Chicago to Berlin by:
-1. Creating a German-optimized resume and Brandentifier portfolio
+1. Creating a German-optimized resume and Brandentify portfolio
 2. Building a network with German professionals through virtual coffee chats
 3. Focusing on companies with English-speaking work environments
 4. Securing a position with a Berlin startup needing her exact expertise
@@ -682,7 +682,7 @@ Consider Sarah's journey: A marketing manager who relocated from Chicago to Berl
 - International job boards focused on your field
 - Qualification equivalency assessment services
 
-Remember that international career moves require careful planning, cultural openness, and strategic networking. By leveraging your Brandentifier presence and following this roadmap, you'll be well-positioned to pursue exciting global opportunities.
+Remember that international career moves require careful planning, cultural openness, and strategic networking. By leveraging your Brandentify presence and following this roadmap, you'll be well-positioned to pursue exciting global opportunities.
 
 Musk, Your Career Partner`;
   }
@@ -720,11 +720,11 @@ The healthcare technology sector offers a compelling transition path that values
 
 **Next Steps**:
 1. Research leading healthcare tech companies and their marketing approaches
-2. Connect with 5-7 marketing professionals in the healthcare tech space through Brandentifier
-3. Update your Brandentifier portfolio with relevant healthcare-adjacent case studies
+2. Connect with 5-7 marketing professionals in the healthcare tech space through Brandentify
+3. Update your Brandentify portfolio with relevant healthcare-adjacent case studies
 4. Identify 2-3 healthcare industry certifications to supplement your expertise
 
-**Brandentifier Strategy**: Create a specialized Digital Visiting Card highlighting transferable skills for healthcare technology recruiters
+**Brandentify Strategy**: Create a specialized Digital Visiting Card highlighting transferable skills for healthcare technology recruiters
 
 ### 🟡 Financial Services - **Medium Match (76%)**
 
@@ -745,10 +745,10 @@ Financial services offers stability and premium compensation with growing demand
 **Next Steps**:
 1. Develop foundational knowledge of financial products and regulations
 2. Emphasize compliance and security aspects of your previous work
-3. Connect with 3-5 marketing professionals in financial services via Brandentifier
+3. Connect with 3-5 marketing professionals in financial services via Brandentify
 4. Update your digital portfolio with case studies highlighting regulatory compliance
 
-**Brandentifier Strategy**: Update your Industry Pulse posts with insights that demonstrate understanding of financial markets and customer challenges
+**Brandentify Strategy**: Update your Industry Pulse posts with insights that demonstrate understanding of financial markets and customer challenges
 
 ### 🟢 Education Technology - **High Match (85%)**
 
@@ -770,9 +770,9 @@ EdTech represents an excellent transition opportunity with strong demand for mar
 1. Research leading EdTech platforms and their marketing approaches
 2. Take a short course on learning science fundamentals
 3. Connect with educators to understand educational institution decision processes
-4. Create a specialized Brandentifier portfolio section highlighting relevant experience
+4. Create a specialized Brandentify portfolio section highlighting relevant experience
 
-**Brandentifier Strategy**: Use Smart Radar to connect with EdTech professionals in your area for informational interviews
+**Brandentify Strategy**: Use Smart Radar to connect with EdTech professionals in your area for informational interviews
 
 ### 🟠 Sustainability/Green Tech - **Moderate Match (68%)**
 
@@ -794,16 +794,16 @@ While requiring some additional knowledge acquisition, the sustainability sector
 1. Develop foundational knowledge of key sustainability frameworks and metrics
 2. Highlight any environmental or social impact aspects of previous work
 3. Consider sustainability certification (e.g., LEED Green Associate)
-4. Connect with professionals in sustainability marketing via Brandentifier
+4. Connect with professionals in sustainability marketing via Brandentify
 
-**Brandentifier Strategy**: Share industry insights about sustainability trends to demonstrate genuine interest and knowledge building
+**Brandentify Strategy**: Share industry insights about sustainability trends to demonstrate genuine interest and knowledge building
 
 ## 📊 Transition Planning Timeline
 
 ### Immediate Actions (1-3 Months)
 - Conduct in-depth research on your top 2 industry choices
-- Update your Brandentifier portfolio with relevant case studies and projects
-- Begin industry-specific networking through Brandentifier's Smart Radar
+- Update your Brandentify portfolio with relevant case studies and projects
+- Begin industry-specific networking through Brandentify's Smart Radar
 - Identify skill gaps and begin targeted learning
 
 ### Mid-Term Steps (3-6 Months)
@@ -816,9 +816,9 @@ While requiring some additional knowledge acquisition, the sustainability sector
 - Pursue transitional roles that bridge your current and target industries
 - Join industry associations and attend key conferences
 - Consider freelance projects in your target industry for portfolio building
-- Leverage your Brandentifier network for internal referrals
+- Leverage your Brandentify network for internal referrals
 
-## 📱 How Brandentifier Supports Your Industry Transition
+## 📱 How Brandentify Supports Your Industry Transition
 
 - **Industry-Specific Portfolio**: Create versions of your portfolio tailored to each target industry
 - **Digital Visiting Card**: Develop cards that emphasize transferable skills for each target sector
@@ -826,7 +826,7 @@ While requiring some additional knowledge acquisition, the sustainability sector
 - **Industry Pulse**: Share insights demonstrating your understanding of target industry challenges
 - **Services Showcase**: Offer specialized consulting aligned with your destination industry
 
-Remember that successful industry transitions build on your existing strengths while strategically addressing knowledge gaps. By leveraging your Brandentifier presence and following this roadmap, you'll be well-positioned to make a successful career pivot.
+Remember that successful industry transitions build on your existing strengths while strategically addressing knowledge gaps. By leveraging your Brandentify presence and following this roadmap, you'll be well-positioned to make a successful career pivot.
 
 Musk, Your Career Partner`;
   }
@@ -871,7 +871,7 @@ Path | Match Level | Growth Trajectory | Salary Potential
 - Financial management and budgeting for complex organizations
 - Team building and leadership development competencies
 
-**Brandentifier Strategy**: Develop a leadership-focused Digital Visiting Card highlighting strategic accomplishments and team impact metrics
+**Brandentify Strategy**: Develop a leadership-focused Digital Visiting Card highlighting strategic accomplishments and team impact metrics
 
 ### 2. Product Marketing Specialization
 **Progression Path**: Product Marketing Manager → Senior PMM → Director → VP Product Marketing
@@ -887,7 +887,7 @@ Path | Match Level | Growth Trajectory | Salary Potential
 - Cross-functional product development collaboration
 - Competitive analysis and market intelligence methodologies
 
-**Brandentifier Strategy**: Create a specialized portfolio section highlighting product-focused case studies and launch metrics
+**Brandentify Strategy**: Create a specialized portfolio section highlighting product-focused case studies and launch metrics
 
 ### 3. Marketing Analytics Leadership
 **Progression Path**: Analytics Manager → Director of Analytics → Chief Analytics Officer
@@ -903,7 +903,7 @@ Path | Match Level | Growth Trajectory | Salary Potential
 - Multi-touch attribution and marketing mix modeling
 - Marketing analytics team building and development
 
-**Brandentifier Strategy**: Use Industry Pulse to share data-driven insights that establish your analytics thought leadership
+**Brandentify Strategy**: Use Industry Pulse to share data-driven insights that establish your analytics thought leadership
 
 ### 4. Customer Experience Leadership
 **Progression Path**: CX Manager → Director of CX → Chief Experience Officer
@@ -919,7 +919,7 @@ Path | Match Level | Growth Trajectory | Salary Potential
 - Voice of customer program development
 - Experience design principles and methodologies
 
-**Brandentifier Strategy**: Showcase customer-centric accomplishments through tailored Services offerings in your profile
+**Brandentify Strategy**: Showcase customer-centric accomplishments through tailored Services offerings in your profile
 
 ### 5. Growth Marketing Leadership
 **Progression Path**: Growth Manager → Growth Director → VP of Growth
@@ -935,12 +935,12 @@ Path | Match Level | Growth Trajectory | Salary Potential
 - Growth modeling and forecasting methodologies
 - Cross-functional growth team leadership
 
-**Brandentifier Strategy**: Create growth-focused case studies in your portfolio highlighting key metrics and optimization processes
+**Brandentify Strategy**: Create growth-focused case studies in your portfolio highlighting key metrics and optimization processes
 
 ## 🚀 Next Steps Roadmap
 
 ### Immediate Actions (Next 30 Days)
-- Update your Brandentifier portfolio to emphasize experiences aligned with your top 2 paths
+- Update your Brandentify portfolio to emphasize experiences aligned with your top 2 paths
 - Schedule 3-5 informational interviews with professionals in your preferred tracks
 - Identify 1-2 skill development priorities based on your chosen direction
 - Create a specialized Digital Visiting Card for your primary career path
@@ -949,15 +949,15 @@ Path | Match Level | Growth Trajectory | Salary Potential
 - Seek opportunities in your current role to develop experience in your chosen direction
 - Take an online course or certification aligned with your selected track
 - Expand your network with 10+ new connections in your target specialty
-- Use Brandentifier's Smart Radar to find mentors in your chosen field
+- Use Brandentify's Smart Radar to find mentors in your chosen field
 
 ### Medium-Term Strategy (3-6 Months)
 - Develop "proof of concept" projects that demonstrate capabilities in your new direction
-- Reposition your professional brand to align with your career path through Brandentifier
+- Reposition your professional brand to align with your career path through Brandentify
 - Attend industry events specific to your chosen specialty
 - Join professional groups related to your target career track
 
-## 📱 How Brandentifier Supports Your Career Exploration
+## 📱 How Brandentify Supports Your Career Exploration
 
 - **Multi-Path Portfolio**: Create specialized sections for different potential career tracks
 - **A/B Test Digital Visiting Cards**: Develop different versions to gauge professional response
@@ -990,21 +990,21 @@ Based on your professional profile, here are my recommendations to help advance 
    - Expand your business acumen through courses in financial management or strategy
 
 2. **Network Development**
-   - Use Brandentifier's Smart Connect feature to identify strategic networking opportunities
+   - Use Brandentify's Smart Connect feature to identify strategic networking opportunities
    - Join professional associations in your industry
    - Attend industry conferences and events to build your presence
 
 3. **Professional Visibility**
-   - Create a standout portfolio using Brandentifier's Portfolio Builder
+   - Create a standout portfolio using Brandentify's Portfolio Builder
    - Share your expertise through publishing articles or speaking at events
-   - Showcase your services using Brandentifier's Services feature
+   - Showcase your services using Brandentify's Services feature
 
 ## Next Steps
 
-1. Update your Brandentifier portfolio to highlight your most impressive achievements
+1. Update your Brandentify portfolio to highlight your most impressive achievements
 2. Set up 3-5 informational interviews with professionals in roles you aspire to
 3. Identify one skill gap and enroll in relevant training within the next month
-4. Schedule regular time for strategic networking using Brandentifier's Smart Connect
+4. Schedule regular time for strategic networking using Brandentify's Smart Connect
 
 Musk, Your Career Partner`;
   }
@@ -1034,7 +1034,7 @@ Building a strong professional network in the ${industry} industry is crucial fo
 2. **Digital Platforms**
    - LinkedIn: The primary platform for ${industry} networking
    - Twitter: Follow industry leaders and join conversations using hashtags
-   - Brandentifier's Smart Connect: Use our AI-powered tool to find connections in your target companies
+   - Brandentify's Smart Connect: Use our AI-powered tool to find connections in your target companies
 
 3. **Events & Conferences**
    - Annual industry summits and trade shows
@@ -1054,7 +1054,7 @@ When reaching out to new connections, try these approaches:
 ## Building Your Network Plan
 
 1. **Immediate Actions (Next 2 Weeks)**
-   - Update your Brandentifier portfolio to highlight relevant skills and experiences
+   - Update your Brandentify portfolio to highlight relevant skills and experiences
    - Connect with 10 professionals in your desired positions
    - Join 3 industry-specific groups on LinkedIn and Facebook
 
@@ -1068,9 +1068,9 @@ When reaching out to new connections, try these approaches:
    - Contribute meaningfully to industry conversations
    - Leverage your growing network for referrals and opportunities
 
-## Leveraging Brandentifier Features
+## Leveraging Brandentify Features
 
-- **Portfolio Showcase**: Update your Brandentifier portfolio to highlight your ${industry} expertise and stand out to potential contacts.
+- **Portfolio Showcase**: Update your Brandentify portfolio to highlight your ${industry} expertise and stand out to potential contacts.
 
 - **Smart Connect**: Use our AI-powered networking tool to identify strategic connections based on your goals for ${purpose}.
 
@@ -1136,7 +1136,7 @@ Improve your resume's ATS compatibility by:
 2. Update 3-5 key bullet points with measurable achievements
 3. Reorganize your skills section for better visual hierarchy
 4. Add 2-3 relevant industry keywords throughout your resume
-5. Consider creating a portfolio on Brandentifier to showcase your work samples
+5. Consider creating a portfolio on Brandentify to showcase your work samples
 
 Implementing these recommendations will significantly increase your resume's effectiveness in capturing attention and securing interviews for your target positions.
 

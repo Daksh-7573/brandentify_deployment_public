@@ -15,7 +15,7 @@ export default function DocsDownload() {
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-white mb-4">
-            Brandentifier Documentation
+            Brandentify Documentation
           </h1>
           <p className="text-lg text-gray-300">
             Download comprehensive guides for marketing and team reference
@@ -113,3 +113,4 @@ export default function DocsDownload() {
     </div>
   );
 }
+

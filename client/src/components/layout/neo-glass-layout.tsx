@@ -14,9 +14,9 @@ export function NeoGlassLayout({
   className = "",
 }: NeoGlassLayoutProps) {
   return (
-    <div className="container mx-auto max-w-7xl px-2 sm:px-4 py-4 sm:py-8 md:py-24 flex justify-center items-start">
+    <div className="container mx-auto max-w-7xl px-3 sm:px-4 lg:px-6 py-3 sm:py-4 md:py-10 flex justify-center items-start">
       <div
-        className={`neo-glass-panel rounded-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 md:mb-10 w-full ${className}`}
+        className={`neo-glass-panel rounded-lg p-3 sm:p-4 md:p-5 mb-2 sm:mb-3 md:mb-4 w-full overflow-x-hidden ${className}`}
       >
         {children}
       </div>
@@ -39,10 +39,10 @@ export function NeoGlassSection({
 }: NeoGlassSectionProps) {
   return (
     <div
-      className={`neo-glass-card rounded-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 ${className}`}
+      className={`neo-glass-card rounded-lg p-2 sm:p-3 md:p-4 mb-2 sm:mb-3 ${className}`}
     >
       {title && (
-        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">
+        <h2 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-white">
           {title}
         </h2>
       )}

@@ -102,6 +102,11 @@ export async function handleCareerRecommendations(req: Request, res: Response) {
  * Handle nearby professionals (Smart Radar)
  */
 export async function handleNearbyProfessionals(req: Request, res: Response) {
+  return res.status(403).json({
+    success: false,
+    message: 'Smart Radar feature coming soon'
+  });
+
   try {
     const { userId } = req.params;
     const { radius = 50, latitude, longitude } = req.query;

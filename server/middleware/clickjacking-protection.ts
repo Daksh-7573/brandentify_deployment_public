@@ -22,9 +22,9 @@ const EMBEDDABLE_ROUTES = [
 // Trusted domains that can embed our content
 const TRUSTED_FRAME_ANCESTORS = [
   "'self'",
-  'https://brandentifier.com',
-  'https://www.brandentifier.com',
-  'https://brandentifier.replit.app',
+  'https://brandentify.com',
+  'https://www.brandentify.com',
+  'https://brandentify.replit.app',
   'https://*.replit.app',
   'https://*.replit.dev',
 ];
@@ -98,3 +98,4 @@ export function securityHeaders(req: Request, res: Response, next: NextFunction)
 }
 
 export default clickjackingProtection;
+

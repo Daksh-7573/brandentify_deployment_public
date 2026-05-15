@@ -47,7 +47,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
   
   // Format profile link using brand name (or username as fallback)
-  const profileLink = `brandentifier.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
+  const profileLink = `brandentify.com/@${(userData.brandName || userData.username).toLowerCase().replace(/\s+/g, '-')}`;
   
   // Define industry icons and tags
   const getIndustryIcon = (tag: string) => {

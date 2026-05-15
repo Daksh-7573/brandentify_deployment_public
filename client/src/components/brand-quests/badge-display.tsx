@@ -79,12 +79,10 @@ export function BadgeDisplay({ userId, limit, compact = false, className }: Badg
       <div className={className}>
         <div className="mb-4">
           <h2 className="text-xl font-semibold text-white">Your Badges</h2>
-          <p className="text-white/70 text-sm">Complete quests to earn badges</p>
+          <p className="text-gray-400 text-sm">Complete quests to earn badges</p>
         </div>
-        <div className="bg-gray-900/40 backdrop-blur-md border border-white/5 rounded-lg p-4">
-          <div className="text-center py-4 text-white/60">
-            You haven't earned any badges yet. Complete quests to earn badges!
-          </div>
+        <div className="text-center py-4 text-gray-400">
+          You haven't earned any badges yet. Complete quests to earn badges!
         </div>
       </div>
     );
@@ -120,10 +118,9 @@ export function BadgeDisplay({ userId, limit, compact = false, className }: Badg
     <div className={className}>
       <div className="mb-4">
         <h2 className="text-xl font-semibold text-white">Your Badges</h2>
-        <p className="text-white/70 text-sm">Achievements you've unlocked</p>
+        <p className="text-gray-400 text-sm">Achievements you've unlocked</p>
       </div>
-      <div className="bg-gray-900/40 backdrop-blur-md border border-white/5 rounded-lg p-4">
-        <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-3">
           {displayBadges && displayBadges.map(badge => (
             <Dialog key={badge.id}>
               <DialogTrigger asChild>
@@ -142,13 +139,12 @@ export function BadgeDisplay({ userId, limit, compact = false, className }: Badg
           ))}
         </div>
       </div>
-    </div>
   );
 }
 
 function BadgeDialogContent({ badge }: { badge: UserBadge }) {
   return (
-    <DialogContent className="sm:max-w-md bg-gray-900/90 backdrop-blur-md border border-white/10 shadow-xl">
+    <DialogContent className="sm:max-w-md bg-black/90 backdrop-blur-xl border border-white/10 shadow-xl">
       <DialogHeader>
         <DialogTitle className="text-white">
           <div className="flex items-center gap-2">

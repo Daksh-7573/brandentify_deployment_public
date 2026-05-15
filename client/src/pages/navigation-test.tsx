@@ -29,7 +29,7 @@ export default function NavigationTest() {
         boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)"
       }}>
         <h1 style={{ color: "#333", marginBottom: "10px" }}>
-          Brandentifier Navigation Test
+          Brandentify Navigation Test
         </h1>
         <p style={{ color: "#666", marginBottom: "30px" }}>
           Current page: <strong>{location}</strong>

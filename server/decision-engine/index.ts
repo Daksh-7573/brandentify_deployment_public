@@ -1,5 +1,5 @@
 /**
- * Brandentifier Decision Engine
+ * Brandentify Decision Engine
  * 
  * Core architecture for intelligent recommendations and matching algorithms
  * that power features like Smart Connect, Smart Radar, and Musk AI suggestions.

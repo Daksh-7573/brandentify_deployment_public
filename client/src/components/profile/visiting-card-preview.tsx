@@ -39,7 +39,7 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
   isLoading = false,
 }) => {
   // Format profile link using randomProfileLink for permanent URL
-  const profileLink = userData.randomProfileLink ? `brandentifier.com/r/${userData.randomProfileLink}` : `brandentifier.com/@${userData.brandName || userData.username}`;
+  const profileLink = userData.randomProfileLink ? `brandentify.com/r/${userData.randomProfileLink}` : `brandentify.com/@${userData.brandName || userData.username}`;
   
   // For 3D animated card style, use the specialized component
   if (cardType === "3d-animated") {

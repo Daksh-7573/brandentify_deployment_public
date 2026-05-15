@@ -5,6 +5,95 @@ import { socialQuestTemplateEngine } from './social-quest-template-engine';
 import { hashtagSuggestionService } from './hashtag-suggestion-service';
 
 export class PersonalizedQuestAssignment {
+  private getCurrentDateString(): string {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  private getCurrentWeekDates(): string[] {
+    const now = new Date();
+    const dayOfWeek = now.getUTCDay();
+    const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const monday = new Date(now);
+    monday.setUTCDate(now.getUTCDate() - daysFromMonday);
+    monday.setUTCHours(0, 0, 0, 0);
+
+    const dates: string[] = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(monday);
+      date.setUTCDate(monday.getUTCDate() + i);
+      dates.push(date.toISOString().split('T')[0]);
+    }
+    return dates;
+  }
+
+  private async insertUserQuestWithFallback(input: {
+    userId: number;
+    questDefinitionId: number;
+    assignedDate?: string;
+    weekNumber: number;
+    year: number;
+  }) {
+    const scheduledDate = input.assignedDate || this.getCurrentDateString();
+    
+    // CRITICAL: Check for existing quest to prevent duplicates
+    const existingQuest = await db
+      .select()
+      .from(userQuests)
+      .where(and(
+        eq(userQuests.userId, input.userId),
+        eq(userQuests.questDefinitionId, input.questDefinitionId),
+        eq(userQuests.scheduledDate, scheduledDate)
+      ))
+      .limit(1);
+
+    if (existingQuest.length > 0) {
+      console.log(`[PersonalizedQuests] ⏭️ Skipping duplicate quest - User ${input.userId}, Quest ${input.questDefinitionId}, Date ${scheduledDate}`);
+      return existingQuest[0]; // Return existing quest instead of creating duplicate
+    }
+
+    const values = {
+      userId: input.userId,
+      questDefinitionId: input.questDefinitionId,
+      status: 'active' as const,
+      progress: 0,
+      assignedAt: new Date(),
+      assignedDate: input.assignedDate || scheduledDate,
+      scheduledDate,
+      weekNumber: input.weekNumber,
+      year: input.year,
+    };
+
+    console.log('[Quest Insert]', {
+      userId: input.userId,
+      questId: input.questDefinitionId,
+      scheduled_date: scheduledDate,
+    });
+
+    try {
+      const [insertedQuest] = await db.insert(userQuests).values(values).returning();
+      return insertedQuest;
+    } catch (insertError) {
+      const fallbackDate = this.getCurrentDateString();
+      console.error(
+        `[PersonalizedQuests] ❌ Quest insert failed for user ${input.userId}, quest ${input.questDefinitionId}. Retrying with CURRENT_DATE...`,
+        insertError
+      );
+
+      console.log('[Quest Insert]', {
+        userId: input.userId,
+        questId: input.questDefinitionId,
+        scheduled_date: fallbackDate,
+      });
+
+      const [insertedQuest] = await db.insert(userQuests).values({
+        ...values,
+        assignedDate: fallbackDate,
+        scheduledDate: fallbackDate,
+      }).returning();
+
+      return insertedQuest;
+    }
+  }
   
   /**
    * Assigns personalized social media quests based on user profile
@@ -124,20 +213,17 @@ export class PersonalizedQuestAssignment {
 
       // Assign new quests based on priority order
       const assignedQuests = [];
-      for (const quest of questsToAssign) {
-        const [assignedQuest] = await db
-          .insert(userQuests)
-          .values({
-            userId,
-            questDefinitionId: quest.id,
-            status: 'active',
-            progress: 0,
-            assignedAt: new Date(),
-            assignedDate: new Date().toISOString().split('T')[0], // YYYY-MM-DD format
-            weekNumber: currentWeek,
-            year: currentYear
-          })
-          .returning();
+      const weekDates = this.getCurrentWeekDates();
+      for (let index = 0; index < questsToAssign.length; index++) {
+        const quest = questsToAssign[index];
+        const assignedDate = weekDates[index % weekDates.length] || this.getCurrentDateString();
+        const assignedQuest = await this.insertUserQuestWithFallback({
+          userId,
+          questDefinitionId: quest.id,
+          assignedDate,
+          weekNumber: currentWeek,
+          year: currentYear,
+        });
 
         const recommendation = recommendations.find(r => r.targetAction === quest.targetAction);
         
@@ -413,13 +499,13 @@ export class PersonalizedQuestAssignment {
         constraints: 'Vertical format (9:16), trending sounds/effects, engaging first 3 seconds',
         guidance: 'Record in TikTok app, use native effects and trending audio'
       },
-      // Generic/Fallback for Brandentifier Pulse
+      // Generic/Fallback for Brandentify Pulse
       'create_pulse': {
-        format: 'Brandentifier Pulse Post',
+        format: 'Brandentify Pulse Post',
         quantityValue: 1,
         quantityType: 'post with 1-5 images or 1 video',
         constraints: 'Professional content, industry-relevant, engaging format',
-        guidance: 'Create in Brandentifier feed with text and optional media'
+        guidance: 'Create in Brandentify feed with text and optional media'
       }
     };
 
@@ -501,23 +587,19 @@ export class PersonalizedQuestAssignment {
       }
 
       const assignedQuests = [];
+      const weekDates = this.getCurrentWeekDates();
 
-      for (const questDef of questsToAssign) {
+      for (let index = 0; index < questsToAssign.length; index++) {
+        const questDef = questsToAssign[index];
         const recommendation = recommendations.find(r => r.targetAction === questDef.targetAction);
-        
-        const [insertedQuest] = await db
-          .insert(userQuests)
-          .values({
-            userId,
-            questDefinitionId: questDef.id,
-            status: 'active',
-            progress: 0,
-            assignedDate: new Date().toISOString().split('T')[0], // YYYY-MM-DD format
-            weekNumber,
-            year,
-            assignedAt: new Date()
-          })
-          .returning();
+        const assignedDate = weekDates[index % weekDates.length] || this.getCurrentDateString();
+        const insertedQuest = await this.insertUserQuestWithFallback({
+          userId,
+          questDefinitionId: questDef.id,
+          assignedDate,
+          weekNumber,
+          year,
+        });
 
         // Generate hashtag suggestions for this quest
         const hashtagSuggestion = await hashtagSuggestionService.generateHashtags(

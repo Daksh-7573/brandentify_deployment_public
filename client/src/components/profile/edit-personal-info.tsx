@@ -320,7 +320,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           Profile URL
         </label>
         <div className="text-sm border rounded-md p-3 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white/70 border-white/20 shadow-md">
-          {userData.randomProfileLink ? `brandentifier.com/r/${userData.randomProfileLink}` : `brandentifier.com/@${userData.username}`}
+          {userData.randomProfileLink ? `brandentify.com/r/${userData.randomProfileLink}` : `brandentify.com/@${userData.username}`}
         </div>
         <p className="text-xs text-white/50">
           Your profile URL is based on your name and cannot be changed

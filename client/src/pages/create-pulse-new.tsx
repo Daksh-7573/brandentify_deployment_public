@@ -24,6 +24,11 @@ import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-l
 import { cn } from "@/lib/utils";
 import "../styles/neo-glass-spotify.css";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
+// SEO Components
+import CreatePulseSEO from '@/components/seo/create-pulse-seo';
+import CreatePulseStructuredData from '@/components/seo/create-pulse-structured-data';
+import CreatePulseFAQSection from '@/components/seo/create-pulse-faq';
+import CreatePulseContentSEO from '@/components/seo/create-pulse-content-seo';
 
 export default function CreatePulsePage() {
   const { user } = useAuth();
@@ -472,21 +477,39 @@ export default function CreatePulsePage() {
   };
 
   return (
-    <div 
-      className="fixed inset-0 w-full h-full responsive-background"
-      style={{ 
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
-      }}
-    >
-      {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
-      <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+    <>
+      {/* SEO Components */}
+      <CreatePulseSEO 
+        contentType={pulseType === 'poll' ? 'poll' : pulseType === 'media-pulse' ? 'media' : 'project'}
+        industry={pulseIndustry}
+        domain={pulseCategory}
+      />
+      <CreatePulseStructuredData 
+        contentType={pulseType === 'poll' ? 'poll' : pulseType === 'media-pulse' ? 'media' : 'project'}
+        industry={pulseIndustry}
+        domain={pulseCategory}
+      />
+      <CreatePulseContentSEO 
+        contentType={pulseType === 'poll' ? 'poll' : pulseType === 'media-pulse' ? 'media' : 'project'}
+        industry={pulseIndustry}
+        domain={pulseCategory}
+      />
       
-      <div className="relative z-10 w-full h-full overflow-auto">
-        <Header />
-        <NeoGlassLayout className="mt-3 mx-3 sm:mx-6">
+      <div 
+        className="fixed inset-0 w-full h-full responsive-background"
+        style={{ 
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed'
+        }}
+      >
+        {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
+        <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+        
+        <div className="relative z-10 w-full h-full overflow-auto">
+          <Header />
+          <NeoGlassLayout className="mt-3 mx-3 sm:mx-6">
               <div className="w-full">
               <div className="mb-4 sm:mb-6">
                 <h1 className="text-xl sm:text-2xl font-bold text-white">Create Pulse</h1>
@@ -954,9 +977,9 @@ export default function CreatePulsePage() {
                                       />
                                     </div>
                                     <div className="space-y-2">
-                                      <Label className="text-white">Brandentifier Profile</Label>
+                                      <Label className="text-white">Brandentify Profile</Label>
                                       <Input
-                                        placeholder="https://brandentifier.replit.app/profile/username"
+                                        placeholder="https://brandentify.replit.app/profile/username"
                                         value={member.brandentifier}
                                         onChange={(e) => updateTeamMember(member.id, 'brandentifier', e.target.value)}
                                         className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
@@ -1004,13 +1027,13 @@ export default function CreatePulsePage() {
                                 <Label htmlFor="client-profile" className="text-white">Client Profile Link</Label>
                                 <Input
                                   id="client-profile"
-                                  placeholder="https://brandentifier.replit.app/r/abc123xyz789"
+                                  placeholder="https://brandentify.replit.app/r/abc123xyz789"
                                   value={clientProfile}
                                   onChange={(e) => setClientProfile(e.target.value)}
                                   className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
                                 />
                                 <p className="text-xs text-gray-400">
-                                  Add Brandentifier profile link of your client
+                                  Add Brandentify profile link of your client
                                 </p>
                               </div>
                             </div>
@@ -1076,9 +1099,15 @@ export default function CreatePulsePage() {
                 </button>
               </NeoGlassSection>
               </div>
+              
+              {/* FAQ Section for AEO (Answer Engine Optimization) */}
+              <CreatePulseFAQSection 
+                contentType={pulseType === 'poll' ? 'poll' : pulseType === 'media-pulse' ? 'media' : 'project'}
+              />
             </NeoGlassLayout>
       </div>
     </div>
+    </>
   );
 }
 

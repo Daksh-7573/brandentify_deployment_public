@@ -248,6 +248,73 @@ export const useUserWeeklyQuests = (userId?: number, weekNumber?: number, year?:
   });
 };
 
+export const useUserWeeklyCalendarQuests = (userId?: number, weekNumber?: number, year?: number) => {
+  const currentWeek = weekNumber || getCurrentWeekNumber();
+  const currentYear = year || getCurrentYear();
+
+  return useQuery({
+    queryKey: [userId ? `/api/quests/weekly` : null, userId, currentWeek, currentYear],
+    queryFn: async () => {
+      if (!userId) {
+        return null;
+      }
+
+      try {
+        const fetchWeeklyData = async () => {
+          const params = new URLSearchParams({
+            userId: String(userId),
+            weekNumber: String(currentWeek),
+            year: String(currentYear),
+            fallbackToLatest: 'true',
+          });
+
+          const res = await fetch(`/api/quests/weekly?${params.toString()}`);
+          if (!res.ok) {
+            console.error('Failed to fetch weekly calendar quests, status:', res.status);
+            return null;
+          }
+
+          const contentType = res.headers.get('content-type');
+          if (!contentType || !contentType.includes('application/json')) {
+            console.error('Expected JSON but got', contentType);
+            return null;
+          }
+
+          const payload = await res.json();
+          return payload;
+        };
+
+        let data = await fetchWeeklyData();
+        console.log('Weekly quests:', data);
+
+        const hasAnyQuest = Array.isArray(data?.days)
+          ? data.days.some((day: any) => Array.isArray(day?.quests) && day.quests.length > 0)
+          : false;
+
+        if (!hasAnyQuest) {
+          console.warn(`[WeeklyCalendar] Empty weekly response for user ${userId}. Triggering generation fallback.`);
+          await fetch('/api/admin/generate-weekly-quests', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, force: true }),
+          }).catch((error) => {
+            console.error('[WeeklyCalendar] Weekly generation fallback failed:', error);
+          });
+
+          data = await fetchWeeklyData();
+          console.log('Weekly quests (after generation fallback):', data);
+        }
+
+        return data;
+      } catch (error) {
+        console.error('Error fetching weekly calendar quests:', error);
+        return null;
+      }
+    },
+    enabled: !!userId,
+  });
+};
+
 // Fetch user's daily quests (career only)
 export const useUserDailyQuests = (userId?: number) => {
   const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
@@ -366,8 +433,9 @@ export const useUserCombinedDailyQuests = (userId?: number) => {
 // Assign daily quests to user
 export const useAssignDailyQuests = () => {
   return useMutation({
-    mutationFn: async ({ userId }: { userId: number }) => {
-      const res = await fetch(`/api/users/${userId}/quests/assign-daily`, {
+    mutationFn: async ({ userId, force }: { userId: number; force?: boolean }) => {
+      const url = force ? `/api/users/${userId}/quests/assign-daily?force=true` : `/api/users/${userId}/quests/assign-daily`;
+      const res = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -386,16 +454,56 @@ export const useAssignDailyQuests = () => {
       return res.json() as Promise<UserQuest[]>;
     },
     onSuccess: (data, variables) => {
-      // Invalidate daily quest cache to show new quests
-      queryClient.invalidateQueries({ 
-        queryKey: [`/api/users/${variables.userId}/quests/current-day`] 
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const key = query.queryKey[0];
+          return typeof key === 'string' && (
+            key === `/api/users/${variables.userId}/quests/current-day` ||
+            key === `/api/users/${variables.userId}/quests` ||
+            key === `/api/users/${variables.userId}/quests-with-definitions` ||
+            key.startsWith(`/api/users/${variables.userId}/quests/bucket/`) ||
+            key.startsWith(`/api/users/${variables.userId}/social-quests/bucket/`)
+          );
+        }
       });
-      // Also invalidate other quest caches
-      queryClient.invalidateQueries({ 
-        queryKey: [`/api/users/${variables.userId}/quests`] 
+    }
+  });
+};
+
+// Hook for assigning daily social quests to a user
+export const useAssignDailySocialQuests = () => {
+  return useMutation({
+    mutationFn: async ({ userId }: { userId: number }) => {
+      const res = await fetch(`/api/users/${userId}/social-quests/assign-daily`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
-      queryClient.invalidateQueries({ 
-        queryKey: [`/api/users/${variables.userId}/quests-with-definitions`] 
+      
+      if (!res.ok) {
+        const text = await res.text();
+        try {
+          const errorJson = JSON.parse(text);
+          throw new Error(errorJson.message || 'Failed to assign daily social quests');
+        } catch (e) {
+          throw new Error(`Failed to assign daily social quests: ${text.slice(0, 100)}`);
+        }
+      }
+      return res.json() as Promise<UserQuest[]>;
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const key = query.queryKey[0];
+          return typeof key === 'string' && (
+            key === `/api/users/${variables.userId}/quests/current-day` ||
+            key === `/api/users/${variables.userId}/quests` ||
+            key === `/api/users/${variables.userId}/quests-with-definitions` ||
+            key.startsWith(`/api/users/${variables.userId}/quests/bucket/`) ||
+            key.startsWith(`/api/users/${variables.userId}/social-quests/bucket/`)
+          );
+        }
       });
     }
   });

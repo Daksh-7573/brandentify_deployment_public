@@ -1085,11 +1085,11 @@ export default function ProjectForm({
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className={cn("text-sm", useDarkMode ? "text-white/80" : "text-gray-700")}>Brandentifier Profile</label>
+                        <label className={cn("text-sm", useDarkMode ? "text-white/80" : "text-gray-700")}>Brandentify Profile</label>
                         <Input
                           value={currentTeamMember.brandentifier}
                           onChange={(e) => setCurrentTeamMember({...currentTeamMember, brandentifier: e.target.value})}
-                          placeholder="https://brandentifier.replit.app/profile/username"
+                          placeholder="https://brandentify.replit.app/profile/username"
                           className={cn(
                             className,
                             useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
@@ -1144,14 +1144,14 @@ export default function ProjectForm({
                     <Label className={useDarkMode ? "text-white/80" : ""}>Client Profile Link</Label>
                     <Input
                       {...projectForm.register("clientProfileLink")}
-                      placeholder="https://brandentifier.replit.app/profile/username"
+                      placeholder="https://brandentify.replit.app/profile/username"
                       className={cn(
                         className,
                         useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
                       )}
                     />
                     <p className={cn("text-xs", useDarkMode ? "text-white/60" : "text-gray-500")}>
-                      Add Brandentifier profile link of your client
+                      Add Brandentify profile link of your client
                     </p>
                   </div>
                 </div>
