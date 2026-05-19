@@ -60,7 +60,7 @@ export function CareerCapsuleStructuredData() {
         price: '0',
         priceCurrency: 'USD'
       },
-      area: 'Professional Development',
+      areaServed: 'Professional Development',
       audience: {
         '@type': 'Audience',
         audienceType: 'Professionals seeking career advancement'

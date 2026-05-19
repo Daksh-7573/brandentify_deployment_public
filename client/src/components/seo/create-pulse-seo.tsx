@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'wouter';
 
 interface CreatePulseSEOProps {
   contentType?: 'poll' | 'media' | 'project' | null;
@@ -8,7 +8,7 @@ interface CreatePulseSEOProps {
 }
 
 export default function CreatePulseSEO({ contentType, industry, domain }: CreatePulseSEOProps) {
-  const location = useLocation();
+  const [location] = useLocation();
 
   useEffect(() => {
     // Dynamic content type titles and descriptions
@@ -76,7 +76,7 @@ export default function CreatePulseSEO({ contentType, industry, domain }: Create
     updateMetaTag('og:description', meta.description);
     updateMetaTag('og:type', 'website');
     updateMetaTag('og:image', 'https://brandentify.com/create-pulse-og-image.jpg');
-    updateMetaTag('og:url', `https://brandentify.com${location.pathname}`);
+    updateMetaTag('og:url', `https://brandentify.com${location}`);
 
     // Update Twitter Card tags
     updateMetaTag('twitter:card', 'summary_large_image');
@@ -91,7 +91,7 @@ export default function CreatePulseSEO({ contentType, industry, domain }: Create
       canonicalTag.setAttribute('rel', 'canonical');
       document.head.appendChild(canonicalTag);
     }
-    canonicalTag.setAttribute('href', `https://brandentify.com${location.pathname}`);
+    canonicalTag.setAttribute('href', `https://brandentify.com${location}`);
 
     // Add industry-specific meta if provided
     if (industry) {
@@ -115,7 +115,7 @@ export default function CreatePulseSEO({ contentType, industry, domain }: Create
     return () => {
       // Tags will be updated/overwritten on next page navigation
     };
-  }, [contentType, industry, domain, location.pathname]);
+  }, [contentType, industry, domain, location]);
 
   return null; // This component doesn't render anything
 }

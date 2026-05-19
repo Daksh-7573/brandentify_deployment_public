@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'wouter';
 
 interface CreatePulseStructuredDataProps {
   contentType?: 'poll' | 'media' | 'project' | null;
@@ -8,7 +8,7 @@ interface CreatePulseStructuredDataProps {
 }
 
 export default function CreatePulseStructuredData({ contentType, industry, domain }: CreatePulseStructuredDataProps) {
-  const location = useLocation();
+  const [location] = useLocation();
 
   useEffect(() => {
     // Base WebApplication schema
@@ -110,7 +110,7 @@ export default function CreatePulseStructuredData({ contentType, industry, domai
       },
       "serviceType": "Content Creation",
       "area": "Professional Networking",
-      "area": industry ? industry : "Industry Content",
+      "areaServed": industry ? industry : "Industry Content",
       "domain": domain ? domain : "Professional Development",
       "hasOfferCatalog": {
         "@type": "OfferCatalog",
@@ -189,7 +189,7 @@ export default function CreatePulseStructuredData({ contentType, industry, domai
         scriptTag.remove();
       }
     };
-  }, [contentType, industry, domain, location.pathname]);
+  }, [contentType, industry, domain, location]);
 
   return null; // This component doesn't render anything
 }

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'wouter';
 
 interface CreatePulseContentSEOProps {
   contentType: 'poll' | 'media' | 'project';
@@ -16,7 +16,7 @@ export default function CreatePulseContentSEO({
   step = 1, 
   totalSteps = 1 
 }: CreatePulseContentSEOProps) {
-  const location = useLocation();
+  const [location] = useLocation();
 
   useEffect(() => {
     // Content type specific SEO data
@@ -206,7 +206,7 @@ export default function CreatePulseContentSEO({
         scriptTag.remove();
       }
     };
-  }, [contentType, industry, domain, step, totalSteps, location.pathname]);
+  }, [contentType, industry, domain, step, totalSteps, location]);
 
   return null; // This component doesn't render anything
 }
