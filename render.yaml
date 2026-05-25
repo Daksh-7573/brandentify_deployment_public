@@ -12,10 +12,21 @@ services:
         value: production
       - key: TRUST_PROXY
         value: "1"
+
       - key: DATABASE_URL
         sync: false
       - key: JWT_SECRET
         sync: false
+      - key: SESSION_SECRET
+        sync: false
+      - key: CSRF_SECRET
+        sync: false
+
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+
       - key: OPENAI_API_KEY
         sync: false
       - key: ANTHROPIC_API_KEY
@@ -24,5 +35,41 @@ services:
         sync: false
       - key: GOOGLE_AI_API_KEY
         sync: false
+
       - key: REDIS_URL
+        sync: false
+
+      - key: VITE_FIREBASE_API_KEY
+        sync: false
+      - key: VITE_FIREBASE_APP_ID
+        sync: false
+      - key: VITE_FIREBASE_PROJECT_ID
+        sync: false
+      - key: VITE_FIREBASE_AUTH_DOMAIN
+        sync: false
+
+      - key: GNEWS_API_KEY
+        sync: false
+      - key: NEWSAPI_KEY
+        sync: false
+
+      - key: AI_PROVIDER
+        sync: false
+      - key: AI_BASE_URL
+        sync: false
+      - key: AI_MODEL
+        sync: false
+      - key: AI_FALLBACK_OPENAI
+        sync: false
+      - key: OLLAMA_URL
+        sync: false
+      - key: OLLAMA_MODEL
+        sync: false
+      - key: OLLAMA_TIMEOUT
+        sync: false
+      - key: RESUME_ANALYSIS_PROVIDER
+        sync: false
+      - key: GEMINI_MODEL
+        sync: false
+      - key: GEMINI_TIMEOUT_MS
         sync: false
